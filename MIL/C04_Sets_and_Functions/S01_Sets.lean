@@ -307,7 +307,7 @@ example : s \ t ∪ t = s ∪ t := by
   rintro (xs | xt)
   · left
     use xs
-    exact h
+    -- exact h
   right; exact xt
 
 example : s \ t ∪ t \ s = (s ∪ t) \ (s ∩ t) := by
@@ -488,7 +488,7 @@ example (h₀ : ∀ x ∈ s, ¬Even x) (h₁ : ∀ x ∈ s, Prime x) : ∀ x ∈
 example (h : ∃ x ∈ s, ¬Even x ∧ Prime x) : ∃ x ∈ s, Prime x := by
   rcases h with ⟨x, xs, _, prime_x⟩
   use x, xs
-  exact prime_x
+  -- exact prime_x
 -- QUOTE.
 
 /- TEXT:
@@ -520,7 +520,7 @@ example (h₀ : ∀ x ∈ t, ¬Even x) (h₁ : ∀ x ∈ t, Prime x) : ∀ x ∈
 example (h : ∃ x ∈ s, ¬Even x ∧ Prime x) : ∃ x ∈ t, Prime x := by
   rcases h with ⟨x, xs, _, px⟩
   use x, ssubt xs
-  exact px
+  -- exact px
 
 end
 
@@ -663,7 +663,7 @@ example : (⋃ p ∈ primes, { x | x ≤ p }) = univ := by
   simp
   rcases Nat.exists_infinite_primes x with ⟨p, primep, pge⟩
   use p, pge
-  exact primep
+  -- exact primep
 
 -- BOTH:
 end

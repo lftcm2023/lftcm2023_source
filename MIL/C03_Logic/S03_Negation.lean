@@ -243,7 +243,7 @@ example (h : ¬∃ x, P x) : ∀ x, ¬P x := by
   intro x Px
   apply h
   use x
-  exact Px
+  -- exact Px
 
 example (h : ∀ x, ¬P x) : ¬∃ x, P x := by
   rintro ⟨x, Px⟩
@@ -336,7 +336,7 @@ example (h : ¬FnHasUb f) : ∀ a, ∃ x, f x > a := by
   intro h''
   apply h'
   use x
-  exact h''
+  -- exact h''
 
 /- TEXT:
 .. index:: push_neg, tactics ; push_neg
