@@ -74,7 +74,7 @@ in :numref:`sequences_and_convergence` if you tried to state for instance that
 ``0 < 1`` without telling Lean whether you meant this inequality to be about natural numbers
 or real numbers.
 
-Our next task is to assign a notation to ``One₁.one``. This we don't want collisions
+Our next task is to assign a notation to ``One₁.one``. Since we don't want collisions
 with the builtin notation for ``1``, we will use ``𝟙``. This is achieved by the following
 command where the first line tells Lean to use the documentation
 of ``One₁.one`` as documentation for the symbol ``𝟙``.
@@ -314,7 +314,7 @@ A ring structure on a type contains both an additive group structure and a multi
 monoid structure, and some properties about their interaction. But so far we hard-coded
 a notation ``⋄`` for all our operations. More fundamentally, the type class system
 assumes every type has only one instance of each type class. There are various
-ways to solve this issue. Surprisingly mathlib uses the naive idea to duplicate
+ways to solve this issue. Surprisingly Mathlib uses the naive idea to duplicate
 everything for additive and multiplicative theories with the help of some code-generating
 attribute. Structures and classes are defined in both additive and multiplicative notation
 with an attribute ``to_additive`` linking them. In case of multiple inheritance like for
@@ -633,7 +633,7 @@ def nsmul₁ [Zero M] [Add M] : ℕ → M → M
   | 0, _ => 0
   | n + 1, a => a + nsmul₁ n a
 
-def zsmul₁ {M : Type _} [Zero M] [Add M] [Neg M] : ℤ → M → M
+def zsmul₁ {M : Type*} [Zero M] [Add M] [Neg M] : ℤ → M → M
   | Int.ofNat n, a => nsmul₁ n a
   | Int.negSucc n, a => -nsmul₁ n.succ a
 -- QUOTE.
@@ -675,7 +675,7 @@ we used above, it refers to the way one can draw the paths from ``ℤ`` to its `
 going through either ``AddCommGroup₃ ℤ`` or ``Ring₃ ℤ``.
 
 It is important to understand that not all diamonds are bad. In fact there are diamonds everywhere
-in mathlib, and also in this chapter. Already at the very beginning we saw one can go
+in Mathlib, and also in this chapter. Already at the very beginning we saw one can go
 from ``Monoid₁ α`` to ``Dia₁ α`` through either ``Semigroup₁ α`` or ``DiaOneClass₁ α`` and
 thanks to the work done by the ``class`` command, the resulting two ``Dia₁ α`` instances
 are definitionally equal. In particular a diamond having a ``Prop``-valued class at the bottom
@@ -750,7 +750,7 @@ example (n : ℕ) (m : ℤ) : SMul.smul (self := mySMul) n m = n * m := rfl
 /- TEXT:
 This story then continues with incorporating a ``zsmul`` field into the definition of groups
 and similar tricks. You are now ready to read the definition of monoids, groups, rings and modules
-in mathlib. There are more complicated than what we have seen here, because they are part of a huge
+in Mathlib. There are more complicated than what we have seen here, because they are part of a huge
 hierarchy, but all principles have been explained above.
 
 As an exercise, you can come back to the order relation hierarchy you built above and try

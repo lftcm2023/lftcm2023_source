@@ -120,7 +120,6 @@ theorem exists_prime_factor {n : Nat} (h : 2 ≤ n) : ∃ p : Nat, p.Prime ∧ p
   have mgt2 : 2 ≤ m := two_le this mne1
   by_cases mp : m.Prime
   · use m, mp
-    -- exact mdvdn
   . rcases ih m mltn mgt2 mp with ⟨p, pp, pdvd⟩
     use p, pp
     apply pdvd.trans mdvdn
@@ -206,7 +205,7 @@ open Finset
 
 -- EXAMPLES:
 section
-variable {α : Type _} [DecidableEq α] (r s t : Finset α)
+variable {α : Type*} [DecidableEq α] (r s t : Finset α)
 
 example : r ∩ (s ∪ t) ⊆ r ∩ s ∪ r ∩ t := by
   rw [subset_iff]
@@ -239,7 +238,7 @@ dispense with propositional tautologies. See if you can use
 these methods to prove the two examples below.
 BOTH: -/
 section
-variable {α : Type _} [DecidableEq α] (r s t : Finset α)
+variable {α : Type*} [DecidableEq α] (r s t : Finset α)
 
 -- QUOTE:
 example : (r ∪ s) ∩ (r ∪ t) = r ∪ s ∩ t := by
@@ -418,7 +417,7 @@ is a procedure for ``Nat.Prime``. In general, if we use classical logic
 by writing ``open Classical``,
 we can dispense with the assumption.
 
-In mathlib, ``Finset.sup s f`` denotes the supremum of the values of ``f x`` as ``x``
+In Mathlib, ``Finset.sup s f`` denotes the supremum of the values of ``f x`` as ``x``
 ranges over ``s``, returning ``0`` in the case where ``s`` is empty and
 the codomain of ``f`` is ``ℕ``. In the first proof, we use ``s.sup id``,
 where ``id`` is the identity function, to refer to the maximum value in ``s``.
@@ -535,7 +534,6 @@ theorem exists_prime_factor_mod_4_eq_3 {n : Nat} (h : n % 4 = 3) :
     ∃ p : Nat, p.Prime ∧ p ∣ n ∧ p % 4 = 3 := by
   by_cases np : n.Prime
   · use n
-    -- exact ⟨np, dvd_rfl, h⟩
   induction' n using Nat.strong_induction_on with n ih
   dsimp at ih
   rw [Nat.prime_def_lt] at np
@@ -557,14 +555,12 @@ theorem exists_prime_factor_mod_4_eq_3 {n : Nat} (h : n % 4 = 3) :
 SOLUTIONS: -/
   · by_cases mp : m.Prime
     · use m
-      -- exact ⟨mp, mdvdn, h1⟩
     rcases ih m mltn h1 mp with ⟨p, pp, pdvd, p4eq⟩
     use p
     exact ⟨pp, pdvd.trans mdvdn, p4eq⟩
   obtain ⟨nmdvdn, nmltn⟩ := aux mdvdn mge2 mltn
   by_cases nmp : (n / m).Prime
   · use n / m
-    -- exact ⟨nmp, nmdvdn, h1⟩
   rcases ih (n / m) nmltn h1 nmp with ⟨p, pp, pdvd, p4eq⟩
   use p
   exact ⟨pp, pdvd.trans nmdvdn, p4eq⟩

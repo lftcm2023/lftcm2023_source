@@ -268,7 +268,7 @@ it will apply in all these instances.
 TEXT. -/
 section
 -- QUOTE:
-variable {α : Type _} {R : Type _} [OrderedCancelAddCommMonoid R]
+variable {α : Type*} {R : Type*} [OrderedCancelAddCommMonoid R]
 
 #check add_le_add
 
@@ -287,13 +287,13 @@ Section :numref:`proving_identities_in_algebraic_structures`,
 though we still haven't explained what they mean.
 For concreteness, we will stick to the real numbers
 for most of our examples,
-but it is worth knowing that mathlib contains definitions and theorems
+but it is worth knowing that Mathlib contains definitions and theorems
 that work at a high level of generality.
 
 .. index:: monotone function
 
 For another example of a hidden universal quantifier,
-mathlib defines a predicate ``Monotone``,
+Mathlib defines a predicate ``Monotone``,
 which says that a function is nondecreasing in its arguments:
 TEXT. -/
 -- QUOTE:
@@ -494,7 +494,7 @@ TEXT. -/
 section
 
 -- QUOTE:
-variable {α : Type _} (r s t : Set α)
+variable {α : Type*} (r s t : Set α)
 
 -- EXAMPLES:
 example : s ⊆ s := by
@@ -533,7 +533,7 @@ TEXT. -/
 -- BOTH:
 section
 -- QUOTE:
-variable {α : Type _} [PartialOrder α]
+variable {α : Type*} [PartialOrder α]
 variable (s : Set α) (a b : α)
 
 def SetUb (s : Set α) (a : α) :=
@@ -595,7 +595,7 @@ example {c : ℝ} (h : c ≠ 0) : Injective fun x ↦ c * x := by
 Finally, show that the composition of two injective functions is injective:
 BOTH: -/
 -- QUOTE:
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 variable {g : β → γ} {f : α → β}
 
 -- EXAMPLES:

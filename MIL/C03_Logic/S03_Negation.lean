@@ -222,7 +222,7 @@ TEXT. -/
 -- BOTH:
 section
 -- QUOTE:
-variable {α : Type _} (P : α → Prop) (Q : Prop)
+variable {α : Type*} (P : α → Prop) (Q : Prop)
 
 -- EXAMPLES:
 example (h : ¬∃ x, P x) : ∀ x, ¬P x := by
@@ -243,7 +243,6 @@ example (h : ¬∃ x, P x) : ∀ x, ¬P x := by
   intro x Px
   apply h
   use x
-  -- exact Px
 
 example (h : ∀ x, ¬P x) : ¬∃ x, P x := by
   rintro ⟨x, Px⟩
@@ -336,7 +335,6 @@ example (h : ¬FnHasUb f) : ∀ a, ∃ x, f x > a := by
   intro h''
   apply h'
   use x
-  -- exact h''
 
 /- TEXT:
 .. index:: push_neg, tactics ; push_neg
@@ -346,7 +344,7 @@ a negation in front,
 and it is a common mathematical pattern to replace such
 statements with equivalent forms in which the negation
 has been pushed inward.
-To facilitate this, mathlib offers a ``push_neg`` tactic,
+To facilitate this, Mathlib offers a ``push_neg`` tactic,
 which restates the goal in this way.
 The command ``push_neg at h`` restates the hypothesis ``h``.
 TEXT. -/

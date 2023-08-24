@@ -17,7 +17,7 @@ Fundamentals
 
 We now go up in generality and introduce topological spaces. We will review the two main ways to define
 topological spaces and then explain how the category of topological spaces is much better behaved than
-the category of metric spaces. Note that we won't be using mathlib category theory here, only having
+the category of metric spaces. Note that we won't be using Mathlib category theory here, only having
 a somewhat categorical point of view.
 
 The first way to think about the transition from metric spaces to topological spaces is that we only
@@ -27,7 +27,7 @@ has to satisfy a number of axioms presented below (this collection is slightly r
 BOTH: -/
 -- QUOTE:
 section
-variable {X : Type _} [TopologicalSpace X]
+variable {X : Type*} [TopologicalSpace X]
 
 example : IsOpen (univ : Set X) :=
   isOpen_univ
@@ -35,10 +35,10 @@ example : IsOpen (univ : Set X) :=
 example : IsOpen (∅ : Set X) :=
   isOpen_empty
 
-example {ι : Type _} {s : ι → Set X} (hs : ∀ i, IsOpen (s i)) : IsOpen (⋃ i, s i) :=
+example {ι : Type*} {s : ι → Set X} (hs : ∀ i, IsOpen (s i)) : IsOpen (⋃ i, s i) :=
   isOpen_iUnion hs
 
-example {ι : Type _} [Fintype ι] {s : ι → Set X} (hs : ∀ i, IsOpen (s i)) :
+example {ι : Type*} [Fintype ι] {s : ι → Set X} (hs : ∀ i, IsOpen (s i)) :
     IsOpen (⋂ i, s i) :=
   isOpen_iInter hs
 -- QUOTE.
@@ -49,7 +49,7 @@ Closed sets are then defined as sets whose complement  is open. A function betwe
 is (globally) continuous if all preimages of open sets are open.
 BOTH: -/
 -- QUOTE:
-variable {Y : Type _} [TopologicalSpace Y]
+variable {Y : Type*} [TopologicalSpace Y]
 
 example {f : X → Y} : Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
   continuous_def
@@ -62,7 +62,7 @@ the same if and only if they have the same continuous functions (indeed the iden
 be continuous in both direction if and only if the two structures have the same open sets).
 
 However as soon as we move on to continuity at a point we see the limitations of the approach based
-on open sets. In mathlib we frequently think of topological spaces as types equipped
+on open sets. In Mathlib we frequently think of topological spaces as types equipped
 with a neighborhood filter ``𝓝 x`` attached to each point ``x`` (the corresponding function
 ``X → Filter X`` satisfies certain conditions explained further down). Remember from the filters section that
 these gadget play two related roles. First ``𝓝 x`` is seen as the generalized set of points of ``X``
@@ -140,14 +140,14 @@ BOTH: -/
 #check TopologicalSpace.nhds_mkOfNhds
 
 -- QUOTE:
-example {α : Type _} (n : α → Filter α) (H₀ : ∀ a, pure a ≤ n a)
+example {α : Type*} (n : α → Filter α) (H₀ : ∀ a, pure a ≤ n a)
     (H : ∀ a : α, ∀ p : α → Prop, (∀ᶠ x in n a, p x) → ∀ᶠ y in n a, ∀ᶠ x in n y, p x) :
     ∀ a, ∀ s ∈ n a, ∃ t ∈ n a, t ⊆ s ∧ ∀ a' ∈ t, s ∈ n a' :=
   sorry
 -- QUOTE.
 
 -- SOLUTIONS:
-example {α : Type _} (n : α → Filter α) (H₀ : ∀ a, pure a ≤ n a)
+example {α : Type*} (n : α → Filter α) (H₀ : ∀ a, pure a ≤ n a)
     (H : ∀ a : α, ∀ p : α → Prop, (∀ᶠ x in n a, p x) → ∀ᶠ y in n a, ∀ᶠ x in n y, p x) :
     ∀ a, ∀ s ∈ n a, ∃ t ∈ n a, t ⊆ s ∧ ∀ a' ∈ t, s ∈ n a' := by
   intro a s s_in
@@ -163,7 +163,7 @@ end
 Note that ``TopologicalSpace.mkOfNhds`` is not so frequently used, but it still good to know in what
 precise sense the neighborhood filters is all there is in a topological space structure.
 
-The next thing to know in order to efficiently use topological spaces in mathlib is that we use a lot
+The next thing to know in order to efficiently use topological spaces in Mathlib is that we use a lot
 of formal properties of ``TopologicalSpace : Type u → Type u``. From a purely mathematical point of view,
 those formal properties are a very clean way to explain how topological spaces solve issues that metric spaces
 have. From this point of view, the issues solved by topological spaces is that metric spaces enjoy very
@@ -186,7 +186,7 @@ push or pull topologies from one side to the other. Those two operations form a 
 
 BOTH: -/
 -- QUOTE:
-variable {X Y : Type _}
+variable {X Y : Type*}
 
 example (f : X → Y) : TopologicalSpace X → TopologicalSpace Y :=
   TopologicalSpace.coinduced f
@@ -214,7 +214,7 @@ BOTH: -/
 Then the next big piece is a complete lattice structure on ``TopologicalSpace X``
 for any given structure. If you think of topologies are being primarily the data of open sets then you expect
 the order relation on ``TopologicalSpace X`` to come from ``Set (Set X)``, ie you expect ``t ≤ t'``
-if a set ``u`` is open for ``t'`` as soon as it is open for ``t``. However we already know that mathlib focuses
+if a set ``u`` is open for ``t'`` as soon as it is open for ``t``. However we already know that Mathlib focuses
 on neighborhoods more than open sets so, for any ``x : X`` we want the map from topological spaces to neighborhoods
 ``fun T : TopologicalSpace X ↦ @nhds X T x`` to be order preserving.
 And we know the order relation on ``Filter X`` is designed to ensure an order
@@ -252,7 +252,7 @@ a function :math:`g : Y → Z` is continuous for the topology :math:`f_*T_X` if 
 
 BOTH: -/
 -- QUOTE:
-example {Z : Type _} (f : X → Y) (T_X : TopologicalSpace X) (T_Z : TopologicalSpace Z)
+example {Z : Type*} (f : X → Y) (T_X : TopologicalSpace X) (T_Z : TopologicalSpace Z)
       (g : Y → Z) :
     @Continuous Y Z (TopologicalSpace.coinduced f T_X) T_Z g ↔
       @Continuous X Z T_X T_Z (g ∘ f) := by
@@ -278,7 +278,7 @@ Let us explore that constraint "on paper" using notation :math:`p_i` for the pro
 So we see that what is the topology we want on ``Π i, X i``:
 BOTH: -/
 -- QUOTE:
-example (ι : Type _) (X : ι → Type _) (T_X : ∀ i, TopologicalSpace (X i)) :
+example (ι : Type*) (X : ι → Type*) (T_X : ∀ i, TopologicalSpace (X i)) :
     (Pi.topologicalSpace : TopologicalSpace (∀ i, X i)) =
       ⨅ i, TopologicalSpace.induced (fun x ↦ x i) (T_X i) :=
   rfl
@@ -286,7 +286,7 @@ example (ι : Type _) (X : ι → Type _) (T_X : ∀ i, TopologicalSpace (X i)) 
 
 /- TEXT:
 
-This ends our tour of how mathlib thinks that topological spaces fix defects of the theory of metric spaces
+This ends our tour of how Mathlib thinks that topological spaces fix defects of the theory of metric spaces
 by being a more functorial theory and having a complete lattice structure for any fixed type.
 
 Separation and countability
@@ -331,7 +331,7 @@ a continuous mapping of :math:`A` into a regular space :math:`Y`. If, for each :
 while remaining in :math:`A` then there exists a continuous extension :math:`φ` of :math:`f` to
 :math:`X`.
 
-Actually ``mathlib`` contains a more general version of the above lemma, ``DenseInducing.continuousAt_extend``,
+Actually Mathlib contains a more general version of the above lemma, ``DenseInducing.continuousAt_extend``,
 but we'll stick to Bourbaki's version here.
 
 Remember that, given ``A : Set X``, ``↥A`` is the subtype associated to ``A``, and Lean will automatically
@@ -344,7 +344,7 @@ Let's prove first an auxiliary lemma, extracted to simplify the context
 
 BOTH: -/
 -- QUOTE:
-theorem aux {X Y A : Type _} [TopologicalSpace X] {c : A → X}
+theorem aux {X Y A : Type*} [TopologicalSpace X] {c : A → X}
       {f : A → Y} {x : X} {F : Filter Y}
       (h : Tendsto f (comap c (𝓝 x)) F) {V' : Set Y} (V'_in : V' ∈ F) :
     ∃ V ∈ 𝓝 x, IsOpen V ∧ c ⁻¹' V ⊆ f ⁻¹' V' :=
@@ -352,7 +352,7 @@ theorem aux {X Y A : Type _} [TopologicalSpace X] {c : A → X}
 -- QUOTE.
 
 -- SOLUTIONS:
-example {X Y A : Type _} [TopologicalSpace X] {c : A → X}
+example {X Y A : Type*} [TopologicalSpace X] {c : A → X}
       {f : A → Y} {x : X} {F : Filter Y}
       (h : Tendsto f (comap c (𝓝 x)) F) {V' : Set Y} (V'_in : V' ∈ F) :
     ∃ V ∈ 𝓝 x, IsOpen V ∧ c ⁻¹' V ⊆ f ⁻¹' V' := by
@@ -443,7 +443,7 @@ Compactness
 ^^^^^^^^^^^
 
 Let us now discuss how compactness is defined for topological spaces. As usual there are several ways
-to think about it and mathlib goes for the filter version.
+to think about it and Mathlib goes for the filter version.
 
 We first need to define cluster points of filters. Given a filter ``F`` on a topological space ``X``,
 a point ``x : X`` is a cluster point of ``F`` if ``F``, seen as a generalized set, has non-empty intersection
@@ -526,7 +526,7 @@ cover ``s`` has a finite covering sub-family.
 
 BOTH: -/
 -- QUOTE:
-example {ι : Type _} {s : Set X} (hs : IsCompact s) (U : ι → Set X) (hUo : ∀ i, IsOpen (U i))
+example {ι : Type*} {s : Set X} (hs : IsCompact s) (U : ι → Set X) (hUo : ∀ i, IsOpen (U i))
     (hsU : s ⊆ ⋃ i, U i) : ∃ t : Finset ι, s ⊆ ⋃ i ∈ t, U i :=
   hs.elim_finite_subcover U hUo hsU
 -- QUOTE.

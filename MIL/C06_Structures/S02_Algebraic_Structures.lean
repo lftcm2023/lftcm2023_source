@@ -137,7 +137,7 @@ Given a data type ``α``, we can define the group structure on ``α``
 as follows.
 EXAMPLES: -/
 -- QUOTE:
-structure Group₁ (α : Type _) where
+structure Group₁ (α : Type*) where
   mul : α → α → α
   one : α
   inv : α → α
@@ -158,12 +158,12 @@ follows from the other group axioms, so there is no need
 to add it to the definition.
 
 This definition of a group is similar to the definition of ``Group`` in
-mathlib,
+Mathlib,
 and we have chosen the name ``Group₁`` to distinguish our version.
 If you write ``#check Group`` and ctrl-click on the definition,
-you will see that the mathlib version of ``Group`` is defined to
+you will see that the Mathlib version of ``Group`` is defined to
 extend another structure; we will explain how to do that later.
-If you type ``#print Group`` you will also see that the mathlib
+If you type ``#print Group`` you will also see that the Mathlib
 version of ``Group`` has a number of extra fields.
 For reasons we will explain later, sometimes it is useful to add
 redundant information to a structure,
@@ -171,21 +171,21 @@ so that there are additional fields for objects and functions
 that can be defined from the core
 data. Don't worry about that for now.
 Rest assured that our simplified version ``Group₁`` is
-morally the same as the definition of a group that mathlib uses.
+morally the same as the definition of a group that Mathlib uses.
 
 It is sometimes useful to bundle
-the type together with the structure, and mathlib also
+the type together with the structure, and Mathlib also
 contains a definition of a ``GroupCat`` structure that is equivalent to
 the following:
 EXAMPLES: -/
 -- QUOTE:
 structure Group₁Cat where
-  α : Type _
+  α : Type*
   str : Group₁ α
 -- QUOTE.
 
 /- TEXT:
-The mathlib version is found in ``Algebra.Category.Group.Basic``,
+The Mathlib version is found in ``Algebra.Category.Group.Basic``,
 and you can ``#check`` it if you add this to the imports at the
 beginning of the examples file.
 
@@ -193,7 +193,7 @@ For reasons that will become clearer below, it is more often
 useful to keep the type ``α`` separate from the structure ``Group α``.
 We refer to the two objects together as a *partially bundled structure*,
 since the representation combines most, but not all, of the components
-into one structure. It is common in mathlib
+into one structure. It is common in Mathlib
 to use capital roman letters like ``G`` for a type
 when it is used as the carrier type for a group.
 
@@ -210,7 +210,7 @@ to one another.
 EXAMPLES: -/
 section
 -- QUOTE:
-variable (α β γ : Type _)
+variable (α β γ : Type*)
 variable (f : α ≃ β) (g : β ≃ γ)
 
 #check Equiv α β
@@ -252,7 +252,7 @@ Mathlib also defines the type ``perm α`` of equivalences between
 ``α`` and itself.
 EXAMPLES: -/
 -- QUOTE:
-example (α : Type _) : Equiv.Perm α = (α ≃ α) :=
+example (α : Type*) : Equiv.Perm α = (α ≃ α) :=
   rfl
 -- QUOTE.
 
@@ -264,7 +264,7 @@ In other words, multiplication is what we ordinarily think of as
 composition of the bijections. Here we define this group:
 EXAMPLES: -/
 -- QUOTE:
-def permGroup {α : Type _} : Group₁ (Equiv.Perm α)
+def permGroup {α : Type*} : Group₁ (Equiv.Perm α)
     where
   mul f g := Equiv.trans g f
   one := Equiv.refl α
@@ -276,7 +276,7 @@ def permGroup {α : Type _} : Group₁ (Equiv.Perm α)
 -- QUOTE.
 
 /- TEXT:
-In fact, mathlib defines exactly this ``Group`` structure on ``Equiv.Perm α``
+In fact, Mathlib defines exactly this ``Group`` structure on ``Equiv.Perm α``
 in the file ``GroupTheory.Perm.Basic``.
 As always, you can hover over the theorems used in the definition of
 ``permGroup`` to see their statements,
@@ -311,7 +311,7 @@ Define negation and a zero on the ``Point`` data type,
 and define the ``AddGroup₁`` structure on ``Point``.
 BOTH: -/
 -- QUOTE:
-structure AddGroup₁ (α : Type _) where
+structure AddGroup₁ (α : Type*) where
 /- EXAMPLES:
   (add : α → α → α)
   -- fill in the rest
@@ -374,12 +374,12 @@ on a structure and use it with any particular instance,
 and we want to arrange it so that we can prove a theorem about
 a structure and use it with any instance.
 
-In fact, mathlib is already set up to use generic group notation,
+In fact, Mathlib is already set up to use generic group notation,
 definitions, and theorems for ``Equiv.Perm α``.
 EXAMPLES: -/
 section
 -- QUOTE:
-variable {α : Type _} (f g : Equiv.Perm α) (n : ℕ)
+variable {α : Type*} (f g : Equiv.Perm α) (n : ℕ)
 
 #check f * g
 #check mul_assoc f g g⁻¹
@@ -392,7 +392,7 @@ example : f * g * g⁻¹ = f := by rw [mul_assoc, mul_right_inv, mul_one]
 example : f * g * g⁻¹ = f :=
   mul_inv_cancel_right f g
 
-example {α : Type _} (f g : Equiv.Perm α) : g.symm.trans (g.trans f) = f :=
+example {α : Type*} (f g : Equiv.Perm α) : g.symm.trans (g.trans f) = f :=
   mul_inv_cancel_right f g
 -- QUOTE.
 
@@ -467,7 +467,7 @@ since in general we intend Lean to find it and put it to use
 without troubling us with the details.
 EXAMPLES: -/
 -- QUOTE:
-class Group₂ (α : Type _) where
+class Group₂ (α : Type*) where
   mul : α → α → α
   one : α
   inv : α → α
@@ -476,7 +476,7 @@ class Group₂ (α : Type _) where
   one_mul : ∀ x : α, mul one x = x
   mul_left_inv : ∀ x : α, mul (inv x) x = one
 
-instance {α : Type _} : Group₂ (Equiv.Perm α) where
+instance {α : Type*} : Group₂ (Equiv.Perm α) where
   mul f g := Equiv.trans g f
   one := Equiv.refl α
   inv := Equiv.symm
@@ -492,13 +492,13 @@ EXAMPLES: -/
 -- QUOTE:
 #check Group₂.mul
 
-def mySquare {α : Type _} [Group₂ α] (x : α) :=
+def mySquare {α : Type*} [Group₂ α] (x : α) :=
   Group₂.mul x x
 
 #check mySquare
 
 section
-variable {β : Type _} (f g : Equiv.Perm β)
+variable {β : Type*} (f g : Equiv.Perm β)
 
 example : Group₂.mul f g = g.trans f :=
   rfl
@@ -586,17 +586,17 @@ because Lean knows that these are defined for every ring.
 We can use this method to specify notation for our ``Group₂`` class:
 EXAMPLES: -/
 -- QUOTE:
-instance hasMulGroup₂ {α : Type _} [Group₂ α] : Mul α :=
+instance hasMulGroup₂ {α : Type*} [Group₂ α] : Mul α :=
   ⟨Group₂.mul⟩
 
-instance hasOneGroup₂ {α : Type _} [Group₂ α] : One α :=
+instance hasOneGroup₂ {α : Type*} [Group₂ α] : One α :=
   ⟨Group₂.one⟩
 
-instance hasInvGroup₂ {α : Type _} [Group₂ α] : Inv α :=
+instance hasInvGroup₂ {α : Type*} [Group₂ α] : Inv α :=
   ⟨Group₂.inv⟩
 
 section
-variable {α : Type _} (f g : Equiv.Perm α)
+variable {α : Type*} (f g : Equiv.Perm α)
 
 #check f * 1 * g⁻¹
 
@@ -624,7 +624,7 @@ In fact, Lean favors more recent declarations unless you explicitly
 specify a different priority.
 Also, there is another way to tell Lean that one structure is an
 instance of another, using the ``extends`` keyword.
-This is how ``mathlib`` specifies that, for example,
+This is how Mathlib specifies that, for example,
 every commutative ring is a ring.
 You can find more information in a
 `section on class inference <https://leanprover.github.io/theorem_proving_in_lean4/type_classes.html#managing-type-class-inference>`_ in *Theorem Proving in Lean*.
@@ -646,7 +646,7 @@ Try it out and make sure that the additive group notation works for
 elements of ``Point``.
 BOTH: -/
 -- QUOTE:
-class AddGroup₂ (α : Type _) where
+class AddGroup₂ (α : Type*) where
 /- EXAMPLES:
   add : α → α → α
   -- fill in the rest
@@ -660,13 +660,13 @@ SOLUTIONS: -/
   zero_add : ∀ x : α, add x zero = x
   add_left_neg : ∀ x : α, add (neg x) x = zero
 
-instance hasAddAddGroup₂ {α : Type _} [AddGroup₂ α] : Add α :=
+instance hasAddAddGroup₂ {α : Type*} [AddGroup₂ α] : Add α :=
   ⟨AddGroup₂.add⟩
 
-instance hasZeroAddGroup₂ {α : Type _} [AddGroup₂ α] : Zero α :=
+instance hasZeroAddGroup₂ {α : Type*} [AddGroup₂ α] : Zero α :=
   ⟨AddGroup₂.zero⟩
 
-instance hasNegAddGroup₂ {α : Type _} [AddGroup₂ α] : Neg α :=
+instance hasNegAddGroup₂ {α : Type*} [AddGroup₂ α] : Neg α :=
   ⟨AddGroup₂.neg⟩
 
 instance : AddGroup₂ Point where

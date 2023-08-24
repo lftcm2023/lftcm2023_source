@@ -40,11 +40,10 @@ example (a b c : ℝ) : a * b * c = b * (a * c) := by
 -- QUOTE.
 
 /- TEXT:
-The ``import`` line at the beginning of the example
-imports the theory of the real numbers from ``mathlib``.
+The ``import`` lines at the beginning of the associated examples file
+import the theory of the real numbers from Mathlib, as well as useful automation.
 For the sake of brevity,
-we generally suppress information like this when it
-is repeated from example to example.
+we generally suppress information like this in the textbook.
 
 You are welcome to make changes to see what happens.
 You can type the ``ℝ`` character as ``\R`` or ``\real``
@@ -387,7 +386,7 @@ because at that point ``hyp`` matches the goal exactly.
 
 .. index:: ring (tactic), tactics ; ring
 
-We close this section by noting that ``mathlib`` provides a
+We close this section by noting that Mathlib provides a
 useful bit of automation with a ``ring`` tactic,
 which is designed to prove identities in any commutative ring as long as they follow
 purely from the ring axioms, without using any local assumption.

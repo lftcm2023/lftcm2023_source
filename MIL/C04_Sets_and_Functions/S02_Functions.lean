@@ -21,7 +21,7 @@ TEXT. -/
 section
 
 -- QUOTE:
-variable {α β : Type _}
+variable {α β : Type*}
 variable (f : α → β)
 variable (s t : Set α)
 variable (u v : Set β)
@@ -183,7 +183,6 @@ example (h : Surjective f) : u ⊆ f '' (f ⁻¹' u) := by
 example (h : s ⊆ t) : f '' s ⊆ f '' t := by
   rintro y ⟨x, xs, fxeq⟩
   use x, h xs
-  -- exact fxeq
 
 example (h : u ⊆ v) : f ⁻¹' u ⊆ f ⁻¹' v := by
   intro x; apply h
@@ -252,7 +251,7 @@ to unfold the meaning of an equation or inclusion between sets,
 and then calling ``simp`` to unpack the conditions for membership.
 BOTH: -/
 -- QUOTE:
-variable {I : Type _} (A : I → Set α) (B : I → Set β)
+variable {I : Type*} (A : I → Set α) (B : I → Set β)
 
 -- EXAMPLES:
 example : (f '' ⋃ i, A i) = ⋃ i, f '' A i := by
@@ -260,7 +259,6 @@ example : (f '' ⋃ i, A i) = ⋃ i, f '' A i := by
   constructor
   · rintro ⟨x, ⟨i, xAi⟩, fxeq⟩
     use i, x
-    -- exact ⟨xAi, fxeq⟩
   rintro ⟨i, x, xAi, fxeq⟩
   exact ⟨x, ⟨i, xAi⟩, fxeq⟩
 
@@ -298,7 +296,6 @@ example : (f '' ⋃ i, A i) = ⋃ i, f '' A i := by
   constructor
   · rintro ⟨x, ⟨i, xAi⟩, fxeq⟩
     use i, x
-    -- exact ⟨xAi, fxeq⟩
   rintro ⟨i, x, xAi, fxeq⟩
   exact ⟨x, ⟨i, xAi⟩, fxeq⟩
 
@@ -421,7 +418,7 @@ to ``InjOn f univ``.
 Similarly, the library defines ``range f`` to be
 ``{x | ∃y, f y = x}``,
 so ``range f`` is provably equal to ``f '' univ``.
-This is a common theme in mathlib:
+This is a common theme in Mathlib:
 although many properties of functions are defined relative
 to their full domain,
 there are often relativized versions that restrict
@@ -538,7 +535,7 @@ TEXT. -/
 -- BOTH:
 section
 -- QUOTE:
-variable {α β : Type _} [Inhabited α]
+variable {α β : Type*} [Inhabited α]
 
 -- EXAMPLES:
 #check (default : α)
@@ -683,7 +680,7 @@ and then fill in the two lines that are missing.
 TEXT. -/
 -- BOTH:
 section
-variable {α : Type _}
+variable {α : Type*}
 open Function
 
 -- EXAMPLES:
