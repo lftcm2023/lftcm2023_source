@@ -1,12 +1,17 @@
 import Lake
 open Lake DSL
 
-package mil {
+package lftcm2023 {
   -- add package configuration options here
 }
 
 @[default_target]
 lean_lib MIL {
+  -- add library configuration options here
+}
+
+@[default_target]
+lean_lib CIL {
   -- add library configuration options here
 }
 
