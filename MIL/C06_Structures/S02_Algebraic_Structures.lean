@@ -1,4 +1,4 @@
-import Mathlib.Tactic
+import MIL.Common
 import Mathlib.Data.Real.Basic
 
 namespace C06S02
@@ -185,7 +185,7 @@ structure Group₁Cat where
 -- QUOTE.
 
 /- TEXT:
-The Mathlib version is found in ``Algebra.Category.Group.Basic``,
+The Mathlib version is found in ``Mathlib.Algebra.Category.GroupCat.Basic``,
 and you can ``#check`` it if you add this to the imports at the
 beginning of the examples file.
 
