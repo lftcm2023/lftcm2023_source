@@ -19,13 +19,11 @@ lean_lib MIL where
   moreLeanArgs := moreLeanArgs
 
 @[default_target]
-lean_lib CIL {
-  -- add library configuration options here
-}
+lean_lib CIL where
+  moreLeanArgs := moreLeanArgs
 
 @[default_target]
-lean_lib Projects {
-  -- add library configuration options here
-}
+lean_lib Projects where
+  moreLeanArgs := moreLeanArgs
 
 require mathlib from git "https://github.com/leanprover-community/mathlib4"@"master"
