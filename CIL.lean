@@ -1,14 +1,4 @@
-import CIL.C01_Basics_of_Polyrith.S02LinearCombination
-import CIL.C01_Basics_of_Polyrith.S03NonlinearExamples
-import CIL.C01_Basics_of_Polyrith.S04Polyrith
-
-import CIL.C02_Using_Polyrith.S01Chebyshev
-import CIL.C02_Using_Polyrith.S02IsometryPlane
-import CIL.C02_Using_Polyrith.S03DoubleCover
-
-import CIL.C03_Nonsingularity_of_Curves.S01PowersCaseSplits
-import CIL.C03_Nonsingularity_of_Curves.S02ProjectiveCurves
-
-import CIL.C04_Combining_Tactics.S01FieldSimp
-import CIL.C04_Combining_Tactics.S02Sphere
-import CIL.C04_Combining_Tactics.S03Binomial
+import CIL.C01BasicsOfPolyrith
+import CIL.C02UsingPolyrith
+import CIL.C03NonsingularityOfCurves
+import CIL.C04CombiningTactics

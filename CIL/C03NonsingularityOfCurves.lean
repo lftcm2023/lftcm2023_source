@@ -7,6 +7,29 @@ import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Tactic.Polyrith
 import CIL.Attr
 
+
+example {x : ℚ} (hx : x ^ 2 - 4 * x = - 4) : x = 2 := by sorry -- polyrith
+-- polyrith failed to retrieve a solution from Sage! ValueError: polynomial is not in the ideal
+
+
+example {x : ℤ} (hx : x ^ 2 - 4 * x = -4) : x = 2 := by
+  have : (x - 2) ^ 2 = 0 := by sorry -- polyrith
+  replace this := pow_eq_zero this
+  sorry -- polyrith
+
+
+example {r s : ℚ} (hr : r ≠ 1) (h : r * s - 2 = s - 2 * r) : s = -2 := by
+  have hr' : r - 1 ≠ 0
+  · contrapose! hr
+    sorry -- polyrith
+  apply mul_left_cancel₀ hr'
+  sorry -- polyrith
+
+
+example {r s : ℚ} (h : r * s - 2 = s - 2 * r) : True := by
+  have : (r - 1) * (s + 2) = 0 := by sorry -- polyrith
+  cases' eq_zero_or_eq_zero_of_mul_eq_zero this with H H <;> exact trivial
+
 noncomputable section
 
 open MvPolynomial
@@ -37,14 +60,6 @@ in Kℙ². -/
 def klein : MvPolynomial (Fin 3) K :=
   X 0 ^ 3 * X 1 + X 1 ^ 3 * X 2 + X 2 ^ 3 * X 0
 
-/- If the first five lines of code in the next example run too slowly to meaningfully experiment
-with the rest of the proof, temporarily comment the lines above and paste in the lines below,
-which states their result without proof.
-  have h : x ^ 3 * y + y ^ 3 * z + z ^ 3 * x = 0 := sorry,
-  have h₀ : y * (3 * x ^ 2) + z ^ 3 = 0 := sorry,
-  have h₁ : x ^ 3 + z * (3 * y ^ 2) = 0 := sorry,
-  have h₂ : y ^ 3 + x * (3 * z ^ 2) = 0 := sorry,
--/
 /-- The Klein quartic is nonsingular. -/
 example {x y z : K} (h : MvPolynomial.eval ![x, y, z] (klein K) = 0)
     (hdz : ∀ i, MvPolynomial.eval ![x, y, z] (MvPolynomial.pderiv i (klein K)) = 0) :

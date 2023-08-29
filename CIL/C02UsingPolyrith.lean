@@ -1,22 +1,99 @@
 /-
-Copyright (c) 2022 Heather Macbeth. All rights reserved.
-Authors: Heather Macbeth, Marc Masdeu
+Copyright (c) 2020 Johan Commelin. All rights reserved.
+Adapted from mathlib, released under Apache 2.0 license as described in that repository.
+Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth, Marc Masdeu
 -/
+import Mathlib.Data.Polynomial.Basic
+import Mathlib.Analysis.Complex.Basic
+import Mathlib.Tactic.Polyrith
 import Mathlib.Analysis.Quaternion
 import Mathlib.Data.Matrix.Notation
 import Mathlib.LinearAlgebra.UnitaryGroup
-import Mathlib.Tactic.Polyrith
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Algebra.GroupPower.Ring
 import CIL.Attr
 
-open scoped Quaternion
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+
+open Polynomial
+
+open scoped Polynomial
+
+/-- The Chebyshev polynomials, defined recursively.-/
+noncomputable def t : ℕ → ℤ[X]
+  | 0 => 1
+  | 1 => X
+  | n + 2 => 2 * X * t (n + 1) - t n
+
+-- now record the three pieces of the recursive definition for easy access
+theorem t_zero : t 0 = 1 := rfl
+
+theorem t_one : t 1 = X := rfl
+
+theorem t_add_two (n : ℕ) : t (n + 2) = 2 * X * t (n + 1) - t n := by rw [t]
+
+/-
+The goal of this section is to prove the following formula, namely that for all m and k,
+2 T(m) T(m+k) = T(2m + k) + T(k).
+
+The proof is by induction on m, using the previous two cases.
+The paper proof (of the inductive step) goes as this:
+    2T(m+2)T((m+2)+k)
+    = 2(2xT(m+1)-T(m))T(m+k+2)
+    = 2x(2T(m+1)T((m+1)+(k+1)))-2T(m)T(m+(k+2))
+    = 2x(T(2(m+1)+(k+1))+T(k+1))-(T(2m+(k+2))+T(k+2))
+    = (2xT(2m+k+3)-T(2m+k+2))+(2xT(k+1)-T(k+2))
+    = T(2(m+2)+k)+T(k)
+-/
+
+/-- The product of two Chebyshev polynomials is the sum of two other Chebyshev polynomials. -/
+theorem mul_t : ∀ m : ℕ, ∀ k, 2 * t m * t (m + k) = t (2 * m + k) + t k
+  | 0 => by
+    sorry
+  | 1 => by
+    sorry
+  | m + 2 => by
+    intro k
+    have h₁ := t_add_two (m + 37) -- not actually a relevant input value!
+    have h₂ := t_add_two (37 + m) -- not actually a relevant input value!
+    ring_nf at h₁ h₂ ⊢ -- note the effect of this on the hypotheses
+    sorry
 
 noncomputable section
 
-/-! This file contains a lot of computationally-intensive evaluation of matrices and quaternions.
-We speed it up slightly by specifiying in advance the path the simplifier should take. -/
+open Complex
 
+open scoped ComplexConjugate
+
+/-! This file contains a lot of computationally-intensive evaluation of operations on the complex
+numbers. We speed it up slightly by specifiying in advance the path the simplifier should take.
+-/
+attribute [complex_simps] normSq_eq_conj_mul_self norm_eq_abs ofReal_pow ofReal_one
+  map_sub map_one conj_neg_I
+
+/-
+The goal is to prove that if f : ℂ → ℂ is an ℝ-linear isometry taking 1 to 1, then f(i) is either
+i or -i. That is, f will be either the identity or complex conjugation.
+
+The key is to prove first that
+$$
+(f(i) - i) (\overline{f(i)} - \overline{-i}) = 0.
+$$
+-/
+example {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1) : f I = I ∨ f I = -I := by
+  have key : (f I - I) * (conj (f I) - conj (-I)) = 0
+  · have H₁ := congr_arg (λ t ↦ (((t ^ 2) : ℝ) : ℂ)) (f.norm_map (I - 1))
+    have H₂ := congr_arg (λ t ↦ (((t ^ 2) : ℝ) : ℂ)) (f.norm_map I)
+    simp only [h, ←normSq_eq_abs, complex_simps] at H₁ H₂ ⊢
+    linear_combination I * H₁ + (-(1 * I) + 1) * H₂
+  -- From `key`, we deduce that either `f I - I = 0` or `conj (f I) - conj (- I) = 0`.
+  cases' eq_zero_or_eq_zero_of_mul_eq_zero key with hI hI
+  · sorry
+  · sorry -- use here that conjugation is injective
+
+open scoped Quaternion
+
+noncomputable section
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
@@ -28,6 +105,8 @@ def Quaternion.toMatrix (a : ℍ) : Matrix (Fin 3) (Fin 3) ℝ :=
     ![2 * (y * z + w * x), x ^ 2 + z ^ 2 - y ^ 2 - w ^ 2, 2 * (z * w - y * x)],
     ![2 * (y * w - z * x), 2 * (z * w + y * x), x ^ 2 + w ^ 2 - y ^ 2 - z ^ 2]]
 
+/-! This file contains a lot of computationally-intensive evaluation of matrices and quaternions.
+We speed it up slightly by specifiying in advance the path the simplifier should take. -/
 attribute [quaternion_simps] Matrix.head_cons Matrix.cons_vec_bit0_eq_alt0 Matrix.cons_val_zero
   Matrix.cons_val_one Matrix.cons_vecAppend Matrix.cons_vecAlt0 Matrix.cons_val' Matrix.empty_val'
   Matrix.empty_vecAlt0 Matrix.empty_vecAppend Matrix.one_apply_eq Matrix.one_apply_ne
@@ -123,7 +202,6 @@ theorem toMatrixHom_mker : (MonoidHom.mker toMatrixHom : Set unitQuaternions) = 
   ext a
   obtain ⟨⟨x, y, z, w⟩, h⟩ := a
   have H : x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 = 1 := by rwa [mem_unitQuaternions] at h
-
   simp [quaternion_simps]
 
   constructor
@@ -146,16 +224,7 @@ theorem toMatrixHom_mker : (MonoidHom.mker toMatrixHom : Set unitQuaternions) = 
     · simp [hx, hy, hz, hw]
     · simp [hx, hy, hz, hw]
   -- easy direction: ±1 are in the kernel
-  rintro (⟨rfl, rfl, rfl, rfl⟩ | ⟨rfl, rfl, rfl, rfl⟩) <;> ext (i j); fin_cases i <;> fin_cases j
-  · simp [quaternion_simps]
-  · simp [quaternion_simps]
-  · simp [quaternion_simps]
-  · simp [quaternion_simps]
-  · simp [quaternion_simps]
-  · simp [quaternion_simps]
-  · simp [quaternion_simps]
-  · simp [quaternion_simps]
-  · simp [quaternion_simps]
-  · simp [quaternion_simps]
+  rintro (⟨rfl, rfl, rfl, rfl⟩ | ⟨rfl, rfl, rfl, rfl⟩) <;> (ext (i j); fin_cases i <;> fin_cases j) <;>
+  simp [quaternion_simps]
 
 end unitQuaternions
