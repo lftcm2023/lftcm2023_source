@@ -72,17 +72,17 @@ def fnUB (f : ℝ → ℝ) (a : ℝ) := ∀ x, f x ≤ a
 section
 
 -- Demonstrate use of `apply`, `have`, `specialize`, `dsimp`, proof structuring
--- Also show `have`, 
+-- Also show `have`,
 
 theorem fnUB_add (hfa : fnUB f a) (hgb : fnUB g b) :
-  fnUB (f + g) (a + b) := by
+    fnUB (f + g) (a + b) := by
   intro x
   dsimp
   have hfa' : f x ≤ a
   · apply hfa
   specialize hgb x
   apply add_le_add hfa' hgb
-  
+
 end
 
 /-!
@@ -93,7 +93,7 @@ end
 
 example : ∃ x : ℝ, 2 < x ∧ x < 3 := by
   use 2.5
-  norm_num 
+  norm_num
 
 example : 5 ∣ 20 := by
   use 4  -- Automatically closes trivial goals!
@@ -137,7 +137,7 @@ example (h : ∀ a, ∃ x, f x > a) : ¬ fnHasUB f := by
 
 -- Repeat with demonstration of `simp`, `simp only`, `push_neg`
 
-example (h : ∀ a, ∃ x, f x > a) : ¬ fnHasUB f := by
+example (h : ∀ a, ∃ x, a < f x) : ¬ fnHasUB f := by
   dsimp only [fnHasUB, fnUB]
   push_neg
   assumption
@@ -161,7 +161,7 @@ example (h₀ : x ≤ y) (h₁ : ¬ y ≤ x) : x ≤ y ∧ x ≠ y := by
     subst he
     contradiction
 
--- Demonstrate `rcases`, `.1`, 
+-- Demonstrate `rcases`, `.1`,
 
 example (h : x ≤ y ∧ x ≠ y) : ¬ y ≤ x := by
   rcases h with ⟨h₁, h₂⟩
@@ -186,7 +186,7 @@ variable (x y z : ℝ)
 example : x < |y| → x < y ∨ x < -y := by
   intro h
   have h₁ : 0 ≤ y ∨ y < 0
-  · exact le_or_gt 0 y   
+  · exact le_or_gt 0 y
   rcases h₁ with (h₁|h₁)
   · left
     rwa [abs_of_nonneg h₁] at h
@@ -212,21 +212,62 @@ variable (p q : Prop) -- Propositions
 variable (r s : ℕ → Prop)  -- Predicates over the natural numbers
 
 example : p ∧ q → q ∧ p := by
-  sorry
+-- SOLUTIONS:
+  intro hpq
+  rcases hpq with ⟨hp, hq⟩
+  exact ⟨hq, hp⟩
+-- BOTH:
 
 example : p ∨ q → q ∨ p := by
-  sorry
+-- SOLUITONS:
+  intro hpq
+  rcases hpq with (hp|hq)
+  · right
+    assumption
+  · left
+    assumption
+-- BOTH:
 
 example : (∃ x, r x ∧ s x) → (∃ x, r x) ∧ (∃ x, s x) := by
-  sorry
+-- SOLUTIONS:
+  intro h
+  rcases h with ⟨x, hrx, hsx⟩
+  constructor
+  · use x
+  · use x
+-- BOTH:
 
 example : ∀ z, (∃ x y, r x ∧ s y ∧ y = z) → ∃ x, r x ∧ s z := by
-  sorry
+-- SOLUTIONS:
+  intro z h
+  rcases h with ⟨x, y, hr, hx, rfl⟩
+  use x
+-- BOTH:
 
 example : ¬¬(¬¬p → p) := by
-  sorry
+-- SOLUTIONS:
+  intro h
+  apply h
+  intro hnnp
+  exfalso
+  apply hnnp
+  intro hp
+  apply h
+  intro
+  assumption
+-- BOTH:
 
 example : ∃ x, r x → ∀ y, r y := by
-  sorry
+-- SOLUTIONS:
+  by_cases h : ∀ y, r y
+  · use 0
+    intro _
+    assumption
+  · push_neg at h
+    rcases h with ⟨w, hw⟩
+    use w
+    intro hw'
+    contradiction
+-- BOTH:
 
 end
