@@ -62,7 +62,13 @@ example {x : ℝ} (h₁ : x ≠ 1) (h₀ : x ≠ 0) : f (f (f x)) = x :=
   sorry
 
 
---
+
+/-
+In this section we construct stereographic projection as a bijection between the unit circle
+(minus its north pole) and the real line.
+The formulas for both directions of the bijection are fractions,
+so we will use `field_simp` repeatedly.
+-/
 
 -- introduce notation for the circle
 local notation "𝕊" => {p : ℝ × ℝ | p.1 ^ 2 + p.2 ^ 2 = 1}

@@ -1,4 +1,0 @@
-import CIL.C01BasicsOfPolyrith
-import CIL.C02UsingPolyrith
-import CIL.C03NonsingularityOfCurves
-import CIL.C04CombiningTactics

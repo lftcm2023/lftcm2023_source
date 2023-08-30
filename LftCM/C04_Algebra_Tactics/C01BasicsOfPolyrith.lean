@@ -116,9 +116,10 @@ example {p q r : ℚ} (h₁ : p + q + r = 0) (h₂ : p * q + p * r + q * r = 2) 
   sorry
 
 
---
-
 /-
+Now, you have seen that at some point it starts to get difficult to see the right parameter
+for `linear_combination`. Luckily for us, there is a tactic to help us in this!
+
 Just replace the sorries with `polyrith` and enjoy! This tactic uses Sage (online access required)
 to suggest a `linear_combination` application.
 -/
