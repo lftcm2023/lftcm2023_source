@@ -1,6 +1,7 @@
 import regex
 from pathlib import Path
 import shutil
+import os
 
 # Main repository directories
 repository_root = Path(__file__).parent.parent.resolve()
@@ -162,6 +163,8 @@ def process_section(chapter_name, section_name):
     user_repo_examples_file = user_repo_chapter_dir/(section_name + '.lean')
     user_repo_solutions_file = user_repo_chapter_solutions_dir/('Solutions_' + section_name + '.lean')
 
+    contains_solutions = False
+
     with lean_source_file.open(encoding='utf8') as source_file, \
             sphinx_section_file.open('w', encoding='utf8') as rst_file, \
             user_repo_examples_file.open('w', encoding='utf8') as examples_file, \
@@ -178,6 +181,7 @@ def process_section(chapter_name, section_name):
                 mode = 'both'
             elif solutions_mode.match(line):
                 mode = 'solutions'
+                contains_solutions = True
             elif omit_mode.match(line):
                 mode = 'omit'
             elif tag_line.match(line):
@@ -223,6 +227,8 @@ def process_section(chapter_name, section_name):
                     raise RuntimeError("unexpected mode")
                 if quoting and mode != 'solutions':
                     rst_file.write('  ' + line)
+    if not contains_solutions:
+        os.remove(user_repo_solutions_file)
 
 def process_sections():
     """
