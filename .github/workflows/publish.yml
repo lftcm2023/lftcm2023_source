@@ -23,7 +23,8 @@ jobs:
           cp -r .vscode user_repo/.vscode
       - uses: actions/checkout@v3
         with:
-          repo: lftcm2023/lftcm2023
+          repository: lftcm2023/lftcm2023
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
           path: deploy
       - name: Generate user repo
         run: |
