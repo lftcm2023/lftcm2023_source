@@ -1,6 +1,8 @@
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Real.Basic
 
+set_option autoImplicit true
+
 /-
 # Logics
 

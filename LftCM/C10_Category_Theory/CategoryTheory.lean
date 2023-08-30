@@ -5,6 +5,8 @@ import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.Data.Polynomial.Eval
 import Mathlib.Algebra.Category.Ring.Basic
 
+set_option autoImplicit true
+
 open CategoryTheory
 
 /-!

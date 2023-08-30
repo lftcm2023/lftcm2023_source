@@ -1,6 +1,8 @@
 import LftCM.Common
 import Mathlib.Topology.Instances.Real
 
+set_option autoImplicit true
+
 /- TEXT:
 .. _section_hierarchies_morphisms:
 
