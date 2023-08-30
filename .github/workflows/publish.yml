@@ -33,6 +33,8 @@ jobs:
           cp -Lr ../user_repo/./ .
           git add .
           git add -f .vscode
+          git config --global user.email "lftcm-2023@users.noreply.github.com"
+          git config --global user.name "lftcm-2023-bot"
           git commit -m "Update $(date)"
       - name: Push user repo
         run: |
