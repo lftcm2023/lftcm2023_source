@@ -48,7 +48,7 @@ def make_lean_main_import_file():
             [dir for dir in lean_source_dir.glob("C*") if dir.is_dir()],
             key=lambda d: d.name)
         for chapter_dir in chapter_dirs:
-            section_files= sorted([file for file in chapter_dir.glob("S*.lean")], key=lambda f: f.name)
+            section_files= sorted([file for file in chapter_dir.glob("*.lean")], key=lambda f: f.name)
             for section_file in section_files:
                 section_name = section_file.name[:-5]
                 import_file.write(f"import LftCM.{chapter_dir.name}.{section_name}\n")
@@ -64,7 +64,7 @@ def make_lean_user_main_import_file():
             [dir for dir in lean_source_dir.glob("C*") if dir.is_dir()],
             key=lambda d: d.name)
         for chapter_dir in chapter_dirs:
-            section_files= sorted([file for file in chapter_dir.glob("S*.lean")], key=lambda f: f.name)
+            section_files= sorted([file for file in chapter_dir.glob("*.lean")], key=lambda f: f.name)
             for section_file in section_files:
                 section_name = section_file.name[:-5]
                 import_file.write(f"import LftCM.{chapter_dir.name}.{section_name}\n")
@@ -116,7 +116,7 @@ def make_sphinx_chapter_files():
         with dest_file.open('a', encoding='utf8') as dest:
             dest.write("\n")
             section_files= sorted(
-                [file for file in chapter_dir.glob("S*.lean")],
+                [file for file in chapter_dir.glob("*.lean")],
                 key=lambda f: f.name)
             for section_file in section_files:
                 section_name = section_file.name[:-5]
@@ -233,7 +233,7 @@ def process_sections():
         key=lambda d: d.name)
     for chapter_dir in chapter_dirs:
         section_files= sorted(
-            [file for file in chapter_dir.glob("S*.lean")],
+            [file for file in chapter_dir.glob("*.lean")],
             key=lambda f: f.name)
         for section_file in section_files:
             section_name = section_file.name[:-5]
@@ -296,7 +296,7 @@ def make_examples_test():
             [dir for dir in lean_source_dir.glob("C*") if dir.is_dir()],
             key=lambda d: d.name)
         for chapter_dir in chapter_dirs:
-            section_files= sorted([file for file in chapter_dir.glob("S*.lean")], key=lambda f: f.name)
+            section_files= sorted([file for file in chapter_dir.glob("*.lean")], key=lambda f: f.name)
             for section_file in section_files:
                 section_name = section_file.name[:-5]
                 import_file.write(f"import LftCM.Test.{chapter_dir.name}.{section_name}\n")
@@ -318,7 +318,7 @@ def make_solutions_test():
             [dir for dir in lean_source_dir.glob("C*") if dir.is_dir()],
             key=lambda d: d.name)
         for chapter_dir in chapter_dirs:
-            section_files= sorted([file for file in chapter_dir.glob("S*.lean")], key=lambda f: f.name)
+            section_files= sorted([file for file in chapter_dir.glob("*.lean")], key=lambda f: f.name)
             for section_file in section_files:
                 section_name = section_file.name[:-5]
                 import_file.write(f"import LftCM.Test.{chapter_dir.name}.solutions.Solutions_{section_name}\n")

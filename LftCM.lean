@@ -4,6 +4,7 @@ import LftCM.C01_Basics.S03_Proving_Identities_in_Algebraic_Structures
 import LftCM.C01_Basics.S04_More_on_Order_and_Divisibility
 import LftCM.C01_Basics.S05_Proving_Facts_about_Algebraic_Structures
 import LftCM.C01_Basics.S06_Using_Theorems_and_Lemmas
+import LftCM.C02_Logic.Logic
 import LftCM.C02_Logic.S01_Implication_and_the_Universal_Quantifier
 import LftCM.C02_Logic.S02_The_Existential_Quantifier
 import LftCM.C02_Logic.S03_Negation
@@ -27,6 +28,7 @@ import LftCM.C09A_Analysis.S02_Differential_Calculus_in_Normed_Spaces
 import LftCM.C09A_Analysis.S03_Integration
 import LftCM.C09A_Analysis.S04_Measure_Theory
 import LftCM.C09A_Analysis.S05_Elementary_Integration
+import LftCM.C10_Category_Theory.CategoryTheory
 import LftCM.C12B_Number_Theory.S01_Irrational_Roots
 import LftCM.C12B_Number_Theory.S02_Induction_and_Recursion
 import LftCM.C12B_Number_Theory.S03_Infinitely_Many_Primes
