@@ -273,8 +273,8 @@ def make_everything():
     shutil.copytree(sphinx_source_dir, sphinx_dir)
 
     # start generating Sphinx source files
-    make_sphinx_index_file()
-    make_sphinx_chapter_files()
+    # make_sphinx_index_file()
+    # make_sphinx_chapter_files()
 
     # generate the examples files, solutions files, and Sphinx files for each section
     process_sections()
