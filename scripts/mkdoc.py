@@ -4,7 +4,7 @@ import shutil
 
 # Main repository directories
 repository_root = Path(__file__).parent.parent.resolve()
-lean_source_dir = repository_root/'MIL'
+lean_source_dir = repository_root/'LftCM'
 sphinx_source_dir = repository_root/'sphinx_source'
 user_repo_source_dir = repository_root/'user_repo_source'
 
@@ -12,12 +12,12 @@ user_repo_source_dir = repository_root/'user_repo_source'
 sphinx_dir = repository_root/'source'
 sphinx_build_dir = repository_root/'build'
 user_repo_dir = repository_root/'user_repo'
-user_repo_lean_dir = user_repo_dir/'MIL'
+user_repo_lean_dir = user_repo_dir/'LftCM'
 
 # Generated files
-lean_main_import_file = repository_root/'MIL.lean'
+lean_main_import_file = repository_root/'LftCM.lean'
 sphinx_index_file = sphinx_dir/'index.rst'
-lean_user_main_import_file = user_repo_dir/'MIL.lean'
+lean_user_main_import_file = user_repo_dir/'LftCM.lean'
 
 def clean_generated_directories():
     """
@@ -51,7 +51,7 @@ def make_lean_main_import_file():
             section_files= sorted([file for file in chapter_dir.glob("S*.lean")], key=lambda f: f.name)
             for section_file in section_files:
                 section_name = section_file.name[:-5]
-                import_file.write(f"import MIL.{chapter_dir.name}.{section_name}\n")
+                import_file.write(f"import LftCM.{chapter_dir.name}.{section_name}\n")
 
 def make_lean_user_main_import_file():
     """
@@ -67,7 +67,7 @@ def make_lean_user_main_import_file():
             section_files= sorted([file for file in chapter_dir.glob("S*.lean")], key=lambda f: f.name)
             for section_file in section_files:
                 section_name = section_file.name[:-5]
-                import_file.write(f"import MIL.{chapter_dir.name}.{section_name}\n")
+                import_file.write(f"import LftCM.{chapter_dir.name}.{section_name}\n")
 
 index_file_start = """
 Mathematics in Lean
@@ -202,7 +202,7 @@ def process_section(chapter_name, section_name):
                 quoting = False
             elif match_literalinclude := literalinclude.match(line):
                 tag = match_literalinclude.group(1)
-                rst_file.write(".. literalinclude:: /../MIL/{}/{}.lean\n".format(chapter_name, section_name))
+                rst_file.write(".. literalinclude:: /../LftCM/{}/{}.lean\n".format(chapter_name, section_name))
                 rst_file.write("   :start-after: -- TAG: {}\n".format(tag))
                 rst_file.write("   :end-before: -- TAG: end\n")
             # Content lines.
@@ -264,7 +264,7 @@ def make_everything():
     shutil.copy2(repository_root/'lake-manifest.json', user_repo_dir)
     shutil.copy2(repository_root/'lakefile.lean', user_repo_dir)
     shutil.copy2(repository_root/'lean-toolchain', user_repo_dir)
-    shutil.copy2(repository_root/'MIL'/'Common.lean', user_repo_dir/'MIL')
+    shutil.copy2(repository_root/'LftCM'/'Common.lean', user_repo_dir/'LftCM')
 
     # make the main import file in the user repo
     make_lean_user_main_import_file()
@@ -299,7 +299,7 @@ def make_examples_test():
             section_files= sorted([file for file in chapter_dir.glob("S*.lean")], key=lambda f: f.name)
             for section_file in section_files:
                 section_name = section_file.name[:-5]
-                import_file.write(f"import MIL.Test.{chapter_dir.name}.{section_name}\n")
+                import_file.write(f"import LftCM.Test.{chapter_dir.name}.{section_name}\n")
 
 def make_solutions_test():
     """
@@ -321,7 +321,7 @@ def make_solutions_test():
             section_files= sorted([file for file in chapter_dir.glob("S*.lean")], key=lambda f: f.name)
             for section_file in section_files:
                 section_name = section_file.name[:-5]
-                import_file.write(f"import MIL.Test.{chapter_dir.name}.solutions.Solutions_{section_name}\n")
+                import_file.write(f"import LftCM.Test.{chapter_dir.name}.solutions.Solutions_{section_name}\n")
 
 def clean_test():
     """

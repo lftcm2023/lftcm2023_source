@@ -1,4 +1,4 @@
-import MIL.Common
+import LftCM.Common
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Prime
 /- OMIT:

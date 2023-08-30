@@ -18,14 +18,14 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: update MIL.lean
+      - name: update LftCM.lean
         run: |
-          find MIL -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > MIL.lean
+          find LftCM -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > LftCM.lean
 
       - name: get cache
         run: lake exe cache get
 
-      - name: build MIL
+      - name: build LftCM
         run: lake build
 
       - name: check that all files are imported

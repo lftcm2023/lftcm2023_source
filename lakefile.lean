@@ -15,7 +15,7 @@ package lftcm2023 where
   moreServerArgs := moreServerArgs
 
 @[default_target]
-lean_lib MIL where
+lean_lib LftCM where
   moreLeanArgs := moreLeanArgs
 
 @[default_target]

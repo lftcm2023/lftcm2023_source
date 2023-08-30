@@ -29,7 +29,7 @@ Do the following:
    to fetch the `mathematics_in_lean` repository and open it up in VS Code.
 
 4. Each section in the textbook has an associated Lean file with examples and exercises.
-   You can find them in the folder `MIL`, organized by chapter.
+   You can find them in the folder `LftCM`, organized by chapter.
    We strongly recommend making a copy of that folder and experimenting and doing the
    exercises in that copy.
    This leaves the originals intact, and it also makes it easier to update the repository as it changes (see below).
@@ -49,7 +49,7 @@ At that point, you can open the textbook in a side panel in VS Code as follows:
 The textbook and this repository are still a work in progress.
 You can update the repository by typing `git pull`
 followed by `lake exe cache get` inside the `mathematics_in_lean` folder.
-(This assumes that you have not changed the contents of the `MIL` folder,
+(This assumes that you have not changed the contents of the `LftCM` folder,
 which is why we suggested making a copy.)
 
 
@@ -61,7 +61,7 @@ This creates a virtual machine in the cloud,
 and installs Lean and Mathlib.
 It then presents you with a VS Code window, running in a virtual
 copy of the repository.
-We still suggest making a copy of the `MIL` directory, as described
+We still suggest making a copy of the `LftCM` directory, as described
 in step 5 in the last section.
 You can update the repository by opening a terminal in the browser
 and typing `git pull` followed by `lake exe cache get` as above.

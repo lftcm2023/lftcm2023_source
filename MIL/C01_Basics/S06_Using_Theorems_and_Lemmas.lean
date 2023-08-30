@@ -1,6 +1,6 @@
 -- BOTH:
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import MIL.Common
+import LftCM.Common
 
 variable (a b c d e : ℝ)
 open Real

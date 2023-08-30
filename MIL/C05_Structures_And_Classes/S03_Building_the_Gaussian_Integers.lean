@@ -1,7 +1,7 @@
 import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
-import MIL.Common
+import LftCM.Common
 
 /- TEXT:
 .. _section_building_the_gaussian_integers:

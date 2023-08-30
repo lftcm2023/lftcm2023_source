@@ -1,6 +1,6 @@
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Parity
-import MIL.Common
+import LftCM.Common
 
 open Nat
 
