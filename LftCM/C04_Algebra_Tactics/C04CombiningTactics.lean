@@ -51,16 +51,15 @@ example {x : ℂ} (hx : x ^ 5 = 1) (hx' : x ≠ 1) : (x + 1 / x) ^ 2 + (x + 1 / 
   apply mul_left_cancel₀ h₁
   sorry -- polyrith
 
-noncomputable def f : ℝ → ℝ := fun x => (1 - x)⁻¹
+noncomputable def ϕ : ℝ → ℝ := fun x => (1 - x)⁻¹
 
 /-
 To solve the following example, introduce the necessary have's to make `field_simp` work.
 -/
-example {x : ℝ} (h₁ : x ≠ 1) (h₀ : x ≠ 0) : f (f (f x)) = x :=
+example {x : ℝ} (h₁ : x ≠ 1) (h₀ : x ≠ 0) : ϕ (ϕ (ϕ x)) = x :=
   by
-  dsimp [f]
+  dsimp [ϕ]
   sorry
-
 
 
 /-

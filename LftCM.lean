@@ -14,8 +14,6 @@ import LftCM.C02_Logic.S06_Sequences_and_Convergence
 import LftCM.C03_Sets_and_Functions.S01_Sets
 import LftCM.C03_Sets_and_Functions.S02_Functions
 import LftCM.C03_Sets_and_Functions.S03_The_Schroeder_Bernstein_Theorem
-import LftCM.C04_Algebra_Tactics.Algebra_Tactics
-import LftCM.C04_Algebra_Tactics.Attr
 import LftCM.C04_Algebra_Tactics.C01BasicsOfPolyrith
 import LftCM.C04_Algebra_Tactics.C02UsingPolyrith
 import LftCM.C04_Algebra_Tactics.C03NonsingularityOfCurves

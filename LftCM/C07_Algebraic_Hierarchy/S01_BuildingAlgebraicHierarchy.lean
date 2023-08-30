@@ -1,7 +1,7 @@
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Data.Real.Basic
 import Mathlib.GroupTheory.QuotientGroup
-import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.Polyrith
 
 namespace lftcm2023
 
@@ -278,7 +278,7 @@ It is now your turn to prove things about our algebraic structures.
 BOTH: -/
 
 -- QUOTE:
-lemma inv_eq_of_mul [Group G] {a b : G} (h : a * b = 1) : a⁻¹ = b :=
+lemma inv_eq_of_mul {G : Type} [Group G] {a b : G} (h : a * b = 1) : a⁻¹ = b :=
 /- EXAMPLES:
   sorry
 SOLUTIONS: -/
@@ -385,11 +385,12 @@ export AddGroup (neg_add)
 
 -- QUOTE:
 @[to_additive (attr := simp)]
-lemma mul_inv [Group G] (a : G) : a * a⁻¹ = 1 :=
+lemma mul_inv (G : Type) [Group G] (a : G) : a * a⁻¹ = 1 :=
 /- EXAMPLES:
   sorry
 SOLUTIONS: -/
-  by rw [← inv_mul a⁻¹, inv_eq_of_mul (inv_mul a)]
+  by
+    rw [← inv_mul a⁻¹, inv_eq_of_mul (inv_mul a)]
 -- QUOTE.
 
 
@@ -575,13 +576,14 @@ to scalar multiplication by an integer by ensuring ``(-1) • a = -a``.
 BOTH: -/
 -- QUOTE:
 
-def nsmul [Zero M] [Add M] : ℕ → M → M
+def nsmul {M  : Type} [Zero M] [Add M] : ℕ → M → M
   | 0, _ => 0
   | n + 1, a => a + nsmul n a
 
 def zsmul {M : Type} [Zero M] [Add M] [Neg M] : ℤ → M → M
   | Int.ofNat n, a => nsmul n a
   | Int.negSucc n, a => -nsmul n.succ a
+
 -- QUOTE.
 /- TEXT:
 Proving this gives rise to a module structure is a bit tedious and not interesting for the
@@ -711,7 +713,7 @@ main approaches here. The most obvious one is to define a predicate on functions
 BOTH: -/
 
 -- QUOTE:
-def isMonoidHomBad [Monoid G] [Monoid H] (f : G → H) : Prop :=
+def isMonoidHomBad {G H : Type} [Monoid G] [Monoid H] (f : G → H) : Prop :=
   f 1 = 1 ∧ ∀ g g', f (g * g') = f g * f g'
 -- QUOTE.
 /- TEXT:
@@ -721,7 +723,7 @@ So we could use a structure instead.
 
 BOTH: -/
 -- QUOTE:
-structure isMonoidHomBad' [Monoid G] [Monoid H] (f : G → H) : Prop where
+structure isMonoidHomBad' {G H : Type} [Monoid G] [Monoid H] (f : G → H) : Prop where
   map_one : f 1 = 1
   map_mul : ∀ g g', f (g * g') = f g * f g'
 -- QUOTE.
@@ -761,7 +763,7 @@ make sure it is displayed almost invisibly in the tactic state, simply by a ``�
 
 BOTH: -/
 -- QUOTE:
-instance [Monoid G] [Monoid H] : CoeFun (MonoidHom G H) (fun _ ↦ G → H) where
+instance {G H : Type} [Monoid G] [Monoid H] : CoeFun (MonoidHom G H) (fun _ ↦ G → H) where
   coe := MonoidHom.toFun
 
 attribute [coe] MonoidHom.toFun
@@ -773,7 +775,7 @@ Let us check we can indeed apply a bundled monoid morphism to an element.
 BOTH: -/
 
 -- QUOTE:
-example [Monoid G] [Monoid H] (f : MonoidHom G H) : f 1 = 1 :=  f.map_one
+example {G H : Type} [Monoid G] [Monoid H] (f : MonoidHom G H) : f 1 = 1 :=  f.map_one
 -- QUOTE.
 /- TEXT:
 We can do the same with other kind of morphisms until we reach ring morphisms.
@@ -787,7 +789,7 @@ structure AddMonoidHom (G H : Type) [AddMonoid G] [AddMonoid H]  where
   map_zero : toFun 0 = 0
   map_add : ∀ g g', toFun (g + g') = toFun g + toFun g'
 
-instance [AddMonoid G] [AddMonoid H] : CoeFun (AddMonoidHom G H) (fun _ ↦ G → H) where
+instance (G H : Type) [AddMonoid G] [AddMonoid H] : CoeFun (AddMonoidHom G H) (fun _ ↦ G → H) where
   coe := AddMonoidHom.toFun
 
 attribute [coe] AddMonoidHom.toFun
@@ -826,7 +828,7 @@ function instance yet. Let us try to do it now.
 BOTH: -/
 
 -- QUOTE:
-def badInst [Monoid M] [Monoid N] [MonoidHomClass' F M N] : CoeFun F (fun _ ↦ M → N) where
+def badInst (M N F : Type) [Monoid M] [Monoid N] [MonoidHomClass' F M N] : CoeFun F (fun _ ↦ M → N) where
   coe := MonoidHomClass'.toFun
 -- QUOTE.
 
@@ -855,7 +857,7 @@ class MonoidHomClass'' (F : Type) (M N : outParam Type) [Monoid M] [Monoid N] wh
   map_one : ∀ f : F, toFun f 1 = 1
   map_mul : ∀ f g g', toFun f (g * g') = toFun f g * toFun f g'
 
-instance [Monoid M] [Monoid N] [MonoidHomClass'' F M N] : CoeFun F (fun _ ↦ M → N) where
+instance (M N F : Type) [Monoid M] [Monoid N] [MonoidHomClass'' F M N] : CoeFun F (fun _ ↦ M → N) where
   coe := MonoidHomClass''.toFun
 
 attribute [coe] MonoidHomClass''.toFun
@@ -885,14 +887,14 @@ Let us see an example lemma and check it applies to both situations.
 BOTH: -/
 
 -- QUOTE:
-lemma map_inv_of_inv [Monoid M] [Monoid N] [MonoidHomClass'' F M N] (f : F) {m m' : M} (h : m*m' = 1) :
+lemma map_inv_of_inv {M N F : Type} [Monoid M] [Monoid N] [MonoidHomClass'' F M N] (f : F) {m m' : M} (h : m*m' = 1) :
     f m * f m' = 1 := by
   rw [← MonoidHomClass''.map_mul, h, MonoidHomClass''.map_one]
 
-example [Monoid M] [Monoid N] (f : MonoidHom M N) {m m' : M} (h : m*m' = 1) : f m * f m' = 1 :=
+example (M N : Type) [Monoid M] [Monoid N] (f : MonoidHom M N) {m m' : M} (h : m*m' = 1) : f m * f m' = 1 :=
 map_inv_of_inv f h
 
-example [Ring R] [Ring S] (f : RingHom R S) {r r' : R} (h : r*r' = 1) : f r * f r' = 1 :=
+example (R S : Type)  [Ring R] [Ring S] (f : RingHom R S) {r r' : R} (h : r*r' = 1) : f r * f r' = 1 :=
 map_inv_of_inv f h
 
 -- QUOTE.
@@ -960,7 +962,7 @@ structure Submonoid (M : Type) [Monoid M] where
   one_mem : 1 ∈ carrier
 
 /-- Submonoids in `M` can be seen as sets in `M`. -/
-instance [Monoid M] : SetLike (Submonoid M) M where
+instance (M : Type) [Monoid M] : SetLike (Submonoid M) M where
   coe := Submonoid.carrier
   coe_injective' := Submonoid.ext
 
@@ -973,9 +975,9 @@ We can also silently treat ``N`` as a set in ``M`` as take its direct image unde
 BOTH: -/
 
 -- QUOTE:
-example [Monoid M] (N : Submonoid M) : 1 ∈ N := N.one_mem
+example (M : Type) [Monoid M] (N : Submonoid M) : 1 ∈ N := N.one_mem
 
-example [Monoid M] (N : Submonoid M) (α : Type) (f : M → α) := f '' N
+example (M : Type) [Monoid M] (N : Submonoid M) (α : Type) (f : M → α) := f '' N
 -- QUOTE.
 
 /- TEXT:
@@ -985,7 +987,7 @@ a parameter ``(x : N)`` which can be coerced to an element of ``M`` belonging to
 BOTH: -/
 
 -- QUOTE:
-example [Monoid M] (N : Submonoid M) (x : N) : (x : M) ∈ N := x.property
+example (M : Type) [Monoid M] (N : Submonoid M) (x : N) : (x : M) ∈ N := x.property
 -- QUOTE.
 
 /- TEXT:
@@ -997,7 +999,7 @@ instance.
 BOTH: -/
 
 -- QUOTE:
-instance SubMonoidMonoid [Monoid M] (N : Submonoid M) : Monoid N where
+instance SubMonoidMonoid {M : Type} [Monoid M] (N : Submonoid M) : Monoid N where
   mul := fun x y ↦ ⟨x*y, N.mul_mem x.property y.property⟩
   mul_assoc := fun x y z ↦ SetCoe.ext (mul_assoc (x : M) y z)
   one := ⟨1, N.one_mem⟩
@@ -1017,7 +1019,7 @@ class SubmonoidClass (S : Type) (M : Type) [Monoid M] [SetLike S M] : Prop where
   mul_mem : ∀ (s : S) {a b : M}, a ∈ s → b ∈ s → a * b ∈ s
   one_mem : ∀ s : S, 1 ∈ s
 
-instance [Monoid M] : SubmonoidClass (Submonoid M) M where
+instance (M: Type) [Monoid M] : SubmonoidClass (Submonoid M) M where
   mul_mem := Submonoid.mul_mem
   one_mem := Submonoid.one_mem
 -- QUOTE.
@@ -1036,11 +1038,11 @@ structure Subgroup (G : Type) [Group G] extends Submonoid G where
 
 
 /-- Subgroups in `M` can be seen as sets in `M`. -/
-instance [Group G] : SetLike (Subgroup G) G where
+instance (G : Type) [Group G] : SetLike (Subgroup G) G where
   coe := fun H ↦ H.toSubmonoid.carrier
   coe_injective' := Subgroup.ext
 
-instance [Group G] (H : Subgroup G) : Group H :=
+instance (G : Type) [Group G] (H : Subgroup G) : Group H :=
 { SubMonoidMonoid H.toSubmonoid with
   inv := fun x ↦ ⟨x⁻¹, H.inv_mem x.property⟩
   inv_mul := fun x ↦ SetCoe.ext (inv_mul (x : G))
@@ -1050,11 +1052,11 @@ class SubgroupClass (S : Type) (G : Type) [Group G] [SetLike S G]
     extends SubmonoidClass S G  : Prop where
   inv_mem : ∀ (s : S) {a : G}, a ∈ s → a⁻¹ ∈ s
 
-instance [Group G] : SubmonoidClass (Subgroup G) G where
+instance (G : Type) [Group G] : SubmonoidClass (Subgroup G) G where
   mul_mem := fun H ↦ H.toSubmonoid.mul_mem
   one_mem := fun H ↦ H.toSubmonoid.one_mem
 
-instance [Group G] : SubgroupClass (Subgroup G) G :=
+instance (G : Type) [Group G] : SubgroupClass (Subgroup G) G :=
 { (inferInstance : SubmonoidClass (Subgroup G) G) with
   inv_mem := Subgroup.inv_mem }
 
@@ -1067,7 +1069,7 @@ this will be an infimum construction. Let us do the case of two submonoids.
 BOTH: -/
 
 -- QUOTE:
-instance [Monoid M] : Inf (Submonoid M) :=
+instance (M : Type) [Monoid M] : Inf (Submonoid M) :=
   ⟨fun S₁ S₂ ↦
     { carrier := S₁ ∩ S₂
       one_mem := ⟨S₁.one_mem, S₂.one_mem⟩
@@ -1080,7 +1082,7 @@ This allows to get the intersections of two submonoids as a submonoid.
 BOTH: -/
 
 -- QUOTE:
-example [Monoid M] (N P : Submonoid M) : Submonoid M := N ⊓ P
+example (M : Type) [Monoid M] (N P : Submonoid M) : Submonoid M := N ⊓ P
 -- QUOTE.
 
 /- TEXT:
@@ -1109,7 +1111,7 @@ the ``@`` syntax, as in ``@Setoid.refl M N.Setoid``.
 BOTH: -/
 
 -- QUOTE:
-def Submonoid.Setoid [CommMonoid M] (N : Submonoid M) : Setoid M  where
+def Submonoid.Setoid {M : Type} [CommMonoid M] (N : Submonoid M) : Setoid M  where
   r := fun x y ↦ ∃ w ∈ N, ∃ z ∈ N, x*w = y*z
   iseqv := {
     refl := fun x ↦ ⟨1, N.one_mem, 1, N.one_mem, rfl⟩
@@ -1124,12 +1126,12 @@ SOLUTIONS: -/
 -- BOTH:
   }
 
-instance [CommMonoid M] : HasQuotient M (Submonoid M) where
+instance (M : Type) [CommMonoid M] : HasQuotient M (Submonoid M) where
   quotient' := fun N ↦ Quotient N.Setoid
 
-def QuotientMonoid.mk [CommMonoid M] (N : Submonoid M) : M → M ⧸ N := Quotient.mk N.Setoid
+def QuotientMonoid.mk {M : Type} [CommMonoid M] (N : Submonoid M) : M → M ⧸ N := Quotient.mk N.Setoid
 
-instance [CommMonoid M] (N : Submonoid M) : Monoid (M ⧸ N) where
+instance (M : Type) [CommMonoid M] (N : Submonoid M) : Monoid (M ⧸ N) where
   mul := Quotient.map₂' (· * ·) (by
 /- EXAMPLES:
       sorry
