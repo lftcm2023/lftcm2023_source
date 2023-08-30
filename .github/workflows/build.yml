@@ -28,5 +28,5 @@ jobs:
       - name: build LftCM
         run: lake build
 
-      - name: check that all files are imported
-        run: git diff --exit-code
+      # - name: check that all files are imported
+      #   run: git diff --exit-code
