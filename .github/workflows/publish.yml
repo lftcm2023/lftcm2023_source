@@ -1,0 +1,39 @@
+on:
+  workflow_dispatch:
+
+name: publish
+
+jobs:
+  delpoy:
+    environment:
+      name: lftcm-2023
+      url: https://github.com/lftcm2023/lftcm2023
+    name: Generate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: install python dependencies
+        run: pip install -r requirements.txt
+      - name: Separate solutions
+        run: |
+          scripts/mkall.py
+          cp -r .vscode user_repo/.vscode
+      - uses: actions/checkout@v3
+        with:
+          repo: lftcm2023/lftcm2023
+          path: deploy
+      - name: Generate user repo
+        run: |
+          cd deploy
+          rm -rf * .gitignore
+          cp -Lr ../user_repo/./ .
+          git add .
+          git add -f .vscode
+          git commit -m "Update $(date)"
+      - name: Push user repo
+        run: |
+          cd deploy
+          git push
