@@ -76,17 +76,17 @@ TEXT. -/
 -- BOTH:
 -- QUOTE:
 /-- The Chebyshev polynomials, defined recursively.-/
-noncomputable def t : ℕ → ℤ[X]
+noncomputable def T : ℕ → ℤ[X]
   | 0 => 1
   | 1 => X
-  | n + 2 => 2 * X * t (n + 1) - t n
+  | n + 2 => 2 * X * T (n + 1) - T n
 
 -- now record the three pieces of the recursive definition for easy access
-theorem t_zero : t 0 = 1 := rfl
+theorem T_zero : T 0 = 1 := rfl
 
-theorem t_one : t 1 = X := rfl
+theorem T_one : T 1 = X := rfl
 
-theorem t_add_two (n : ℕ) : t (n + 2) = 2 * X * t (n + 1) - t n := by rw [t]
+theorem T_add_two (n : ℕ) : T (n + 2) = 2 * X * T (n + 1) - T n := by rw [T]
 -- QUOTE.
 
 /- TEXT:
@@ -131,23 +131,23 @@ TEXT. -/
 -- BOTH:
 -- QUOTE:
 /-- The product of two Chebyshev polynomials is the sum of two other Chebyshev polynomials. -/
-theorem mul_t : ∀ m : ℕ, ∀ k, 2 * t m * t (m + k) = t (2 * m + k) + t k
+theorem mul_T : ∀ m : ℕ, ∀ k, 2 * T m * T (m + k) = T (2 * m + k) + T k
   | 0 => by
 /- EXAMPLES:
     sorry
 SOLUTIONS: -/
     intro k
     ring_nf
-    linear_combination 2 * t k * t_zero
+    linear_combination 2 * T k * T_zero
 -- BOTH:
   | 1 => by
 /- EXAMPLES:
     sorry
 SOLUTIONS: -/
     intro k
-    have H := t_add_two k
+    have H := T_add_two k
     ring_nf at H ⊢
-    linear_combination -H + 2 * t (1 + k) * t_one
+    linear_combination -H + 2 * T (1 + k) * T_one
 -- BOTH:
   | m + 2 => by
     intro k
@@ -158,13 +158,13 @@ SOLUTIONS: -/
     ring_nf at H₁ h₁ h₂ ⊢
     sorry
 SOLUTIONS: -/
-    have H₁ := mul_t (m + 1) (k + 1)
-    have H₂ := mul_t m (k + 2)
-    have h₁ := t_add_two m
-    have h₂ := t_add_two (2 * m + k + 2)
-    have h₃ := t_add_two k
+    have H₁ := mul_T (m + 1) (k + 1)
+    have H₂ := mul_T m (k + 2)
+    have h₁ := T_add_two m
+    have h₂ := T_add_two (2 * m + k + 2)
+    have h₃ := T_add_two k
     ring_nf at H₁ H₂ h₁ h₂ h₃ ⊢
-    linear_combination 2 * (X : ℤ[X]) * H₁ - 1 * H₂ + 2 * t (2 + m + k) * h₁ - 1 * h₂ - 1 * h₃
+    linear_combination 2 * (X : ℤ[X]) * H₁ - 1 * H₂ + 2 * T (2 + m + k) * h₁ - 1 * h₂ - 1 * h₃
 -- QUOTE.
 
 
@@ -244,15 +244,20 @@ TEXT. -/
 example {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1) : f I = I ∨ f I = -I :=
   by
   have key : (f I - I) * (conj (f I) - conj (-I)) = 0
+/- EXAMPLES:
+  · sorry
+SOLUTIONS: -/
   · have H₁ := congr_arg (λ t ↦ (((t ^ 2) : ℝ) : ℂ)) (f.norm_map (I - 1))
     have H₂ := congr_arg (λ t ↦ (((t ^ 2) : ℝ) : ℂ)) (f.norm_map I)
     simp only [h, ←normSq_eq_abs, complex_simps] at H₁ H₂ ⊢
     linear_combination I * H₁ + (-(1 * I) + 1) * H₂
-/- EXAMPLES:
-  sorry
-SOLUTIONS: -/
   -- From `key`, we deduce that either `f I - I = 0` or `conj (f I) - conj (- I) = 0`.
+-- BOTH:
   cases' eq_zero_or_eq_zero_of_mul_eq_zero key with hI hI
+/- EXAMPLES:
+  · sorry
+  · sorry
+SOLUTIONS: -/
   · left
     linear_combination hI
   · right
@@ -282,9 +287,6 @@ We first state the formula which will describe this double cover as a map from t
 TEXT. -/
 -- BOTH:
 -- QUOTE:
-
-
-
 /-- Explicit matrix formula for the double cover of SO(3, ℝ) by the unit quaternions. -/
 @[quaternion_simps]
 def Quaternion.toMatrix (a : ℍ) : Matrix (Fin 3) (Fin 3) ℝ :=
@@ -292,6 +294,7 @@ def Quaternion.toMatrix (a : ℍ) : Matrix (Fin 3) (Fin 3) ℝ :=
   ![![x ^ 2 + y ^ 2 - z ^ 2 - w ^ 2, 2 * (y * z - w * x), 2 * (y * w + z * x)],
     ![2 * (y * z + w * x), x ^ 2 + z ^ 2 - y ^ 2 - w ^ 2, 2 * (z * w - y * x)],
     ![2 * (y * w - z * x), 2 * (z * w + y * x), x ^ 2 + w ^ 2 - y ^ 2 - z ^ 2]]
+-- QUOTE.
 
 attribute [quaternion_simps] Matrix.head_cons Matrix.cons_vec_bit0_eq_alt0 Matrix.cons_val_zero
   Matrix.cons_val_one Matrix.cons_vecAppend Matrix.cons_vecAlt0 Matrix.cons_val' Matrix.empty_val'
@@ -313,7 +316,6 @@ attribute [quaternion_simps] Matrix.head_cons Matrix.cons_vec_bit0_eq_alt0 Matri
   Function.comp_apply Quaternion.coe_one Quaternion.coe_zero
   Quaternion.ext_iff zero_mul
 
--- QUOTE.
 /- TEXT:
 This turns out to be a "homomorphism of monoids", denoted in Lean by ``→*``; that is, it preserves
 multiplication and the identity.  Here is what the proof of that fact looks like.  It would be

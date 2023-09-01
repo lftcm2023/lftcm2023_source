@@ -340,7 +340,7 @@ Basics of the polyrith tactic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Surprise!  None of the work we did in the last two sections finding the coefficients for
-``linear_combination`` by hand was necessary.  A brand new tactic, ``polyrith``, contributed to
+``linear_combination`` by hand was necessary.  A higher level tactic, ``polyrith``, contributed to
 mathlib in July 2022 by Brown undergraduate Dhruv Bhatia, will obtain them from the Sage function
 `MPolynomial_libsingular.lift <https://doc.sagemath.org/html/en/reference/polynomial_rings/sage/rings/polynomial/multi_polynomial_libsingular.html#sage.rings.polynomial.multi_polynomial_libsingular.MPolynomial_libsingular.lift>`_,
 so long as you have an internet connection.
@@ -356,20 +356,51 @@ query Sage each time) with an automatically-computed ``linear_combination`` whic
 TEXT. -/
 
 -- QUOTE:
-example {a b : ℂ} (h₁ : a - 5 * b = 4) (h₂ : b + 2 = 3) : a = 9 := by polyrith
+example {a b : ℂ} (h₁ : a - 5 * b = 4) (h₂ : b + 2 = 3) : a = 9 := by
+/- EXAMPLES:
+  polyrith
+SOLUTIONS: -/
+  linear_combination h₁ + 5 * h₂
 
-example {m n : ℤ} (h : m - n = 0) : m = n := by polyrith
+example {m n : ℤ} (h : m - n = 0) : m = n := by
+/- EXAMPLES:
+  polyrith
+SOLUTIONS: -/
+  linear_combination h
 
-example {K : Type _} [Field K] [CharZero K] {s : K} (hs : 3 * s + 1 = 4) : s = 1 := by polyrith
+example {K : Type _} [Field K] [CharZero K] {s : K} (hs : 3 * s + 1 = 4) : s = 1 := by
+/- EXAMPLES:
+  polyrith
+SOLUTIONS: -/
+  linear_combination hs / 3
 
-example {p q : ℂ} (h₁ : p + 2 * q = 4) (h₂ : p - 2 * q = 2) : 2 * p = 6 := by polyrith
+example {p q : ℂ} (h₁ : p + 2 * q = 4) (h₂ : p - 2 * q = 2) : 2 * p = 6 := by
+/- EXAMPLES:
+  polyrith
+SOLUTIONS: -/
+  linear_combination h₁ + h₂
 
 example {x y z w : ℂ} (h₁ : x * z = y ^ 2) (h₂ : y * w = z ^ 2) : z * (x * w - y * z) = 0 := by
+/- EXAMPLES:
   polyrith
+SOLUTIONS: -/
+  linear_combination w * h₁ + y * h₂
 
-example {a b : ℚ} (h : a = b) : a ^ 2 = b ^ 2 := by polyrith
+example {a b : ℚ} (h : a = b) : a ^ 2 = b ^ 2 := by
+/- EXAMPLES:
+  polyrith
+SOLUTIONS: -/
+  linear_combination (a + b) * h
 
-example {a b : ℚ} (h : a = b) : a ^ 3 = b ^ 3 := by polyrith
+example {a b : ℚ} (h : a = b) : a ^ 3 = b ^ 3 := by
+/- EXAMPLES:
+  polyrith
+SOLUTIONS: -/
+  linear_combination (a ^ 2 + a * b + b ^ 2) * h
 
-example (m n : ℤ) : (m ^ 2 - n ^ 2) ^ 2 + (2 * m * n) ^ 2 = (m ^ 2 + n ^ 2) ^ 2 := by polyrith
+example (m n : ℤ) : (m ^ 2 - n ^ 2) ^ 2 + (2 * m * n) ^ 2 = (m ^ 2 + n ^ 2) ^ 2 := by
+/- EXAMPLES:
+  polyrith
+SOLUTIONS: -/
+  linear_combination
 -- QUOTE.
