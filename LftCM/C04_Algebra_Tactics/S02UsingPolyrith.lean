@@ -356,7 +356,12 @@ def unitQuaternions : Submonoid ℍ :=
     a ∈ unitQuaternions ↔ a.re ^ 2 + a.imI ^ 2 + a.imJ ^ 2 + a.imK ^ 2 = 1 := by
   simp [←Quaternion.normSq_def']
   exact Iff.rfl
+-- QUOTE.
 
+/- TEXT:
+We prove that the unit quaternions form a group, although we will not need it later.
+TEXT. -/
+-- BOTH:
 -- QUOTE:
 /-- The group of unit quaternions. -/
 def unitQuaternions' : Subgroup (Units ℍ) where

@@ -661,11 +661,10 @@ with proofs. If you insist on doing it then you will probably want to state and 
 intermediate lemmas about ``nsmul`` and ``zsmul``.
 BOTH: -/
 -- QUOTE:
-
 instance abGrpModule (A : Type) [AddCommGroup A] : Module ℤ A where
   smul := zsmul
-  zero_smul := sorry
-  one_smul := sorry
+  zero_smul := by simp [zsmul, nsmul]
+  one_smul := by simp [zsmul, nsmul]
   mul_smul := sorry
   add_smul := sorry
   smul_add := sorry
