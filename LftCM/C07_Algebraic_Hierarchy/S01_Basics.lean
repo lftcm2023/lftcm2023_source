@@ -4,6 +4,8 @@ import Mathlib.Data.Real.Basic
 
 set_option autoImplicit true
 
+namespace lftcm
+
 /- TEXT:
 .. _section_hierarchies_basics:
 
@@ -16,7 +18,7 @@ a distinguished element called ``one``. At this stage, it has no property at all
 BOTH: -/
 
 -- QUOTE:
-class One₁ (α : Type) where
+class One (α : Type) where
   /-- The element one -/
   one : α
 -- QUOTE.
@@ -24,50 +26,50 @@ class One₁ (α : Type) where
 /- TEXT:
 Since we'll make a much heavier use of classes in this chapter, we need to understand some
 more details about what the ``class`` command is doing.
-First, the ``class`` command above defines a structure ``One₁`` with parameter ``α : Type`` and
-a single field ``one``. It also mark this structure as a class so that arguments of type
-``One₁ α`` for some type ``α`` will be inferrable using the instance resolution procedure,
+First, the ``class`` command above defines a structure ``One`` with parameter ``α : Type`` and
+a single field ``one``. It also marks this structure as a class so that arguments of type
+``One α`` for some type ``α`` will be inferrable using the instance resolution procedure,
 as long as they are marked as instance-implicit, ie appear between square brackets.
 Those two effects could also have been achieved using the ``structure`` command with ``class``
 attribute, ie writing ``@[class] structure`` instance of ``class``. But the class command also
-ensures that ``One₁ α`` appears as an instance-implicit argument in its own fields. Compare:
+ensures that ``One α`` appears as an instance-implicit argument in its own fields. Compare:
 BOTH: -/
 
 -- QUOTE:
-#check One₁.one -- One₁.one {α : Type} [self : One₁ α] : α
+#check One.one -- lftcm.One.one {α : Type} [self : One₁ α] : α
 
-@[class] structure One₂ (α : Type) where
+@[class] structure One' (α : Type) where
   /-- The element one -/
   one : α
 
-#check One₂.one
+#check One'.one -- lftcm.One'.one {α : Type} (self : One' α) : α
 -- QUOTE.
 
 /- TEXT:
-In the second check, we can see that ``self : One₂ α`` is an explicit argument.
+In the second check, we can see that ``self : One' α`` is an explicit argument.
 Let us make sure the first version is indeed usable without any explicit argument.
 BOTH: -/
 
 -- QUOTE:
-example (α : Type) [One₁ α] : α := One₁.one
+example (α : Type) [One α] : α := One.one
 -- QUOTE.
 
 /- TEXT:
-Remark: in the above example, the argument ``One₁ α`` is marked as instance-implicit,
+Remark: in the above example, the argument ``One α`` is marked as instance-implicit,
 which is a bit silly since this affects only *uses* of the declaration and declaration created by
 the ``example`` command cannot be used. However it allows to avoid giving a name to that
-argument and, more importantly, it starts installing the good habit of marking ``One₁ α``
+argument and, more importantly, it starts installing the good habit of marking ``One α``
 arguments as instance-implicit.
 
 Another remark is that all this will work only when Lean knows what is ``α``. In the above
 example, leaving out the type ascription ``: α`` would generate an error message like:
-``typeclass instance problem is stuck, it is often due to metavariables One₁ (?m.263 α)``
+``typeclass instance problem is stuck, it is often due to metavariables One (?m.263 α)``
 where ``?m.263 α`` means "some type depending on ``α``" (and 263 is simply an auto-generated
 index that would be useful to distinguish between several unknown things). Another way
 to avoid this issue would be to use a type annotation, as in:
 BOTH: -/
 -- QUOTE:
-example (α : Type) [One₁ α] := (One₁.one : α)
+example (α : Type) [One α] := (One.one : α)
 -- QUOTE.
 
 /- TEXT:
@@ -76,18 +78,18 @@ in :numref:`sequences_and_convergence` if you tried to state for instance that
 ``0 < 1`` without telling Lean whether you meant this inequality to be about natural numbers
 or real numbers.
 
-Our next task is to assign a notation to ``One₁.one``. Since we don't want collisions
+Our next task is to assign a notation to ``One.one``. Since we don't want collisions
 with the builtin notation for ``1``, we will use ``𝟙``. This is achieved by the following
 command where the first line tells Lean to use the documentation
-of ``One₁.one`` as documentation for the symbol ``𝟙``.
+of ``One.one`` as documentation for the symbol ``𝟙``.
 BOTH: -/
 -- QUOTE:
 @[inherit_doc]
-notation "𝟙" => One₁.one
+notation "𝟙" => One.one
 
-example {α : Type} [One₁ α] : α := 𝟙
+example {α : Type} [One α] : α := 𝟙
 
-example {α : Type} [One₁ α] : (𝟙 : α) = 𝟙 := rfl
+example {α : Type} [One α] : (𝟙 : α) = 𝟙 := rfl
 -- QUOTE.
 
 /- TEXT:
@@ -96,59 +98,59 @@ between addition and multiplication for now so we'll use diamond.
 BOTH: -/
 
 -- QUOTE:
-class Dia₁ (α : Type) where
+class Dia (α : Type) where
   dia : α → α → α
 
-infixl:70 " ⋄ "   => Dia₁.dia
+infixl:70 " ⋄ "   => Dia.dia
 -- QUOTE.
 
 /- TEXT:
-As in the ``One₁`` example, the operation has no property at all at this stage. Let us
+As in the ``One`` example, the operation has no property at all at this stage. Let us
 now define the class of semigroup structures where the operation is denoted by ``⋄``.
-For now, we define it by hand as a structure with two fields, a ``Dia₁`` instance and some
+For now, we define it by hand as a structure with two fields, a ``Dia`` instance and some
 ``Prop``-valued field ``dia_assoc`` asserting associativity of ``⋄``.
 BOTH: -/
 
 -- QUOTE:
-class Semigroup₁ (α : Type) where
-  toDia₁ : Dia₁ α
+class SemigroupDia (α : Type) where
+  toDia : Dia α
   /-- Diamond is associative -/
   dia_assoc : ∀ a b c : α, a ⋄ b ⋄ c = a ⋄ (b ⋄ c)
 -- QUOTE.
 
 /- TEXT:
-Note that while stating `dia_assoc`, the previously defined field `toDia₁` is in the local
-context hence can be used when Lean searches for an instance of `Dia₁ α` to make sense
-of `a ⋄ b`. However this `toDia₁` field does not become part of the type class instances database.
-Hence doing ``example {α : Type} [Semigroup₁ α] (a b : α) : α := a ⋄ b`` would fail with
-error message ``failed to synthesize instance Dia₁ α``.
+Note that while stating `dia_assoc`, the previously defined field `toDia` is in the local
+context hence can be used when Lean searches for an instance of `Dia α` to make sense
+of `a ⋄ b`. However this `toDia` field does not become part of the type class instances database.
+Hence doing ``example {α : Type} [SemigroupDia α] (a b : α) : α := a ⋄ b`` would fail with
+error message ``failed to synthesize instance Dia α``.
 
 We can fix this by adding the ``instance`` attribute later.
 BOTH: -/
 
 -- QUOTE:
-attribute [instance] Semigroup₁.toDia₁
+attribute [instance] SemigroupDia.toDia
 
-example {α : Type} [Semigroup₁ α] (a b : α) : α := a ⋄ b
+example {α : Type} [SemigroupDia α] (a b : α) : α := a ⋄ b
 -- QUOTE.
 
 /- TEXT:
 Before building up, we need a more convenient way to extend structures than explicitly
-writing fields like `toDia₁` and adding the instance attribute by hand. The ``class``
+writing fields like `toDia` and adding the instance attribute by hand. The ``class``
 supports this using the ``extends`` syntax as in:
 BOTH: -/
 
 -- QUOTE:
-class Semigroup₂ (α : Type) extends Dia₁ α where
+class SemigroupDia' (α : Type) extends Dia α where
   /-- Diamond is associative -/
   dia_assoc : ∀ a b c : α, a ⋄ b ⋄ c = a ⋄ (b ⋄ c)
 
-example {α : Type} [Semigroup₂ α] (a b : α) : α := a ⋄ b
+example {α : Type} [SemigroupDia' α] (a b : α) : α := a ⋄ b
 -- QUOTE.
 
 /- TEXT:
 Note this syntax is also available in the ``structure`` command, although it that
-case it fixes only the hurdle of writing fields such as `toDia₁` since there
+case it fixes only the hurdle of writing fields such as `toDia` since there
 is no instance to define in that case.
 
 
@@ -156,7 +158,7 @@ Let us now try to combine a diamond operation and a distinguished one with axiom
 this element is neutral on both sides.
 BOTH: -/
 -- QUOTE:
-class DiaOneClass₁ (α : Type) extends One₁ α, Dia₁ α where
+class DiaOneClass (α : Type) extends One α, Dia α where
   /-- One is a left neutral element for diamond. -/
   one_dia : ∀ a : α, 𝟙 ⋄ a = a
   /-- One is a right neutral element for diamond -/
@@ -165,8 +167,8 @@ class DiaOneClass₁ (α : Type) extends One₁ α, Dia₁ α where
 -- QUOTE.
 
 /- TEXT:
-In the next example, we tell Lean that ``α`` has a ``DiaOneClass₁`` structure and state a
-property that uses both a `Dia₁` instance and a `One₁` instance. In order to see how Lean finds
+In the next example, we tell Lean that ``α`` has a ``DiaOneClass`` structure and state a
+property that uses both a `Dia` instance and a `One` instance. In order to see how Lean finds
 those instances we set a tracing option whose result can be seen in the info view. This result
 is rather terse by default but can be expended by clicking one lines ending with black arrows.
 It includes failed attempts where Lean tried to find instances before having enough type
@@ -176,7 +178,7 @@ BOTH: -/
 
 -- QUOTE:
 set_option trace.Meta.synthInstance true in
-example {α : Type} [DiaOneClass₁ α] (a b : α) : Prop := a ⋄ b = 𝟙
+example {α : Type} [DiaOneClass α] (a b : α) : Prop := a ⋄ b = 𝟙
 -- QUOTE.
 
 /- TEXT:
@@ -185,34 +187,34 @@ define monoids as:
 BOTH: -/
 
 -- QUOTE:
-class Monoid₁ (α : Type) extends Semigroup₁ α, DiaOneClass₁ α
+class MonoidDia (α : Type) extends SemigroupDia α, DiaOneClass α
 -- QUOTE.
 
 /- TEXT:
 While the above definition seems straightforward, it hides an important subtlety. Both
-``Semigroup₁ α`` and ``DiaOneClass₁ α`` extend ``Dia₁ α``, so one could fear that having
-a ``Monoid₁ α`` instance gives two unrelated diamond operations on ``α``, one coming from
-a field ``Monoid₁.toSemigroup₁`` and one coming from a field ``Monoid₁.toDiaOneClass₁``.
+``SemigroupDia α`` and ``DiaOneClass α`` extend ``Dia α``, so one could fear that having
+a ``Monoid α`` instance gives two unrelated diamond operations on ``α``, one coming from
+a field ``MonoidDia.toSemigroupDia`` and one coming from a field ``MonoidDia.toDiaOneClass``.
 
 Indeed if we try to build a monoid class by hand using:
 BOTH: -/
 
 -- QUOTE:
-class Monoid₂ (α : Type) where
-  toSemigroup₁ : Semigroup₁ α
-  toDiaOneClass₁ : DiaOneClass₁ α
+class MonoidDiaBad (α : Type) where
+  toSemigroupDia : Semigroup α
+  toDiaOneClass : DiaOneClass α
 -- QUOTE.
 
 /- TEXT:
 then we get two completely unrelated diamond operations
-``Monoid₂.toSemigroup₁.toDia₁.dia`` and ``Monoid₂.toDiaOneClass₁.toDia₁.dia``.
+``MonoidDiaBad.toSemigroupDia.toDia.dia`` and ``MonoidDiaBad.toDiaOneClass.toDia.dia``.
 
 The version generated using the ``extends`` syntax does not have this defect.
 BOTH: -/
 
 -- QUOTE:
-example {α : Type} [Monoid₁ α] :
-  (Monoid₁.toSemigroup₁.toDia₁.dia : α → α → α) = Monoid₁.toDiaOneClass₁.toDia₁.dia := rfl
+example {α : Type} [MonoidDia α] :
+  (MonoidDia.toSemigroupDia.toDia.dia : α → α → α) = MonoidDia.toDiaOneClass.toDia.dia := rfl
 -- QUOTE.
 
 /- TEXT:
@@ -221,24 +223,26 @@ too). An easy way to see what are the fields of our classes is to check their co
 BOTH: -/
 
 -- QUOTE:
-/- Monoid₂.mk {α : Type} (toSemigroup₁ : Semigroup₁ α) (toDiaOneClass₁ : DiaOneClass₁ α) : Monoid₂ α -/
-#check Monoid₂.mk
+/- lftcm.MonoidDiaBad.mk {α : Type} (toSemigroupDia : Semigroup α) (toDiaOneClass : DiaOneClass α) : MonoidDiaBad α -/
+#check MonoidDiaBad.mk
 
-/- Monoid₁.mk {α : Type} [toSemigroup₁ : Semigroup₁ α] [toOne₁ : One₁ α] (one_dia : ∀ (a : α), 𝟙 ⋄ a = a) (dia_one : ∀ (a : α), a ⋄ 𝟙 = a) : Monoid₁ α -/
-#check Monoid₁.mk
+/- lftcm.MonoidDia.mk {α : Type} [toSemigroupDia : SemigroupDia α] [toOne : One α] (one_dia : ∀ (a : α), 𝟙 ⋄ a = a)
+  (dia_one : ∀ (a : α), a ⋄ 𝟙 = a) : MonoidDia α
+-/
+#check MonoidDia.mk
 -- QUOTE.
 
 /- TEXT:
-So we see that ``Monoid₁`` takes ``Semigroup₁ α`` argument as expected but then it won't
-take a would-be overlapping ``DiaOneClass₁ α`` argument but instead tears it apart and includes
-only the non-overlapping parts. And it also auto-generated an instance ``Monoid₁.toDiaOneClass₁``
+So we see that ``Monoid`` takes ``Semigroup α`` argument as expected but then it won't
+take a would-be overlapping ``DiaOneClass α`` argument but instead tears it apart and includes
+only the non-overlapping parts. And it also auto-generated an instance ``Monoid.toDiaOneClass``
 which is *not* a field but has the expected signature which, from the end-user point of view,
-restores the symmetry between the two extended classes ``Semigroup₁`` and ``DiaOneClass₁``.
+restores the symmetry between the two extended classes ``Semigroup`` and ``DiaOneClass``.
 BOTH: -/
 
 -- QUOTE:
-#check Monoid₁.toSemigroup₁
-#check Monoid₁.toDiaOneClass₁
+#check MonoidDia.toSemigroupDia
+#check MonoidDia.toDiaOneClass
 -- QUOTE.
 
 /- TEXT:
@@ -249,14 +253,16 @@ we define a new data-carrying class, and then give it some notation.
 BOTH: -/
 
 -- QUOTE:
-class Inv₁ (α : Type) where
+
+class Inv (α : Type) where
   /-- The inversion function -/
   inv : α → α
 
-@[inherit_doc]
-postfix:max "⁻¹" => Inv₁.inv
 
-class Group₁ (G : Type) extends Monoid₁ G, Inv G where
+@[inherit_doc]
+postfix:max "⁻¹" => Inv.inv
+
+class GroupDia (G : Type) extends MonoidDia G, Inv G where
   inv_dia : ∀ a : G, a⁻¹ ⋄ a = 𝟙
 -- QUOTE.
 
@@ -266,8 +272,8 @@ But the other side is automatic. In order to prove that, we need a preliminary l
 BOTH: -/
 
 -- QUOTE:
-lemma left_inv_eq_right_inv₁ {M : Type} [Monoid₁ M] {a b c : M} (hba : b ⋄ a = 𝟙) (hac : a ⋄ c = 𝟙) : b = c := by
-  rw [← DiaOneClass₁.one_dia c, ← hba, Semigroup₁.dia_assoc, hac, DiaOneClass₁.dia_one b]
+lemma left_inv_eq_right_inv {M : Type} [MonoidDia M] {a b c : M} (hba : b ⋄ a = 𝟙) (hac : a ⋄ c = 𝟙) : b = c := by
+  rw [← DiaOneClass.one_dia c, ← hba, SemigroupDia.dia_assoc, hac, DiaOneClass.dia_one b]
 -- QUOTE.
 
 /- TEXT:
@@ -277,9 +283,9 @@ command to copy those facts as lemmas in the root name space.
 BOTH: -/
 
 -- QUOTE:
-export DiaOneClass₁ (one_dia dia_one)
-export Semigroup₁ (dia_assoc)
-export Group₁ (inv_dia)
+export DiaOneClass (one_dia dia_one)
+export SemigroupDia (dia_assoc)
+export GroupDia (inv_dia)
 -- QUOTE.
 
 /- TEXT:
@@ -287,7 +293,7 @@ We can then rewrite the above proof as:
 BOTH: -/
 
 -- QUOTE:
-example {M : Type} [Monoid₁ M] {a b c : M} (hba : b ⋄ a = 𝟙) (hac : a ⋄ c = 𝟙) : b = c := by
+example {M : Type} [MonoidDia M] {a b c : M} (hba : b ⋄ a = 𝟙) (hac : a ⋄ c = 𝟙) : b = c := by
   rw [← one_dia c, ← hba, dia_assoc, hac, dia_one b]
 -- QUOTE.
 
@@ -296,14 +302,14 @@ It is now your turn to prove things about our algebraic structures.
 BOTH: -/
 
 -- QUOTE:
-lemma inv_eq_of_dia [Group₁ G] {a b : G} (h : a ⋄ b = 𝟙) : a⁻¹ = b :=
+lemma inv_eq_of_dia [GroupDia G] {a b : G} (h : a ⋄ b = 𝟙) : a⁻¹ = b :=
 /- EXAMPLES:
   sorry
 SOLUTIONS: -/
-  left_inv_eq_right_inv₁ (inv_dia a) h
+  left_inv_eq_right_inv (inv_dia a) h
 -- BOTH:
 
-lemma dia_inv [Group₁ G] (a : G) : a ⋄ a⁻¹ = 𝟙 :=
+lemma dia_inv [GroupDia G] (a : G) : a ⋄ a⁻¹ = 𝟙 :=
 /- EXAMPLES:
   sorry
 SOLUTIONS: -/
@@ -331,30 +337,29 @@ BOTH: -/
 -- QUOTE:
 
 
-
-class AddSemigroup₃ (α : Type) extends Add α where
+class AddSemigroup (α : Type) extends Add α where
 /-- Addition is associative -/
-  add_assoc₃ : ∀ a b c : α, a + b + c = a + (b + c)
+  add_assoc : ∀ a b c : α, a + b + c = a + (b + c)
 
-@[to_additive AddSemigroup₃]
-class Semigroup₃ (α : Type) extends Mul α where
+@[to_additive]
+class Semigroup (α : Type) extends Mul α where
 /-- Multiplication is associative -/
-  mul_assoc₃ : ∀ a b c : α, a * b * c = a * (b * c)
+  mul_assoc : ∀ a b c : α, a * b * c = a * (b * c)
 
-class AddMonoid₃ (α : Type) extends AddSemigroup₃ α, AddZeroClass α
+class AddMonoid (α : Type) extends AddSemigroup α, AddZeroClass α
 
-@[to_additive AddMonoid₃]
-class Monoid₃ (α : Type) extends Semigroup₃ α, MulOneClass α
+@[to_additive]
+class Monoid (α : Type) extends Semigroup α, MulOneClass α
 
-attribute [to_additive existing] Monoid₃.toMulOneClass
+attribute [to_additive existing] Monoid.toMulOneClass
 
-export Semigroup₃ (mul_assoc₃)
-export AddSemigroup₃ (add_assoc₃)
+export Semigroup (mul_assoc)
+export AddSemigroup (add_assoc)
 
 whatsnew in
 @[to_additive]
-lemma left_inv_eq_right_inv' {M : Type} [Monoid₃ M] {a b c : M} (hba : b * a = 1) (hac : a * c = 1) : b = c := by
-  rw [← one_mul c, ← hba, mul_assoc₃, hac, mul_one b]
+lemma left_inv_eq_right_inv' {M : Type} [Monoid M] {a b c : M} (hba : b * a = 1) (hac : a * c = 1) : b = c := by
+  rw [← one_mul c, ← hba, mul_assoc, hac, mul_one b]
 
 #check left_neg_eq_right_neg'
 -- QUOTE.
@@ -365,24 +370,31 @@ groups, and then define rings.
 
 BOTH: -/
 -- QUOTE:
-class AddCommSemigroup₃ (α : Type) extends AddSemigroup₃ α where
+class Neg (α : Type) where
+  /-- The negation function -/
+  neg : α → α
+
+@[inherit_doc]
+prefix:max "-" => Neg.neg
+
+class AddCommSemigroup (α : Type) extends AddSemigroup α where
   add_comm : ∀ a b : α, a + b = b + a
 
-@[to_additive AddCommSemigroup₃]
-class CommSemigroup₃ (α : Type) extends Semigroup₃ α where
+@[to_additive]
+class CommSemigroup (α : Type) extends Semigroup α where
   mul_comm : ∀ a b : α, a * b = b * a
 
-class AddCommMonoid₃ (α : Type) extends AddMonoid₃ α, AddCommSemigroup₃ α
+class AddCommMonoid (α : Type) extends AddMonoid α, AddCommSemigroup α
 
-@[to_additive AddCommMonoid₃]
-class CommMonoid₃ (α : Type) extends Monoid₃ α, CommSemigroup₃ α
+@[to_additive]
+class CommMonoid (α : Type) extends Monoid α, CommSemigroup α
 
-class AddGroup₃ (G : Type) extends AddMonoid₃ G, Neg G where
+class AddGroup (G : Type) extends AddMonoid G, Neg G where
   neg_add : ∀ a : G, -a + a = 0
 
-@[to_additive AddGroup₃]
-class Group₃ (G : Type) extends Monoid₃ G, Inv G where
-  inv_mul : ∀ a : G, a⁻¹ * a = 1
+@[to_additive]
+class Group (G : Type) extends Monoid G, Inv G where
+  mul_left_inv : ∀ a : G, a⁻¹ * a = 1
 -- QUOTE.
 
 /- TEXT:
@@ -390,7 +402,7 @@ We should remember to tagged lemmas with ``simp`` when appropriate.
 BOTH: -/
 
 -- QUOTE:
-attribute [simp] Group₃.inv_mul AddGroup₃.neg_add
+attribute [simp] Group.mul_left_inv AddGroup.neg_add
 
 -- QUOTE.
 
@@ -400,12 +412,15 @@ Then we need to repeat ourselves a bit since we switch to standard notations, bu
 BOTH: -/
 
 -- QUOTE:
+
+attribute [to_additive] Inv
+
 @[to_additive]
-lemma inv_eq_of_mul [Group₃ G] {a b : G} (h : a * b = 1) : a⁻¹ = b :=
+lemma inv_eq_of_mul {G : Type} [Group G] {a b : G} (h : a * b = 1) : a⁻¹ = b :=
 /- EXAMPLES:
   sorry
 SOLUTIONS: -/
-  left_inv_eq_right_inv' (Group₃.inv_mul a) h
+  left_inv_eq_right_inv' (Group.mul_left_inv a) h
 -- BOTH:
 -- QUOTE.
 
@@ -416,39 +431,39 @@ BOTH: -/
 
 -- QUOTE:
 @[to_additive (attr := simp)]
-lemma Group₃.mul_inv {G : Type} [Group₃ G] {a : G} : a * a⁻¹ = 1 := by
+lemma Group.mul_inv {G : Type} [Group G] {a : G} : a * a⁻¹ = 1 := by
 /- EXAMPLES:
   sorry
 SOLUTIONS: -/
-  rw [← inv_mul a⁻¹, inv_eq_of_mul (inv_mul a)]
+  rw [← mul_left_inv a⁻¹, inv_eq_of_mul (mul_left_inv a)]
 -- BOTH:
 
 @[to_additive]
-lemma mul_left_cancel₃ {G : Type} [Group₃ G] {a b c : G} (h : a * b = a * c) : b = c := by
+lemma mul_left_cancel {G : Type} [Group G] {a b c : G} (h : a * b = a * c) : b = c := by
 /- EXAMPLES:
   sorry
 SOLUTIONS: -/
-  simpa [← mul_assoc₃] using congr_arg (a⁻¹ * ·) h
+  simpa [← mul_assoc] using congr_arg (a⁻¹ * ·) h
 -- BOTH:
 
 @[to_additive]
-lemma mul_right_cancel₃ {G : Type} [Group₃ G] {a b c : G} (h : b*a = c*a) : b = c := by
+lemma mul_right_cancel {G : Type} [Group G] {a b c : G} (h : b*a = c*a) : b = c := by
 /- EXAMPLES:
   sorry
 SOLUTIONS: -/
-  simpa [mul_assoc₃] using congr_arg (· * a⁻¹) h
+  simpa [mul_assoc] using congr_arg (· * a⁻¹) h
 -- BOTH:
 
-class AddCommGroup₃ (G : Type) extends AddGroup₃ G, AddCommMonoid₃ G
+class AddCommGroup (G : Type) extends AddGroup G, AddCommMonoid G
 
-@[to_additive AddCommGroup₃]
-class CommGroup₃ (G : Type) extends Group₃ G, CommMonoid₃ G
+@[to_additive]
+class CommGroup (G : Type) extends Group G, CommMonoid G
 
 -- QUOTE.
 
 /- TEXT:
 We are now ready for rings. For demonstration purposes we won't assume that addition is
-commutative, and then immediately provide an instance of ``AddCommGroup₃``. Mathlib does not
+commutative, and then immediately provide an instance of ``AddCommGroup``. Mathlib does not
 play this game, first because in practice this does not make any ring instance easier and
 also because Mathlib's algebraic hierarchy goes through semi-rings which are like rings but without
 opposites so that the proof below does not work for them. What we gain here, besides a nice exercise
@@ -457,28 +472,28 @@ to provide a parent structure and some extra fields.
 BOTH: -/
 
 -- QUOTE:
-class Ring₃ (R : Type) extends AddGroup₃ R, Monoid₃ R, MulZeroClass R where
+class Ring (R : Type) extends AddGroup R, Monoid R, MulZeroClass R where
   /-- Multiplication is left distributive over addition -/
   left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
   /-- Multiplication is right distributive over addition -/
   right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
 
-instance {R : Type} [Ring₃ R] : AddCommGroup₃ R :=
-{ Ring₃.toAddGroup₃ with
+instance {R : Type} [Ring R] : AddCommGroup R :=
+{ Ring.toAddGroup with
   add_comm := by
 /- EXAMPLES:
     sorry }
 SOLUTIONS: -/
     intro a b
     have : a + (a + b + b) = a + (b + a + b) := calc
-      a + (a + b + b) = (a + a) + (b + b) := by simp [add_assoc₃, add_assoc₃]
+      a + (a + b + b) = (a + a) + (b + b) := by simp [add_assoc, add_assoc]
       _ = (1 * a + 1 * a) + (1 * b + 1 * b) := by simp
-      _ = (1 + 1) * a + (1 + 1) * b := by simp [Ring₃.right_distrib]
-      _ = (1 + 1) * (a + b) := by simp [Ring₃.left_distrib]
-      _ = 1 * (a + b) + 1 * (a + b) := by simp [Ring₃.right_distrib]
+      _ = (1 + 1) * a + (1 + 1) * b := by simp [Ring.right_distrib]
+      _ = (1 + 1) * (a + b) := by simp [Ring.left_distrib]
+      _ = 1 * (a + b) + 1 * (a + b) := by simp [Ring.right_distrib]
       _ = (a + b) + (a + b) := by simp
-      _ = a + (b + a + b) := by simp [add_assoc₃]
-    exact add_right_cancel₃ (add_left_cancel₃ this) }
+      _ = a + (b + a + b) := by simp [add_assoc]
+    exact add_right_cancel (add_left_cancel this) }
 -- QUOTE.
 /- TEXT:
 Of course we can also build concrete instances, such as a ring structure on integers (of course
@@ -486,16 +501,16 @@ the instance below uses that all the work is already done in Mathlib).
 BOTH: -/
 
 -- QUOTE:
-instance : Ring₃ ℤ where
+instance : Ring ℤ where
   add := (· + ·)
-  add_assoc₃ := add_assoc
+  add_assoc := _root_.add_assoc
   zero := 0
   zero_add := by simp
   add_zero := by simp
-  neg := (- ·)
+  neg := (-(·))
   neg_add := by simp
   mul := (· * ·)
-  mul_assoc₃ := mul_assoc
+  mul_assoc := _root_.mul_assoc
   one := 1
   one_mul := by simp
   mul_one := by simp
@@ -512,39 +527,39 @@ such that ``∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b``. Of course y
 BOTH: -/
 -- QUOTE:
 
-class LE₁ (α : Type) where
+class LE (α : Type) where
   /-- The Less-or-Equal relation. -/
   le : α → α → Prop
 
-@[inherit_doc] infix:50 " ≤₁ " => LE₁.le
+@[inherit_doc] infix:50 " ≤ " => LE.le
 
-class Preorder₁ (α : Type)
+class Preorder (α : Type)
 -- SOLUTIONS:
-  extends LE₁ α where
-  le_refl : ∀ a : α, a ≤₁ a
-  le_trans : ∀ a b c : α, a ≤₁ b → b ≤₁ c → a ≤₁ c
+  extends LE α where
+  le_refl : ∀ a : α, a ≤ a
+  le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
 -- BOTH:
 
-class PartialOrder₁ (α : Type)
+class PartialOrder (α : Type)
 -- SOLUTIONS:
-  extends Preorder₁ α where
-  le_antisymm : ∀ a b : α, a ≤₁ b → b ≤₁ a → a = b
+  extends Preorder α where
+  le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 -- BOTH:
 
-class OrderedCommMonoid₁ (α : Type)
+class OrderedCommMonoid (α : Type)
 -- SOLUTIONS:
-  extends PartialOrder₁ α, CommMonoid₃ α where
-  mul_of_le : ∀ a b : α, a ≤₁ b → ∀ c : α, c * a ≤₁ c * b
+  extends PartialOrder α, CommMonoid α where
+  mul_of_le : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
 -- BOTH:
 
-instance : OrderedCommMonoid₁ ℕ where
+instance : OrderedCommMonoid ℕ where
 -- SOLUTIONS:
-  le := (· ≤ ·)
+  le := fun x y ↦ x ≤ y
   le_refl := fun _ ↦ le_rfl
   le_trans := fun _ _ _ ↦ le_trans
   le_antisymm := fun _ _ ↦ le_antisymm
   mul := (· * ·)
-  mul_assoc₃ := mul_assoc
+  mul_assoc := _root_.mul_assoc
   one := 1
   one_mul := one_mul
   mul_one := mul_one
@@ -565,11 +580,11 @@ type ``β``, and give it a right associative notation.
 BOTH: -/
 
 -- QUOTE:
-class SMul₃ (α : Type) (β : Type) where
+class SMul (α : Type) (β : Type) where
   /-- Scalar multiplication -/
   smul : α → β → β
 
-infixr:73 " • " => SMul₃.smul
+infixr:73 " • " => SMul.smul
 -- QUOTE.
 
 /- TEXT:
@@ -577,7 +592,7 @@ Then we can define modules (again think about vector spaces if you don't know wh
 BOTH: -/
 
 -- QUOTE:
-class Module₁ (R : Type) [Ring₃ R] (M : Type) [AddCommGroup₃ M] extends SMul₃ R M where
+class Module (R : Type) [Ring R] (M : Type) [AddCommGroup M] extends SMul R M where
   zero_smul : ∀ m : M, (0 : R) • m = 0
   one_smul : ∀ m : M, (1 : R) • m = m
   mul_smul : ∀ (a b : R) (m : M), (a * b) • m = a • b • m
@@ -587,26 +602,26 @@ class Module₁ (R : Type) [Ring₃ R] (M : Type) [AddCommGroup₃ M] extends SM
 
 /- TEXT:
 There is something interesting going on here. While it isn't too surprising that the
-ring structure on ``R`` is a parameter in this definition, you probably expected ``AddCommGroup₃ M``
-to be part of the ``extends`` clause just as ``SMul₃ R M`` is.  Trying to do that would lead
+ring structure on ``R`` is a parameter in this definition, you probably expected ``AddCommGroup M``
+to be part of the ``extends`` clause just as ``SMul R M`` is.  Trying to do that would lead
 to a mysterious sounding error message:
-``cannot find synthesization order for instance Module₁.toAddCommGroup₃ with type (R : Type) → [inst : Ring₃ R] → {M : Type} → [self : Module₁ R M] → AddCommGroup₃ M
-all remaining arguments have metavariables: Ring₃ ?R @Module₁ ?R ?inst✝ M``.
+``cannot find synthesization order for instance Module₁.toAddCommGroup₃ with type (R : Type) → [inst : Ring R] → {M : Type} → [self : Module R M] → AddCommGroup M
+all remaining arguments have metavariables: Ring ?R @Module ?R ?inst✝ M``.
 In order to understand this message, you need to remember that such an ``extends`` clause would
-lead to a field ``Module₃.toAddCommGroup₃`` marked as an instance. This instance
+lead to a field ``Module.toAddCommGroup`` marked as an instance. This instance
 would have the signature appearing in the error message:
-``(R : Type) → [inst : Ring₃ R] → {M : Type} → [self : Module₁ R M] → AddCommGroup₃ M``.
+``(R : Type) → [inst : Ring R] → {M : Type} → [self : Module R M] → AddCommGroup M``.
 With such an instance in the type class database, each time Lean would look for a
-``AddCommGroup₃ M`` instance for some ``M``, it would need to go hunting for a completely
-unspecified type ``R`` and a ``Ring₃ R`` instance before embarking on the main quest of finding a
-``Module₁ R M`` instance. Those two side-quests are represented by the meta-variables mentioned in
-the error message and denoted by ``?R`` and ``?inst✝`` there. Such a ``Module₃.toAddCommGroup₃``
+``AddCommGroup M`` instance for some ``M``, it would need to go hunting for a completely
+unspecified type ``R`` and a ``Ring R`` instance before embarking on the main quest of finding a
+``Module R M`` instance. Those two side-quests are represented by the meta-variables mentioned in
+the error message and denoted by ``?R`` and ``?inst✝`` there. Such a ``Module.toAddCommGroup``
 instance would then be a huge trap for the instance resolution procedure and then ``class`` command
 refuses to set it up.
 
-What about ``extends SMul₃ R M`` then? That one creates a field
-``Module₁.toSMul₃ : {R : Type} →  [inst : Ring₃ R] → {M : Type} → [inst_1 : AddCommGroup₃ M] → [self : Module₁ R M] → SMul₃ R M``
-whose end result ``SMul₃ R M`` mentions both ``R`` and ``M`` so this field can
+What about ``extends SMul R M`` then? That one creates a field
+``Module.toSMul : {R : Type} →  [inst : Ring R] → {M : Type} → [inst_1 : AddCommGroup M] → [self : Module R M] → SMul R M``
+whose end result ``SMul R M`` mentions both ``R`` and ``M`` so this field can
 safely be used as an instance. The rule is easy to remember: each class appearing in the
 ``extends`` clause should mention every type appearing in the parameters.
 
@@ -614,13 +629,13 @@ Let us create our first module instance: a ring is a module over itself using it
 as a scalar multiplication.
 BOTH: -/
 -- QUOTE:
-instance selfModule (R : Type) [Ring₃ R] : Module₁ R R where
+instance selfModule (R : Type) [Ring R] : Module R R where
   smul := fun r s ↦ r*s
   zero_smul := zero_mul
   one_smul := one_mul
-  mul_smul := mul_assoc₃
-  add_smul := Ring₃.right_distrib
-  smul_add := Ring₃.left_distrib
+  mul_smul := mul_assoc
+  add_smul := Ring.right_distrib
+  smul_add := Ring.left_distrib
 -- QUOTE.
 /- TEXT:
 As a second example, every abelian group is a module over ``ℤ`` (this is one of the reason to
@@ -631,24 +646,24 @@ to scalar multiplication by an integer by ensuring ``(-1) • a = -a``.
 BOTH: -/
 -- QUOTE:
 
-def nsmul₁ [Zero M] [Add M] : ℕ → M → M
+def nsmul [Zero M] [Add M] : ℕ → M → M
   | 0, _ => 0
-  | n + 1, a => a + nsmul₁ n a
+  | n + 1, a => a + nsmul n a
 
-def zsmul₁ {M : Type*} [Zero M] [Add M] [Neg M] : ℤ → M → M
-  | Int.ofNat n, a => nsmul₁ n a
-  | Int.negSucc n, a => -nsmul₁ n.succ a
+def zsmul {M : Type} [Zero M] [Add M] [Neg M] : ℤ → M → M
+  | Int.ofNat n, a => nsmul n a
+  | Int.negSucc n, a => -(nsmul n.succ a)
 -- QUOTE.
 /- TEXT:
 Proving this gives rise to a module structure is a bit tedious and not interesting for the
 current discussion, so we will sorry all axioms. You are *not* asked to replace those sorries
 with proofs. If you insist on doing it then you will probably want to state and prove several
-intermediate lemmas about ``nsmul₁`` and ``zsmul₁``.
+intermediate lemmas about ``nsmul`` and ``zsmul``.
 BOTH: -/
 -- QUOTE:
 
-instance abGrpModule (A : Type) [AddCommGroup₃ A] : Module₁ ℤ A where
-  smul := zsmul₁
+instance abGrpModule (A : Type) [AddCommGroup A] : Module ℤ A where
+  smul := zsmul
   zero_smul := sorry
   one_smul := sorry
   mul_smul := sorry
@@ -667,19 +682,19 @@ which one using:
 BOTH: -/
 -- QUOTE:
 
-#synth Module₁ ℤ ℤ -- abGrpModule ℤ
+#synth Module ℤ ℤ -- abGrpModule ℤ
 
 -- QUOTE.
 /- TEXT:
 But in a more indirect context it can happen that Lean infers the one and then gets confused.
 This situation is known as a bad diamond. This has nothing to do with the diamond operation
-we used above, it refers to the way one can draw the paths from ``ℤ`` to its ``Module₁ ℤ``
-going through either ``AddCommGroup₃ ℤ`` or ``Ring₃ ℤ``.
+we used above, it refers to the way one can draw the paths from ``ℤ`` to its ``Module ℤ``
+going through either ``AddCommGroup ℤ`` or ``Ring ℤ``.
 
 It is important to understand that not all diamonds are bad. In fact there are diamonds everywhere
 in Mathlib, and also in this chapter. Already at the very beginning we saw one can go
-from ``Monoid₁ α`` to ``Dia₁ α`` through either ``Semigroup₁ α`` or ``DiaOneClass₁ α`` and
-thanks to the work done by the ``class`` command, the resulting two ``Dia₁ α`` instances
+from ``Monoid α`` to ``Dia α`` through either ``Semigroup α`` or ``DiaOneClass α`` and
+thanks to the work done by the ``class`` command, the resulting two ``Dia α`` instances
 are definitionally equal. In particular a diamond having a ``Prop``-valued class at the bottom
 cannot be bad since any too proofs of the same statement are definitionally equal.
 
@@ -690,7 +705,7 @@ poor structure is always done by forgetting data, not by defining data. This wel
 as been named "forgetful inheritance" and extensively discussed in
 https://inria.hal.science/hal-02463336.
 
-In our concrete case, we can modify the definition of ``AddMonoid₃`` to include a ``nsmul`` data
+In our concrete case, we can modify the definition of ``AddMonoid`` to include a ``nsmul`` data
 field and some ``Prop``-valued fields ensuring this operation is provably the one we constructed
 above. Those fields are given default values using ``:=`` after their type in the definition below.
 Thanks to these default values, most instances would be constructed exactly as with our previous
@@ -698,15 +713,15 @@ definitions. But in the special case of ``ℤ`` we will be able to provide speci
 BOTH: -/
 -- QUOTE:
 
-class AddMonoid₄ (M : Type) extends AddSemigroup₃ M, AddZeroClass M where
+class AddMonoid' (M : Type) extends AddSemigroup M, AddZeroClass M where
   /-- Multiplication by a natural number. -/
-  nsmul : ℕ → M → M := nsmul₁
+  nsmul : ℕ → M → M := nsmul
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
   nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
   nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x := by intros; rfl
 
-instance mySMul {M : Type} [AddMonoid₄ M] : SMul ℕ M := ⟨AddMonoid₄.nsmul⟩
+instance mySMul {M : Type} [AddMonoid' M] : SMul ℕ M := ⟨AddMonoid'.nsmul⟩
 -- QUOTE.
 /- TEXT:
 
@@ -715,9 +730,9 @@ related fields.
 BOTH: -/
 -- QUOTE:
 
-instance (M N : Type) [AddMonoid₄ M] [AddMonoid₄ N] : AddMonoid₄ (M × N) where
+instance (M N : Type) [AddMonoid' M] [AddMonoid' N] : AddMonoid' (M × N) where
   add := fun p q ↦ (p.1 + q.1, p.2 + q.2)
-  add_assoc₃ := fun a b c ↦ by ext <;> apply add_assoc₃
+  add_assoc := fun a b c ↦ by ext <;> apply add_assoc
   zero := (0, 0)
   zero_add := fun a ↦ by ext <;> apply zero_add
   add_zero := fun a ↦ by ext <;> apply add_zero
@@ -729,9 +744,9 @@ contain more work than in the default value above.
 BOTH: -/
 -- QUOTE:
 
-instance : AddMonoid₄ ℤ where
+instance : AddMonoid' ℤ where
   add := (· + ·)
-  add_assoc₃ := Int.add_assoc
+  add_assoc := Int.add_assoc
   zero := 0
   zero_add := Int.zero_add
   add_zero := Int.add_zero
@@ -756,21 +771,23 @@ in Mathlib. There are more complicated than what we have seen here, because they
 hierarchy, but all principles have been explained above.
 
 As an exercise, you can come back to the order relation hierarchy you built above and try
-to incorporate a type class ``LT₁`` carrying the Less-Than notation ``<₁`` and make sure
-that every preorder comes with a ``<₁`` which has a default value built from ``≤₁`` and a
+to incorporate a type class ``LT`` carrying the Less-Than notation ``<`` and make sure
+that every preorder comes with a ``<`` which has a default value built from ``≤`` and a
 ``Prop``-valued field asserting the natural relation between those two comparison operators.
 -/
 
 -- SOLUTIONS:
 
-class LT₁ (α : Type) where
+class LT (α : Type) where
   /-- The Less-Than relation -/
   lt : α → α → Prop
 
-@[inherit_doc] infix:50 " <₁ " => LT₁.lt
+@[inherit_doc] infix:50 " < " => LT.lt
 
-class PreOrder₂ (α : Type) extends LE₁ α, LT₁ α where
-  le_refl : ∀ a : α, a ≤₁ a
-  le_trans : ∀ a b c : α, a ≤₁ b → b ≤₁ c → a ≤₁ c
-  lt := fun a b ↦ a ≤₁ b ∧ ¬b ≤₁ a
-  lt_iff_le_not_le : ∀ a b : α, a <₁ b ↔ a ≤₁ b ∧ ¬b ≤₁ a := by intros; rfl
+class PreOrder (α : Type) extends LE α, LT α where
+  le_refl : ∀ a : α, a ≤ a
+  le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
+  lt := fun a b ↦ a ≤ b ∧ ¬b ≤ a
+  lt_iff_le_not_le : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
+
+end lftcm

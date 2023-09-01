@@ -71,8 +71,8 @@ def make_lean_user_main_import_file():
                 import_file.write(f"import LftCM.{chapter_dir.name}.{section_name}\n")
 
 index_file_start = """
-Mathematics in Lean
-===================
+Lean for the Curious Mathematician 2023
+=======================================
 
 .. toctree::
    :numbered:
@@ -112,7 +112,10 @@ def make_sphinx_chapter_files():
     for chapter_dir in chapter_dirs:
         chapter_name = chapter_dir.name
         chapter_file = chapter_dir/(chapter_name + ".rst")
-        shutil.copy2(chapter_file, sphinx_dir)
+        try:
+            shutil.copy2(chapter_file, sphinx_dir)
+        except FileNotFoundError:
+            pass
         dest_file = sphinx_dir/(chapter_name + ".rst")
         with dest_file.open('a', encoding='utf8') as dest:
             dest.write("\n")
@@ -279,8 +282,8 @@ def make_everything():
     shutil.copytree(sphinx_source_dir, sphinx_dir)
 
     # start generating Sphinx source files
-    # make_sphinx_index_file()
-    # make_sphinx_chapter_files()
+    make_sphinx_index_file()
+    make_sphinx_chapter_files()
 
     # generate the examples files, solutions files, and Sphinx files for each section
     process_sections()

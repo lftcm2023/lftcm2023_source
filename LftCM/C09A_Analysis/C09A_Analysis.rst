@@ -1,8 +1,8 @@
 .. _differential_calculus:
 
-.. index:: differential calculus
+.. index:: analysis
 
-Differential Calculus
+Analysis
 =====================
 
 We now consider the formalization of notions from *analysis*,
