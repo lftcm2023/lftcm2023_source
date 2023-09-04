@@ -1,4 +1,3 @@
-import LftCM.Attr
 import LftCM.C01_Basics.Basics
 import LftCM.C01_Basics.S01_Calculating
 import LftCM.C01_Basics.S02_Overview
@@ -20,9 +19,6 @@ import LftCM.C04_Algebra_Tactics.S01BasicsOfPolyrith
 import LftCM.C04_Algebra_Tactics.S02UsingPolyrith
 import LftCM.C04_Algebra_Tactics.S03NonsingularityOfCurves
 import LftCM.C04_Algebra_Tactics.S04CombiningTactics
-import LftCM.C05_Structures_And_Classes.MIL.S01_Structures
-import LftCM.C05_Structures_And_Classes.MIL.S02_Algebraic_Structures
-import LftCM.C05_Structures_And_Classes.MIL.S03_Building_the_Gaussian_Integers
 import LftCM.C05_Structures_And_Classes.Structures_And_Classes
 import LftCM.C07_Algebraic_Hierarchy.S01_Basics
 import LftCM.C07_Algebraic_Hierarchy.S02_Morphisms
@@ -42,4 +38,3 @@ import LftCM.C12A_Differential_Geometry.Differential_Geometry
 import LftCM.C12B_Number_Theory.S01_Irrational_Roots
 import LftCM.C12B_Number_Theory.S02_Induction_and_Recursion
 import LftCM.C12B_Number_Theory.S03_Infinitely_Many_Primes
-import LftCM.Common
