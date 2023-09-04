@@ -878,7 +878,7 @@ end LFTCM
 open LFTCM.MulOpposite
 
 section exercise
-/-! ### EXERCISE 11
+/-! ### EXERCISE 12
 
 1. Show that `MulOpposite α` is a group when `α` is. Remember the advice about deleting the
   un-needed fields. You can also delete `one`, `mul`, and `inv` as they are found from the above.
