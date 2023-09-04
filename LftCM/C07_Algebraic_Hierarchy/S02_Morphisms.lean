@@ -73,7 +73,7 @@ structure MonoidHom (G H : Type) [Monoid G] [Monoid H]  where
 Of course we don't want to type ``toFun`` everywhere so we register a coercion using
 the ``CoeFun`` type class. Its first argument is the type we want to coerce to a function.
 The second argument describes the target function type. In our case it is always ``G → H``
-for every ``f : MonoidHom₁ G H``. We also tag ``MonoidHom.toFun`` with the ``coe`` attribute to
+for every ``f : MonoidHom G H``. We also tag ``MonoidHom.toFun`` with the ``coe`` attribute to
 make sure it is displayed almost invisibly in the tactic state, simply by a ``↑`` prefix.
 
 BOTH: -/
@@ -111,7 +111,6 @@ attribute [coe] AddMonoidHom.toFun
 
 @[ext]
 structure RingHom (R S : Type) [Ring R] [Ring S] extends MonoidHom R S, AddMonoidHom R S
-
 -- QUOTE.
 
 /- TEXT:
@@ -143,12 +142,14 @@ function instance yet. Let us try to do it now.
 BOTH: -/
 
 -- QUOTE:
+
 def badInst [Monoid M] [Monoid N] [MonoidHomClass_bad F M N] : CoeFun F (fun _ ↦ M → N) where
   coe := MonoidHomClass_bad.toFun
+
 -- QUOTE.
 
 /- TEXT:
-Making the an instance would be bad. When faced with something like ``f x`` where the type of ``f``
+Making this into an instance would be bad. When faced with something like ``f x`` where the type of ``f``
 is not a function type, Lean will try to find a ``CoeFun`` instance to coerce ``f`` into a function.
 The above function has type:
 ``{M N F : Type} → [Monoid M] → [Monoid N] → [MonoidHomClass_bad F M N] → CoeFun F (fun x ↦ M → N)``

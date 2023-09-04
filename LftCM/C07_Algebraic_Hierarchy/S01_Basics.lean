@@ -533,26 +533,26 @@ class LE (α : Type) where
 
 @[inherit_doc] infix:50 " ≤ " => LE.le
 
-class Preorder (α : Type)
+class Preorder (α : Type) -- fill it in
 -- SOLUTIONS:
   extends LE α where
   le_refl : ∀ a : α, a ≤ a
   le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
 -- BOTH:
 
-class PartialOrder (α : Type)
+class PartialOrder (α : Type) -- fill it in
 -- SOLUTIONS:
   extends Preorder α where
   le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 -- BOTH:
 
-class OrderedCommMonoid (α : Type)
+class OrderedCommMonoid (α : Type) -- fill it in
 -- SOLUTIONS:
   extends PartialOrder α, CommMonoid α where
   mul_of_le : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
 -- BOTH:
 
-instance : OrderedCommMonoid ℕ where
+instance : OrderedCommMonoid ℕ where -- fill it in
 -- SOLUTIONS:
   le := fun x y ↦ x ≤ y
   le_refl := fun _ ↦ le_rfl
@@ -775,18 +775,25 @@ that every preorder comes with a ``<`` which has a default value built from ``�
 ``Prop``-valued field asserting the natural relation between those two comparison operators.
 -/
 
--- SOLUTIONS:
+/- EXAMPLES:
+class LT (α : Type) where -- fill it in
 
+SOLUTIONS: -/
 class LT (α : Type) where
   /-- The Less-Than relation -/
   lt : α → α → Prop
 
 @[inherit_doc] infix:50 " < " => LT.lt
 
+/- EXAMPLES:
+class PreOrder (α : Type) extends LE α, LT α where -- fill it in
+
+SOLUTIONS: -/
 class PreOrder (α : Type) extends LE α, LT α where
   le_refl : ∀ a : α, a ≤ a
   le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
   lt := fun a b ↦ a ≤ b ∧ ¬b ≤ a
   lt_iff_le_not_le : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 
+/-BOTH: -/
 end lftcm
