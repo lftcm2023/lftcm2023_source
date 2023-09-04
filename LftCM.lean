@@ -1,4 +1,5 @@
 import LftCM.Attr
+import LftCM.C01_Basics.Basics
 import LftCM.C01_Basics.S01_Calculating
 import LftCM.C01_Basics.S02_Overview
 import LftCM.C01_Basics.S03_Proving_Identities_in_Algebraic_Structures
