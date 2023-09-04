@@ -486,7 +486,7 @@ instance {R : Type} [Ring R] : AddCommGroup R :=
 SOLUTIONS: -/
     intro a b
     have : a + (a + b + b) = a + (b + a + b) := calc
-      a + (a + b + b) = (a + a) + (b + b) := by simp [add_assoc, add_assoc]
+      _ = (a + a) + (b + b) := by simp [add_assoc, add_assoc]
       _ = (1 * a + 1 * a) + (1 * b + 1 * b) := by simp
       _ = (1 + 1) * a + (1 + 1) * b := by simp [Ring.right_distrib]
       _ = (1 + 1) * (a + b) := by simp [Ring.left_distrib]

@@ -46,7 +46,7 @@ attribute [quaternion_simps] Matrix.head_cons Matrix.cons_vec_bit0_eq_alt0 Matri
   Function.comp_apply Quaternion.coe_one Quaternion.coe_zero
   Quaternion.ext_iff zero_mul
 
-/- TEXT:
+/-
 
 .. Chebyshev:
 
@@ -71,7 +71,7 @@ So :math:`T_2(x)=2x^2-1`, :math:`T_3(x)=4x^3-3x`, etc.
 
 We express the sequence of Chebyshev polynomials in Lean as a function from the natural numbers
 ``ℕ`` to the integer-coefficient polynomials ``ℤ[X]``, defined recursively.
-TEXT. -/
+-/
 
 -- BOTH:
 -- QUOTE:
@@ -89,7 +89,7 @@ theorem T_one : T 1 = X := rfl
 theorem T_add_two (n : ℕ) : T (n + 2) = 2 * X * T (n + 1) - T n := by rw [T]
 -- QUOTE.
 
-/- TEXT:
+/-
 In this section we will prove the multiplication formula for Chebyshev polynomials:
 
 .. admonition:: Theorem
@@ -126,7 +126,7 @@ sequence `T`, but in more than one way.  For example, in the setup below, both `
 ``T (37 + m)`` as the same token.  So, before running ``polyrith``, normalize all indices by
 running ``ring_nf`` ("ring normal form") simultaneously on all the hypotheses you care about and on
 the goal.
-TEXT. -/
+-/
 
 -- BOTH:
 -- QUOTE:
@@ -156,7 +156,7 @@ SOLUTIONS: -/
     have h₁ := t_add_two 7 -- not actually a relevant input value!
     have h₂ := t_add_two (37 + m) -- not actually a relevant input value!
     ring_nf at H₁ h₁ h₂ ⊢
-    sorry
+    sorry -- polyrith should work if you have added the relevant hypotheses (may be more than 3)
 SOLUTIONS: -/
     have H₁ := mul_T (m + 1) (k + 1)
     have H₂ := mul_T m (k + 2)
@@ -168,7 +168,7 @@ SOLUTIONS: -/
 -- QUOTE.
 
 
-/- TEXT:
+/-
 
 .. IsometryPlane:
 
@@ -238,7 +238,7 @@ does not know facts specific to the ring of complex numbers, such as that :math:
 :math:`\overline{i}=-i`.  You can state any needed such facts explicitly and prove them using
 ``norm_num`` (of course, there are lemmas for this, but why bother memorizing them?).  Then you can
 rewrite by these facts, or just include them in the context for ``polyrith`` to pick up.
-TEXT. -/
+-/
 -- BOTH:
 -- QUOTE:
 example {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1) : f I = I ∨ f I = -I :=
@@ -267,7 +267,7 @@ SOLUTIONS: -/
 -- QUOTE.
 
 
-/- TEXT:
+/-
 .. DoubleCover:
 
 Double cover of SO(3, ℝ)
@@ -284,7 +284,7 @@ We first state the formula which will describe this double cover as a map from t
     2 (y z + w x) &   x ^ 2 + z ^ 2 - y ^ 2 - w ^ 2 & 2 (z w - y x) \\
     2 (y w - z x) &  2 (z w + y x) & x ^ 2 + w ^ 2 - y ^ 2 - z ^ 2
     \end{pmatrix}.
-TEXT. -/
+-/
 -- BOTH:
 -- QUOTE:
 /-- Explicit matrix formula for the double cover of SO(3, ℝ) by the unit quaternions. -/
@@ -316,13 +316,13 @@ attribute [quaternion_simps] Matrix.head_cons Matrix.cons_vec_bit0_eq_alt0 Matri
   Function.comp_apply Quaternion.coe_one Quaternion.coe_zero
   Quaternion.ext_iff zero_mul
 
-/- TEXT:
+/-
 This turns out to be a "homomorphism of monoids", denoted in Lean by ``→*``; that is, it preserves
 multiplication and the identity.  Here is what the proof of that fact looks like.  It would be
 extremely tedious on paper, but it's very fast in Lean, because it simply requires checking
 coefficient-wise  :math:`9=3 \times 3` identities of real-number expressions (for the preservation
 of the identity element) and 9 identities of polynomials (for the preservation of multiplication).
-TEXT. -/
+-/
 -- BOTH:
 -- QUOTE:
 /-- The explicit matrix formula `to_matrix` defines a monoid homomorphism from the quaternions into
@@ -341,13 +341,13 @@ the algebra of 3x3 matrices. -/
     ext (i j); fin_cases i <;> fin_cases j <;> (simp [quaternion_simps]; ring)
 
 -- QUOTE.
-/- TEXT:
+/-
 Now we write down a definition of the *unit* quaternions.  We give it the abstract-nonsense
 definition as the ``mker`` (for "monoid kernel") of the "norm_square" monoid homomorphism
 ``quaternion.norm_sq`` from the quaternions to the reals; this already existed in mathlib. Then we
 prove a quick lemma that this is equivalent to the pedestrian definition, the sums of the squares
 of the four components summing to 1.
-TEXT. -/
+-/
 -- BOTH:
 -- QUOTE:
 /-- The group (we only prove it to be a monoid) of unit quaternions. -/
@@ -360,9 +360,9 @@ def unitQuaternions : Submonoid ℍ :=
   exact Iff.rfl
 -- QUOTE.
 
-/- TEXT:
+/-
 We prove that the unit quaternions form a group, although we will not need it later.
-TEXT. -/
+-/
 -- BOTH:
 -- QUOTE:
 /-- The group of unit quaternions. -/
@@ -370,17 +370,25 @@ def unitQuaternions' : Subgroup (Units ℍ) where
   toSubmonoid := {
     carrier := {x | x.val ∈ unitQuaternions}
     mul_mem' := by
+/- EXAMPLES:
+      sorry
+SOLUTIONS: -/
       rintro ⟨a, a', _, _⟩ ⟨b, b', _, _⟩
       simp [quaternion_simps] at *
       intro H1 H2
       linear_combination H1 + (a.re ^ 2 + a.imI ^ 2 + a.imJ ^ 2 + a.imK ^ 2) * H2
     one_mem' := by
       simp [quaternion_simps]
+-- BOTH:
   }
   inv_mem' := by
+/- EXAMPLES:
+    sorry
+SOLUTIONS: -/
     rintro ⟨a, b, h, h'⟩
     intro H
     simp at H ⊢
+-- BOTH:
 /- EXAMPLES:
   sorry
 SOLUTIONS: -/
@@ -406,11 +414,11 @@ SOLUTIONS: -/
 -- QUOTE.
 
 
-/- TEXT:
+/-
 The 3 × 3 orthogonal group is available in mathlib already, as a submonoid of the 3 x 3
 matrices. (Exercise for the reader: the monoid structure is in mathlib but no one seems yet to have
 proved it's a *group*, i.e. closed under inversion.)
-TEXT. -/
+-/
 -- QUOTE:
 #check Matrix.orthogonalGroup (Fin 3) ℝ
 
@@ -421,7 +429,7 @@ namespace unitQuaternions
 
 open Quaternion
 
-/- TEXT:
+/-
 The first serious calculation is to prove that the matrix formula stated above is well-defined as a
 map from the unit quaternions to :math:`SO(3,\mathbb{R})`.  That is, we have to prove that if
 :math:`x+iy+jz+kw` is a unit quaternion then the formula produces an element of
@@ -433,7 +441,7 @@ that quartic polynomial is one (respectively, zero) on (respectively, off) the d
 
 All these 9 checks can be done by ``polyrith``.  Click through in your Lean file to see the proofs
 that ``polyrith`` comes up with for each one.
-TEXT. -/
+-/
 -- BOTH:
 -- QUOTE:
 /-- The explicit matrix formula `to_matrix` sends a unit quaternion to an element of SO(3, ℝ). -/
@@ -476,7 +484,7 @@ def toMatrixHom : unitQuaternions →* Matrix.orthogonalGroup (Fin 3) ℝ :=
   (toMatrixHom'.restrict unitQuaternions).codRestrict (Matrix.orthogonalGroup (Fin 3) ℝ) fun a =>
     toMatrix_mem_orthogonal a.prop
 
-/- TEXT:
+/-
 So the monoid homomorphism from :math:`\mathbb{H}` to 3 × 3 matrices descends to a homomorphism
 ``unit_quaternions.to_matrix_hom`` from the unit quaternions to :math:`SO(3, \mathbb{R})`, with a
 couple more lines of abstract nonsense.
@@ -500,7 +508,7 @@ The proof below is on the right track, but it is broken: I have not given ``poly
 information it needs.  (I was lazy and just wrote out the result of checking the (0,1)-th
 coefficient of the matrix, as discussed above.)  Figure out what further matrix coefficients to
 check so that ``polyrith`` has all the information it needs.  Or just write down all nine!
-TEXT. -/
+-/
 -- BOTH:
 /-- The unit quaternion -1 (the quaternion -1 together with a proof that its norm is one). -/
 @[quaternion_simps]
@@ -531,6 +539,7 @@ theorem toMatrixHom_mker : (MonoidHom.mker toMatrixHom : Set unitQuaternions) = 
     -- Add more matrix entry inspections here as needed, and adjust the simplification line.
     -- The `polyrith` applications that follow will be broken until you do this!
     simp [quaternion_simps] at h₀₀
+    norm_num at h1 h₀₀
 -- SOLUTIONS: -/
     have h₀₁ := congr_fun₂ h1 0 1
     have h₀₂ := congr_fun₂ h1 0 2
@@ -563,7 +572,7 @@ SOLUTIONS: -/
 -- BOTH:
     have hx : x ^ 2 = (1 : ℝ) ^ 2
 /- EXAMPLES:
-    · sorry  -- TODO fill this in
+    · polyrith
 SOLUTIONS: -/
     · linear_combination h₀₀ / 2 + h₁₁ / 2 + w * hw
 -- BOTH:
