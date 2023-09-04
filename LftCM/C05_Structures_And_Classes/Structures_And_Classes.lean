@@ -342,3 +342,236 @@ end exercise
 end functions_and_operators
 
 end defining_structures
+
+/-! ## Proofs with structures -/
+section proofs_with_structures
+
+section slides
+
+/-- Basic proofs about definitions -/
+
+@[simp] theorem add_x (a b : Point) : (a + b).x = a.x + b.x :=
+  rfl
+@[simp] theorem add_y (a b : Point) : (a + b).y = a.y + b.y :=
+  rfl
+@[simp] theorem add_z (a b : Point) : (a + b).z = a.z + b.z :=
+  rfl
+
+@[simp] theorem smul_x (r : ℝ) (a : Point) : (r • a).x = r • a.x :=
+  rfl
+@[simp] theorem smul_y (r : ℝ) (a : Point) : (r • a).y = r • a.y :=
+  rfl
+@[simp] theorem smul_z (r : ℝ) (a : Point) : (r • a).z = r • a.z :=
+  rfl
+
+@[simp] theorem zero_x : (0 : Point).x = 0 :=
+  rfl
+@[simp] theorem zero_y : (0 : Point).y = 0 :=
+  rfl
+@[simp] theorem zero_z : (0 : Point).z = 0 :=
+  rfl
+
+example : ((⟨1, 2, 3⟩ : Point) + (⟨10, 20, 30⟩ : Point)).x = 11 := by
+  dsimp -- goal is now `1 + 10 = 11`
+  norm_num
+
+end slides
+
+section exercise
+/-! ### EXERCISE 6 -/
+
+/-
+1. Write lemmas like the above for `neg`
+-/
+
+-- SOLUTIONS:
+@[simp] theorem neg_x (a : Point) : (-a).x = -a.x := rfl
+@[simp] theorem neg_y (a : Point) : (-a).y = -a.y := rfl
+@[simp] theorem neg_z (a : Point) : (-a).z = -a.z := rfl
+/- EXAMPLES:
+@[simp] theorem neg_x : sorry := sorry
+@[simp] theorem neg_y : sorry := sorry
+@[simp] theorem neg_z : sorry := sorry
+BOTH: -/
+
+end exercise
+
+section slides
+
+example {a b : Point}
+    (hx : a.x = b.x)
+    (hy : a.y = b.y)
+    (hz : a.z = b.z) : a = b := by
+  obtain ⟨a_x, a_y, a_z⟩ := a  -- or `cases' a with a_x a_y a_z`, or `cases a` for worse names
+  obtain ⟨a_b, b_y, b_z⟩ := b
+  dsimp only at *
+  /- look at the goal here; `obtain` split `a` and `b` into pieces -/
+  rw [hx, hy, hz]
+
+/-!
+Could also have written
+```lean
+@[ext]
+structure Point where
+  x : ℝ
+  y : ℝ
+  z : ℝ
+```
+instead we'll add the attribute retrospectively
+-/
+attribute [ext] Point
+
+example {a b : Point}
+    (hx : a.x = b.x)
+    (hy : a.y = b.y)
+    (hz : a.z = b.z) : a = b := by
+  ext
+  repeat' assumption
+
+protected theorem Point.add_comm (a b : Point) :
+    a + b = b + a := by
+  ext <;> dsimp <;> apply add_comm
+
+-- or
+
+example (a b : Point) :
+    a + b = b + a := by
+  ext
+  dsimp
+  · apply add_comm
+  · apply add_comm
+  · apply add_comm
+
+-- or
+
+example (a b : Point) :
+    a + b = b + a := by
+  ext
+  dsimp
+  case x => apply add_comm
+  case y => apply add_comm
+  case z => apply add_comm
+
+end slides
+
+section exercise
+/-! ### EXERCISE 7 -/
+
+/--
+1. Prove that addition is associative on `Point`
+-/
+
+protected theorem Point.add_assoc (a b c : Point) :
+    (a + b) + c = a + (b + c) := by
+-- SOLUTIONS:
+  ext <;> dsimp <;> apply add_assoc
+/- EXAMPLES:
+  sorry
+BOTH: -/
+
+/-
+2. State and prove that `a + 0 = a` and `0 + a = a`
+-/
+-- SOLUTIONS:
+protected theorem Point.add_zero (a : Point) :
+    a + 0 = a := by
+  ext <;> dsimp <;> apply add_zero
+
+protected theorem Point.zero_add (a : Point) :
+    a + 0 = a := by
+  ext <;> dsimp <;> apply add_zero
+-- BOTH:
+
+/-
+3. State and prove that `-a + a = 0` (hint: `add_left_neg`)
+-/
+
+-- SOLUTIONS:
+protected theorem Point.add_left_neg (a : Point) :
+    -a + a = 0 := by
+  ext <;> dsimp <;> apply add_left_neg
+-- BOTH:
+
+end exercise
+
+section proofs_within_structures
+
+end proofs_within_structures
+
+section slides
+
+structure OpenDisc2D (r : ℝ) where
+  x : ℝ
+  y : ℝ
+  mem_disc : x^2 + y^2 < r^2
+
+def unitDiscZero : OpenDisc2D 1 where
+  x := 0
+  y := 0
+  mem_disc := by
+    -- goal is 0 ^ 2 + 0 ^ 2 < 1 ^ 2
+    norm_num
+
+example (p : OpenDisc2D 1) : p.x ≠ 2 := by
+  intro hx            -- hx : p.x = 2
+  have := p.mem_disc  -- this : p.x ^ 2 + p.y ^ 2 < 1 ^ 2
+  nlinarith
+
+structure EvenNat where
+  n : ℕ
+  is_even : Even n
+
+structure PythagoreanTriple where
+  a : ℕ
+  b : ℕ
+  c : ℕ
+  sq_add_sq : a^2 + b^2 = c^2
+
+structure RootOf (f : ℝ → ℝ) where
+  x : ℝ
+  is_root : f x = 0
+
+end slides
+
+section exercise
+/-! ### EXERCISE 8
+
+Don't forget to use the 💡 feature!
+-/
+
+/-
+1. Define a pythogorean triple
+-/
+example : PythagoreanTriple :=
+-- SOLUTIONS:
+  ⟨3, 4, 5, by ring⟩
+/- EXAMPLES:
+  sorry
+BOTH: -/
+
+/-
+2. Provide a root of `x^2 - 4`
+-/
+example : RootOf (fun x ↦ x^2 - 4) :=
+  ⟨-2, by ring⟩
+/- EXAMPLES:
+  sorry
+BOTH: -/
+
+/-
+3. Define addition on even natural numbers.
+   You might find `Even.add` helpful
+-/
+instance : Add EvenNat where
+-- SOLUTIONS:
+  add x y := {
+    n := x.n + y.n
+    is_even := Even.add x.is_even y.is_even
+  }
+/- EXAMPLES:
+  add x y := sorry
+BOTH: -/
+
+end exercise
+
+end proofs_with_structures
