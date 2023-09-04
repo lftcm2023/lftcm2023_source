@@ -17,7 +17,8 @@ If you get bored of these exercises, feel free to move onto the exercises in MIL
 `S03_Building_the_Gaussian_Integers`. You will need to read MIL alongside the lean file in order
 to see the explanation of the exercise!
 
-If you're struggling, don't forget the solutions are in the repo too; some exercises require
+If you're struggling, don't forget the solutions are in the repo too.
+Some exercises rely on you having solved (or copied the solutions from) previous exercises.
 -/
 
 /-! ## Defining structures -/
@@ -296,6 +297,17 @@ instance : Add Point where
 
 example : Point := ⟨1, 0, 0⟩ + ⟨0, 1, 0⟩
 
+-- this finds the instance we just defined; you can ctrl+click in the info view to jump back to
+-- where we defined it. Note the auto-generated name.
+#synth Add Point
+
+-- This option shows exactly what Lean is doing; click the `▶`s in the infoview to expand.
+-- You'll see that it finds all of
+-- `#[@AddZeroClass.toAdd, @AddSemigroup.toAdd, @Distrib.toAdd, instAddPoint]` to try, but tries the
+-- last one first.
+set_option trace.Meta.synthInstance true in
+#synth Add Point
+
 end slides
 
 section exercise
@@ -387,11 +399,18 @@ section exercise
 /-! ### EXERCISE 6 -/
 variable {R : Type}
 /-
-1. Write lemmas like the above for `neg`
+1. Write lemmas like the above for `neg`. If you get an error like
+   ```
+   failed to synthesize instance
+     Neg R
+   ```
+   this means you forgot to add `[Neg R]` to the arguments. Note that this advice does not always
+   work: if you already have `[Semiring R]` (introduced in a later talk), you should switch to
+   `[Ring R]` instead of `[Semiring R] [Neg R]`.
 -/
 
 -- SOLUTIONS:
-@[simp] theorem neg_x [Neg R] (a : Point' R) : (-a).x = -a.x := rfl
+@[simp] theorem neg_x [Neg R]  (a : Point' R) : (-a).x = -a.x := rfl
 @[simp] theorem neg_y [Neg R] (a : Point' R) : (-a).y = -a.y := rfl
 @[simp] theorem neg_z [Neg R] (a : Point' R) : (-a).z = -a.z := rfl
 /- EXAMPLES:
@@ -742,7 +761,7 @@ class MyAddGroup (G : Type) extends Add G, Zero G, Neg G where
 /- EXAMPLES:
 class LFTCM.AddGroup (G : Type) where
 BOTH: -/
-
+#check Group.toDivisionMonoid
 /-
 2. Prove that `Point' R` forms an additive group when `R` does
 -/
@@ -791,10 +810,17 @@ instance {R} [AddGroup R] : AddGroup (Point' R) where
   add_left_neg p := _
 BOTH: -/
 
+-- the trace is slightly more interesting here; first it tries `[AddGroup R]`
+variable {R} [AddGroup R]  in
+set_option trace.Meta.synthInstance true in
+#synth AddGroup (Point' R)
+
 end exercise
 
+section slides
+
 /-- Advanced: forgetful inheritance -/
-def foo {α : Type} :
+example {α : Type} :
     Group (Equiv.Perm α) where
   mul := sorry
   mul_assoc := sorry
@@ -813,6 +839,8 @@ def foo {α : Type} :
   zpow_neg' := sorry       -- optional
   mul_left_inv := sorry
 -- no need to fill the above, this is not an exercise!
+
+end slides
 
 namespace LFTCM
 
@@ -861,7 +889,7 @@ instance {α} [Group α] : Group (LFTCM.MulOpposite α) where
   mul_one a := by ext; simp
   one_mul a := by ext; simp
   mul_left_inv a := by ext; simp
-/- EXERCISES:
+/- EXAMPLES:
 instance {α} [Group α] : Group (MulOpposite α) :=
   sorry
 BOTH: -/
