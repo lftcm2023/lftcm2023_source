@@ -30,42 +30,42 @@ jobs:
 
       - name: check that all files are imported
         run: git diff --exit-code
-  # deploy:
-  #   needs: build
-  #   environment:
-  #     name: lftcm-2023
-  #     url: https://github.com/lftcm2023/lftcm2023
+  deploy:
+    needs: build
+    environment:
+      name: lftcm-2023
+      url: https://github.com/lftcm2023/lftcm2023
 
-  #   name: Generate and deploy
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/setup-python@v4
-  #       with:
-  #         python-version: '3.10'
-  #     - name: install python dependencies
-  #       run: pip install -r scripts/requirements.txt
-  #     - name: Separate solutions
-  #       run: |
-  #         scripts/mkall.py
-  #         cp -r .vscode user_repo/.vscode
-  #     - uses: actions/checkout@v3
-  #       with:
-  #         repository: lftcm2023/lftcm2023
-  #         ssh-key: ${{ secrets.DEPLOY_KEY }}
-  #         path: deploy
-  #     - name: Generate user repo
-  #       run: |
-  #         cd deploy
-  #         rm -rf * .gitignore
-  #         cp -Lr ../user_repo/./ .
-  #         git add .
-  #         git add -f .vscode
-  #         git config --global user.email "lftcm-2023@users.noreply.github.com"
-  #         git config --global user.name "lftcm-2023-bot"
-  #         # only commit if something changed
-  #         git diff-index --quiet HEAD || git commit -m "Update $(date)"
-  #     - name: Push user repo
-  #       run: |
-  #         cd deploy
-  #         git push
+    name: Generate and deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: install python dependencies
+        run: pip install -r scripts/requirements.txt
+      - name: Separate solutions
+        run: |
+          scripts/mkall.py
+          cp -r .vscode user_repo/.vscode
+      - uses: actions/checkout@v3
+        with:
+          repository: lftcm2023/lftcm2023
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
+          path: deploy
+      - name: Generate user repo
+        run: |
+          cd deploy
+          rm -rf * .gitignore
+          cp -Lr ../user_repo/./ .
+          git add .
+          git add -f .vscode
+          git config --global user.email "lftcm-2023@users.noreply.github.com"
+          git config --global user.name "lftcm-2023-bot"
+          # only commit if something changed
+          git diff-index --quiet HEAD || git commit -m "Update $(date)"
+      - name: Push user repo
+        run: |
+          cd deploy
+          git push
