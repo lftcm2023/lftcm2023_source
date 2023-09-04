@@ -6,7 +6,7 @@ set_option autoImplicit true
 
 namespace lftcm
 
-/- TEXT:
+/-
 .. _section_hierarchies_morphisms:
 
 Morphisms
@@ -21,7 +21,7 @@ BOTH: -/
 def isMonoidHom_naive [Monoid G] [Monoid H] (f : G → H) : Prop :=
   f 1 = 1 ∧ ∀ g g', f (g * g') = f g * f g'
 -- QUOTE.
-/- TEXT:
+/-
 In this definition, it is a bit unpleasant to use a conjunction. In particular users
 will need to remember the ordering we chose when they want to access the two conditions.
 So we could use a structure instead.
@@ -32,7 +32,7 @@ structure isMonoidHom [Monoid G] [Monoid H] (f : G → H) : Prop where
   map_one : f 1 = 1
   map_mul : ∀ g g', f (g * g') = f g * f g'
 -- QUOTE.
-/- TEXT:
+/-
 Once we are here, it is even tempting to make it a class and use the type class instance resolution
 procedure to automatically infer ``isMonoidHom`` for complicated functions out of instances for
 simpler functions. For instance a composition of monoid morphisms is a monoid morphism and this
@@ -54,7 +54,7 @@ BOTH: -/
 -- QUOTE:
 example : Continuous (id : ℝ → ℝ) := continuous_id
 -- QUOTE.
-/- TEXT:
+/-
 We still have bundles continuous functions, which are convenient for instance to put a topology
 on a space of continuous functions, but they are not the primary tool to work with continuity.
 
@@ -69,7 +69,7 @@ structure MonoidHom (G H : Type) [Monoid G] [Monoid H]  where
   map_mul : ∀ g g', toFun (g * g') = toFun g * toFun g'
 
 -- QUOTE.
-/- TEXT:
+/-
 Of course we don't want to type ``toFun`` everywhere so we register a coercion using
 the ``CoeFun`` type class. Its first argument is the type we want to coerce to a function.
 The second argument describes the target function type. In our case it is always ``G → H``
@@ -84,7 +84,7 @@ instance [Monoid G] [Monoid H] : CoeFun (MonoidHom G H) (fun _ ↦ G → H) wher
 attribute [coe] MonoidHom.toFun
 -- QUOTE.
 
-/- TEXT:
+/-
 Let us check we can indeed apply a bundled monoid morphism to an element.
 
 BOTH: -/
@@ -92,7 +92,7 @@ BOTH: -/
 -- QUOTE:
 example [Monoid G] [Monoid H] (f : MonoidHom G H) : f 1 = 1 :=  f.map_one
 -- QUOTE.
-/- TEXT:
+/-
 We can do the same with other kind of morphisms until we reach ring morphisms.
 
 BOTH: -/
@@ -113,7 +113,7 @@ attribute [coe] AddMonoidHom.toFun
 structure RingHom (R S : Type) [Ring R] [Ring S] extends MonoidHom R S, AddMonoidHom R S
 -- QUOTE.
 
-/- TEXT:
+/-
 There are a couple of issues about this approach. A minor one is we don't quite know where to put
 the ``coe`` attribute since the ``RingHom.toFun`` does not exist, the relevant function is
 ``MonoidHom.toFun ∘ RingHom₁.toMonoidHom₁`` which is not a declaration that can be tagged with an
@@ -135,7 +135,7 @@ class MonoidHomClass_bad (F : Type) (M N : Type) [Monoid M] [Monoid N] where
   map_mul : ∀ f g g', toFun f (g * g') = toFun f g * toFun f g'
 -- QUOTE.
 
-/- TEXT:
+/-
 However there is a problem with the above implementation. We haven't registered a coercion to
 function instance yet. Let us try to do it now.
 
@@ -148,7 +148,7 @@ def badInst [Monoid M] [Monoid N] [MonoidHomClass_bad F M N] : CoeFun F (fun _ �
 
 -- QUOTE.
 
-/- TEXT:
+/-
 Making this into an instance would be bad. When faced with something like ``f x`` where the type of ``f``
 is not a function type, Lean will try to find a ``CoeFun`` instance to coerce ``f`` into a function.
 The above function has type:
@@ -179,7 +179,7 @@ instance [Monoid M] [Monoid N] [MonoidHomClass' F M N] : CoeFun F (fun _ ↦ M �
 attribute [coe] MonoidHomClass'.toFun
 -- QUOTE.
 
-/- TEXT:
+/-
 Now we can proceed with our plan to instantiate this class.
 
 BOTH: -/
@@ -196,7 +196,7 @@ instance (R S : Type) [Ring R] [Ring S] : MonoidHomClass' (RingHom R S) R S wher
   map_mul := fun f ↦ f.toMonoidHom.map_mul
 -- QUOTE.
 
-/- TEXT:
+/-
 As promised every lemma we prove about ``f : F`` assuming an instance of ``MonoidHomClass' F`` will
 apply both to monoid morphisms and ring morphisms.
 Let us see an example lemma and check it applies to both situations.
@@ -215,7 +215,7 @@ map_inv_of_inv f h
 
 -- QUOTE.
 
-/- TEXT:
+/-
 At first sight, it may look like we got back to our old bad idea of making ``MonoidHom`` a class.
 But we haven't. Everything is shifted one level of abstraction up. The type class resolution
 procedure won't be looking for functions, it will be looking for either
@@ -242,7 +242,7 @@ instance (M N : Type) [Monoid M] [Monoid N] : MonoidHomClass (MonoidHom M N) M N
   map_mul := MonoidHom.map_mul
 -- QUOTE.
 
-/- TEXT:
+/-
 Of course the hierarchy of morphisms does not stop here. We could go on and define a class
 ``RingHomClass`` extending ``MonoidHomClass`` and instantiate it on ``RingHom`` and
 then later on ``AlgebraHom`` (algebras are rings with some extra structure). But we've

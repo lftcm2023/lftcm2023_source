@@ -556,7 +556,7 @@ structure EvenNat where
   is_even : Even n
 
 @[ext]
-structure PythagoreanTriple where
+structure MyPythagoreanTriple where
   a : ℕ
   b : ℕ
   c : ℕ
@@ -583,7 +583,7 @@ Don't forget to use the 💡 feature!
 /-
 1. Define a pythogorean triple
 -/
-example : PythagoreanTriple :=
+example : MyPythagoreanTriple :=
 -- SOLUTIONS:
   ⟨3, 4, 5, by ring⟩
 /- EXAMPLES:

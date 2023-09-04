@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 import LftCM.Common
 import Mathlib.Data.Complex.Basic
 import Mathlib.Tactic.Polyrith
-/- TEXT:
+/-
 .. LinearCombination:
 
 Basics
@@ -33,7 +33,7 @@ painstakingly, to Lean.
     & = -6 + 5 \cdot 3 \\
     & = 9.
 
-TEXT. -/
+-/
 
 -- QUOTE:
 example {a b : ℂ} (h₁ : a - 5 * b = 4) (h₂ : b + 2 = 3) : a = 9 :=
@@ -45,34 +45,33 @@ example {a b : ℂ} (h₁ : a - 5 * b = 4) (h₂ : b + 2 = 3) : a = 9 :=
     _ = 9 := by ring
 -- QUOTE.
 
-/- TEXT:
+/-
 Implicitly, when we write a calculation like this on paper, we tend to alternate "rearrangement
 steps" (done in Lean with ``ring``) and "substitution steps" (done in Lean with ``rw``).
 
 Another method: You might be familiar with the ``linarith`` tactic, for deducing implications among
 linear inequalities.  If we were working over a linear ordered field such as :math:`\mathbb{R}` or
 :math:`\mathbb{Q}`, this tactic would be a great way to solve this problem.
-TEXT. -/
+-/
 
 -- QUOTE:
 example {a b : ℝ} (h₁ : a - 5 * b = 4) (h₂ : b + 2 = 3) : a = 9 := by linarith
 -- QUOTE.
 
-/- TEXT:
+/-
 But over  :math:`\mathbb{C}`, which has no order, we could only invoke ``linarith`` by first taking
 real and imaginary parts of both sides -- and over a general field this wouldn't work at all.
 
 In this section we will introduce a tactic, ``linear_combination``, which is well-adapted to
-algebra over general commutative rings.  This is a very new tactic, contributed to mathlib in
-January 2022 by Brown undergraduate Abby Goldberg. Here is how our example is solved using
+algebra over general commutative rings. Here is how our example is solved using
 ``linear_combination``.
-TEXT. -/
+-/
 
 -- QUOTE:
 example {a b : ℂ} (h₁ : a - 5 * b = 4) (h₂ : b + 2 = 3) : a = 9 := by linear_combination h₁ + 5 * h₂
 -- QUOTE.
 
-/- TEXT:
+/-
 The tactic ``linear_combination`` works by finding coefficients with which LHS - RHS of the goal is
 a linear combination of LHS - RHS of the hypotheses.  Here LHS - RHS of ``h₁`` is :math:`a-5b-4`,
 LHS - RHS of ``h₂`` is :math:`b-1`, and LHS - RHS of the goal is :math:`a-9`.  It is indeed true
@@ -91,27 +90,30 @@ something to both sides" or "divide both sides by something" or "add two equatio
     :math:`m = n`.
 
 
-TEXT. -/
+-/
 
 -- QUOTE:
 example {m n : ℤ} (h : m - n = 0) : m = n := by linear_combination h
 -- QUOTE.
 
-/- TEXT:
+/-
 
 .. admonition:: Problem
 
     Let :math:`K` be a field of characteristic zero, let :math:`s\in K`, and suppose that
     :math:`3s+1 = 4`. Show that :math:`s = 1`.
 
-TEXT. -/
+-/
 
 -- QUOTE:
 example {K : Type _} [Field K] [CharZero K] {s : K} (hs : 3 * s + 1 = 4) : s = 1 := by
+/- EXAMPLES:
+  sorry
+SOLUTIONS: -/
   linear_combination 1 / 3 * hs
 -- QUOTE.
 
-/- TEXT:
+/-
 
 .. admonition:: Problem
 
@@ -119,18 +121,21 @@ example {K : Type _} [Field K] [CharZero K] {s : K} (hs : 3 * s + 1 = 4) : s = 1
     :math:`p-2q=2`. Show that :math:`2p = 6`.
 
 
-TEXT. -/
+-/
 
 -- QUOTE:
 example {p q : ℂ} (h₁ : p + 2 * q = 4) (h₂ : p - 2 * q = 2) : 2 * p = 6 := by
+/- EXAMPLES:
+  sorry
+SOLUTIONS: -/
   linear_combination h₁ + h₂
 -- QUOTE.
 
-/- TEXT:
+/-
 
 Here are a *lot* of exercises.  Do them until you get bored, then go on to the next section.
 
-TEXT. -/
+-/
 
 -- QUOTE:
 -- BOTH:
@@ -205,7 +210,7 @@ SOLUTIONS: -/
 -- QUOTE.
 
 
-/- TEXT:
+/-
 .. NonlinearExamples:
 
 linear_combination for nonlinear equations
@@ -228,14 +233,14 @@ This can be solved by exhibiting :math:`z(xw-yz)` as an element of the ideal gen
 
     z(xw-yz) = w (xz-y^2) + y (yw-z^2).
 
-TEXT. -/
+-/
 
 -- QUOTE:
 example {x y z w : ℂ} (h₁ : x * z = y ^ 2) (h₂ : y * w = z ^ 2) : z * (x * w - y * z) = 0 := by
   linear_combination w * h₁ + y * h₂
 -- QUOTE.
 
-/- TEXT:
+/-
 Even on a problem where your intuition is to use ``rw``, the tactic ``linear_combination`` can
 probably do it.
 
@@ -244,25 +249,25 @@ probably do it.
     Let :math:`a` and :math:`b` be rational numbers and suppose that :math:`a = b`.
     Show that :math:`a ^ 2 = b ^ 2`.
 
-TEXT. -/
+-/
 
 -- QUOTE:
 example {a b : ℚ} (h : a = b) : a ^ 2 = b ^ 2 := by linear_combination (a + b) * h
 -- QUOTE.
 
-/- TEXT:
+/-
 .. admonition:: Problem
 
     Let :math:`a` and :math:`b` be rational numbers and suppose that :math:`a = b`.
     Show that :math:`a ^ 3 = b ^ 3`.
 
-TEXT. -/
+-/
 
 -- QUOTE:
 example {a b : ℚ} (h : a = b) : a ^ 3 = b ^ 3 := by linear_combination (a ^ 2 + a * b + b ^ 2) * h
 -- QUOTE.
 
-/- TEXT:
+/-
 Do you see the pattern?
 
 Importantly, ``linear_combination`` strictly subsumes the tactic ``ring``.  In fact, ``ring``
@@ -276,17 +281,17 @@ amounts to doing a ``linear_combination`` of no hypotheses!
 
       (m ^ 2 - n ^ 2) ^ 2 + (2  m n) ^ 2 = (m ^ 2 + n ^ 2) ^ 2.
 
-TEXT. -/
+-/
 
 -- QUOTE:
 example (m n : ℤ) : (m ^ 2 - n ^ 2) ^ 2 + (2 * m * n) ^ 2 = (m ^ 2 + n ^ 2) ^ 2 := by
   linear_combination
 -- QUOTE.
 
-/- TEXT:
+/-
 Try the following examples, until you get bored.
 
-TEXT. -/
+-/
 
 -- QUOTE:
 -- BOTH:
@@ -333,7 +338,7 @@ SOLUTIONS: -/
   linear_combination (p + q + r) * h₁ - 2 * h₂
 -- QUOTE.
 
-/- TEXT:
+/-
 .. Polyrith:
 
 Basics of the polyrith tactic
@@ -353,7 +358,7 @@ Here is ``polyrith`` being let loose on all the examples from the previous two s
 case, click on the blue "Try this" underline, to replace the ``polyrith`` invocation (which will
 query Sage each time) with an automatically-computed ``linear_combination`` which stores its result.
 
-TEXT. -/
+-/
 
 -- QUOTE:
 example {a b : ℂ} (h₁ : a - 5 * b = 4) (h₂ : b + 2 = 3) : a = 9 := by

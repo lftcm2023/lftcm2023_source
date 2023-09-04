@@ -14,9 +14,7 @@ import Mathlib.Tactic.Polyrith
 set_option quotPrecheck false
 noncomputable section
 
-/- TEXT:
-.. FieldSimp:
-
+/-
 Combining Tactics
 -------------------
 
@@ -31,7 +29,7 @@ Here is an example: we prove that if :math:`a` and :math:`b` are rational number
 nonzero, then :math:`b = a ^ 2 + 3 a` implies :math:`\tfrac{b}{a} - a = 3`.  Check that if you
 delete the hypothesis that :math:`a \ne 0` then ``field_simp`` fails to do anything useful.
 
-TEXT. -/
+-/
 
 -- QUOTE:
 example (a b : ℚ) (ha : a ≠ 0) (H : b = a ^ 2 + 3 * a) : b / a - a = 3 := by
@@ -39,8 +37,7 @@ example (a b : ℚ) (ha : a ≠ 0) (H : b = a ^ 2 + 3 * a) : b / a - a = 3 := by
   linear_combination H
 -- QUOTE.
 
-/- TEXT:
-
+/-
 In the following problem we prove that the unit circle admits a rational parametrization:
 
 .. math::
@@ -53,13 +50,13 @@ the use of contraposition and of ``(n)linarith`` in proving the nonzeroness hypo
 both common ingredients. Again, check that if you comment out the justification that
 :math:`m ^ 2 + n ^ 2 \ne 0`, then ``field_simp`` fails to trigger.
 
-TEXT. -/
+-/
 -- QUOTE:
 example (m n : ℝ) (hmn : (m, n) ≠ 0) :
     ((m ^ 2 - n ^ 2) / (m ^ 2 + n ^ 2)) ^ 2 + (2 * m * n / (m ^ 2 + n ^ 2)) ^ 2 = 1 :=
   by
-  have : m ^ 2 + n ^ 2 ≠ 0 := by
-    contrapose! hmn
+  have : m ^ 2 + n ^ 2 ≠ 0
+  · contrapose! hmn
     have hm : m = 0 := by nlinarith
     have hn : n = 0 := by nlinarith
     simp [hm, hn]
@@ -67,8 +64,7 @@ example (m n : ℝ) (hmn : (m, n) ≠ 0) :
   ring
 
 -- QUOTE.
-/- TEXT:
-
+/-
 In the following problem we prove that if :math:`x` is a primitive fifth root of unity, then
 :math:`x+1/x` satisfies the quadratic equation
 
@@ -80,21 +76,21 @@ We have another use of contraposition in proving one of the nonzeroness hypothes
 we assume the goal did equal zero, and deduce a numeric contradiction with ``norm_num``.
 Click through each invocation of ``polyrith`` to see what it gives you.
 
-TEXT. -/
+-/
 -- QUOTE:
 example {x : ℂ} (hx : x ^ 5 = 1) (hx' : x ≠ 1) : (x + 1 / x) ^ 2 + (x + 1 / x) - 1 = 0 :=
   by
   have : x ≠ 0 := by
     intro h₀
-    have : (1 : ℂ) = 0 := by
+    have : (1 : ℂ) = 0
 /- EXAMPLES:
-      polyrith
+    · polyrith
 SOLUTIONS: -/
-      linear_combination -(1 * hx) + x ^ 4 * h₀
+    · linear_combination -(1 * hx) + x ^ 4 * h₀
     norm_num at this
   field_simp
-  have h₁ : x - 1 ≠ 0 := by
-    contrapose! hx'
+  have h₁ : x - 1 ≠ 0
+  · contrapose! hx'
 /- EXAMPLES:
     polyrith
 SOLUTIONS: -/
@@ -106,16 +102,16 @@ SOLUTIONS: -/
   linear_combination x * hx
 
 -- QUOTE.
-/- TEXT:
-Here is an exercise. Let :math:`f:\mathbb{R}\to \mathbb{R}` be the function
+/-
+Here is an exercise. Let :math:`ϕ:\mathbb{R}\to \mathbb{R}` be the function
 
 .. math::
 
-    f(x)=\frac{1}{1-x}.
+    ϕ(x)=\frac{1}{1-x}.
 
 Away from the bad inputs :math:`x=0,1`, show that the triple composition of this function is the
 identity.
-TEXT. -/
+-/
 -- QUOTE:
 -- BOTH:
 noncomputable def ϕ : ℝ → ℝ := fun x => (1 - x)⁻¹
@@ -135,7 +131,7 @@ SOLUTIONS: -/
 -- BOTH:
 -- QUOTE.
 
-/- TEXT:
+/-
 .. Sphere:
 
 Stereographic projection
@@ -154,7 +150,7 @@ The forward direction of the bijection is the map
 
   (x,y) \mapsto \frac{2x}{1-y}.
 
-TEXT. -/
+-/
 
 -- BOTH:
 
@@ -174,7 +170,7 @@ def stereoToFun (p : 𝕊) : ℝ :=
 @[simp]
 theorem stereoToFun_apply (p : 𝕊) : stereoToFun p = 2 * p.1.1 / (1 - p.1.2) := rfl
 
-/- TEXT:
+/-
 The backward direction of the bijection is the map
 
 .. math::
@@ -184,7 +180,7 @@ The backward direction of the bijection is the map
 Here we encounter our first proof obligation. We want to prove this is well-defined as a map from
 :math:`\mathbb{R}` to the circle, so we must prove that the norm-square of this expression is 1.
 Fill in the proof below, using ``field_simp`` and a justification that the denominator is nonzero.
-TEXT. -/
+-/
 -- BOTH:
 -- QUOTE:
 /-- Stereographic projection, reverse direction.  This is a map from `ℝ` to the unit circle `𝕊` in
@@ -198,7 +194,6 @@ SOLUTIONS: -/
     have : w ^ 2 + 4 ≠ 0 := by nlinarith
     field_simp
     ring⟩
-
 -- BOTH:
 -- QUOTE.
 @[simp]
@@ -206,12 +201,12 @@ theorem stereoInvFun_apply (w : ℝ) :
     (stereoInvFun w : ℝ × ℝ) = (w ^ 2 + 4)⁻¹ • (4 * w, w ^ 2 - 4) :=
   rfl
 
-/- TEXT:
+/-
 And in fact, since the bijection is going to be a map from :math:`\mathbb{R}` to the circle
 *minus the north pole*, we must also prove that this expression is not equal to :math:`(0,1)`.
 Fill in the proof below, using ``field_simp`` and a justification that the denominator is nonzero
 to simplify the expression ``h``.  Then find a contradiction.
-TEXT. -/
+-/
 
 -- BOTH:
 -- QUOTE:
@@ -232,11 +227,11 @@ SOLUTIONS: -/
   norm_num at this
 -- QUOTE.
 
-/- TEXT:
+/-
 Now comes the hardest part, proving that the given expression is a left inverse for the forward
 direction.  The denominators that appear are complicated, and you may have quite a bit of work in
 proving them nonzero.
-TEXT. -/
+-/
 
 -- BOTH:
 -- QUOTE:
@@ -245,25 +240,33 @@ theorem stereo_left_inv {p : 𝕊} (hp : (p : ℝ × ℝ) ≠ (0, 1)) : stereoIn
   obtain ⟨⟨x, y⟩, pythag⟩ := p
   dsimp at pythag hp ⊢
   rw [Prod.mk.inj_iff] at hp ⊢
-/- EXAMPLES:
-  sorry
-SOLUTIONS: -/
   have ha : 1 - y ≠ 0
+/- EXAMPLES:
+  · sorry
+SOLUTIONS: -/
   · contrapose! hp with ha
     have : y = 1 := by linear_combination -ha
     refine' ⟨_, this⟩
     have : x ^ 2 = 0 := by linear_combination pythag - (y + 1) * this
     exact pow_eq_zero this
+-- BOTH:
   constructor
+/- EXAMPLES:
+  · sorry
+SOLUTIONS: -/
   · field_simp
     linear_combination 4 * (y - 1) * x * pythag
+-- BOTH:
+/- EXAMPLES:
+  · sorry
+SOLUTIONS: -/
   · field_simp
     linear_combination -4 * (y - 1) ^ 3 * pythag
 -- QUOTE.
 
-/- TEXT:
+/-
 The right inverse proof is much easier, only one denominator and we've seen it before.
-TEXT. -/
+-/
 
 -- BOTH:
 -- QUOTE:
@@ -277,9 +280,9 @@ SOLUTIONS: -/
   ring
 -- QUOTE.
 
-/- TEXT:
+/-
 Putting all these facts together with a bit of Lean abstract nonsense gives the bijection.
-TEXT. -/
+-/
 
 -- QUOTE:
 /-- Stereographic projection, as a bijection to `ℝ` from the complement of `(0, 1)` in the unit
@@ -298,7 +301,7 @@ def stereographicProjection : ({(⟨(0, 1), by simp⟩ : 𝕊)}ᶜ : Set 𝕊) �
 -- BOTH:
 end StereoExample
 
-/- TEXT:
+/-
 .. Catalan:
 
 A binomial coefficient identity
@@ -326,14 +329,14 @@ coefficients.
 
 The "central binomial coefficient" expressions :math:`{2n \choose n}` are available in mathlib
 under the name
-TEXT. -/
+-/
 
 -- QUOTE:
 #check Nat.centralBinom
 -- nat.central_binom : ℕ → ℕ
 -- QUOTE.
 
-/- TEXT:
+/-
 and the following easy identity, relating successive central binomial coefficients, is available
 in mathlib under the name ``nat.succ_mul_central_binom_succ``.
 
@@ -345,10 +348,10 @@ in mathlib under the name ``nat.succ_mul_central_binom_succ``.
 
       (n + 1){2(n+1)\choose n+1} = 2 (2 n + 1) {2n \choose n}.
 
-TEXT. -/
+-/
 #check Nat.succ_mul_centralBinom_succ
 
-/- TEXT:
+/-
 
 The technique of the proof is pretty clear.  One should invoke the above lemma twice, once to turn
 all :math:`{2(i+1)\choose i+1}`  into :math:`{2i\choose i}` and once to turn all
@@ -357,19 +360,19 @@ applications of the lemma, then use ``field_simp`` to clear denominators and the
 figure out the coefficients with which to combine them.  ``field_simp`` will require proofs that
 all the denominators we want to clear are nonzero, but this is easy since they are all of the form
 "natural number plus one":
-TEXT. -/
+-/
 -- QUOTE:
 #check Nat.succ_ne_zero
 
 -- nat.succ_ne_zero : ∀ (n : ℕ), n.succ ≠ 0
 -- QUOTE.
-/- TEXT:
+/-
 There is one main complication.  The lemmas ``nat.succ_mul_central_binom_succ`` and
 ``nat.succ_ne_zero`` concern natural numbers, whereas our goal (which involves divisions) is stated
 as an equality of rational numbers.  So each of the applications of the above lemmas will need to
 be cast -- try using `` exact_mod_cast`` or a combination of ``norm_cast`` and ``exact`` for this.
 
-TEXT. -/
+-/
 
 -- QUOTE:
 -- BOTH:
