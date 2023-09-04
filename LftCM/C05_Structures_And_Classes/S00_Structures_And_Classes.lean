@@ -4,7 +4,11 @@ import Mathlib.Data.Fin.VecNotation
 open scoped NNReal
 
 /-!
+-- SOLUTIONS:
+# Structures and classes (SOLUTIONS)
+-- EXAMPLES:
 # Structures and classes
+-- BOTH:
 
 These follow the slides at http://eric-wieser.github.io/lftcm-2023
 
@@ -17,7 +21,11 @@ If you get bored of these exercises, feel free to move onto the exercises in MIL
 `S03_Building_the_Gaussian_Integers`. You will need to read MIL alongside the lean file in order
 to see the explanation of the exercise!
 
+-- SOLUTIONS:
+If you're struggling, don't forget that this IS the solutions file!
+-- EXAMPLES:
 If you're struggling, don't forget the solutions are in the repo too.
+-- BOTH:
 Some exercises rely on you having solved (or copied the solutions from) previous exercises.
 -/
 
@@ -759,7 +767,7 @@ class MyAddGroup (G : Type) extends Add G, Zero G, Neg G where
   zero_add : ∀ x : G, 0 + x = x
   add_left_neg : ∀ x : G, -x + x = 0
 /- EXAMPLES:
-class LFTCM.AddGroup (G : Type) where
+class MyAddGroup (G : Type) where
 BOTH: -/
 #check Group.toDivisionMonoid
 /-
