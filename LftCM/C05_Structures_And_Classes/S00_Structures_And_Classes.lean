@@ -82,7 +82,7 @@ def twoOfClubs : Card where
 def twoOfClubs : Card := _
 BOTH: -/
 
--- make a list of cards of different numbers but the same suit; 💡 works inside other expressions too
+-- make a list of cards of different numbers but the same suit; 💡 on `_` works inside other expressions too
 def threeOfAKind : List Card :=
 -- SOLUTIONS:
   [⟨0, 2⟩, {
@@ -90,7 +90,7 @@ def threeOfAKind : List Card :=
     value := 3
   }, { suit := 0, value := 4}]
 /- EXAMPLES:
-  -- [sorry, sorry, sorry]
+  [sorry, sorry, sorry]
 BOTH: -/
 
 end exercise
@@ -768,8 +768,9 @@ class MyAddGroup (G : Type) extends Add G, Zero G, Neg G where
   add_left_neg : ∀ x : G, -x + x = 0
 /- EXAMPLES:
 class MyAddGroup (G : Type) where
+  -- add your fields here
 BOTH: -/
-#check Group.toDivisionMonoid
+
 /-
 2. Prove that `Point' R` forms an additive group when `R` does
 -/
