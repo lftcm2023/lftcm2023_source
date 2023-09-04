@@ -157,6 +157,9 @@ The forward direction of the bijection is the map
 TEXT. -/
 
 -- BOTH:
+
+namespace StereoExample  -- needed to prevent clashes with the definition in mathlib!
+
 -- introduce notation for the circle
 local notation "𝕊" => {p : ℝ × ℝ | p.1 ^ 2 + p.2 ^ 2 = 1}
 
@@ -291,6 +294,9 @@ def stereographicProjection : ({(⟨(0, 1), by simp⟩ : 𝕊)}ᶜ : Set 𝕊) �
     simpa [Subtype.ext_iff] using p.prop
   right_inv w := stereo_right_inv w
 -- QUOTE.
+
+-- BOTH:
+end StereoExample
 
 /- TEXT:
 .. Catalan:
