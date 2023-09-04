@@ -6,13 +6,18 @@ open scoped NNReal
 /-!
 # Structures and classes
 
-These follow the slides at http://eric-wieser.github.io/<tba>
+These follow the slides at http://eric-wieser.github.io/lftcm-2023
 
 It is easiest to find the exercises in this file by turning on the outline view.
 You can do this with `Ctrl+Shift+P` (`Cmd+Shift+P` on MacOS), typing "outline", and selecting
-"Explorer: focus on outline view". A pane will open in the bottom left of VS, which reflects the
+"Explorer: focus on outline view". A pane will open in the bottom left of VSCode, which reflects the
 `section`s in this file.
 
+If you get bored of these exercises, feel free to move onto the exercises in MIL, especially
+`S03_Building_the_Gaussian_Integers`. You will need to read MIL alongside the lean file in order
+to see the explanation of the exercise!
+
+If you're struggling, don't forget the solutions are in the repo too; some exercises require
 -/
 
 /-! ## Defining structures -/
@@ -347,31 +352,32 @@ end defining_structures
 section proofs_with_structures
 
 section slides
+variable {R : Type}
 
 /-- Basic proofs about definitions -/
 
-@[simp] theorem add_x (a b : Point) : (a + b).x = a.x + b.x :=
+@[simp] theorem add_x [Add R] (a b : Point' R) : (a + b).x = a.x + b.x :=
   rfl
-@[simp] theorem add_y (a b : Point) : (a + b).y = a.y + b.y :=
+@[simp] theorem add_y [Add R] (a b : Point' R) : (a + b).y = a.y + b.y :=
   rfl
-@[simp] theorem add_z (a b : Point) : (a + b).z = a.z + b.z :=
-  rfl
-
-@[simp] theorem smul_x (r : ℝ) (a : Point) : (r • a).x = r • a.x :=
-  rfl
-@[simp] theorem smul_y (r : ℝ) (a : Point) : (r • a).y = r • a.y :=
-  rfl
-@[simp] theorem smul_z (r : ℝ) (a : Point) : (r • a).z = r • a.z :=
+@[simp] theorem add_z [Add R] (a b : Point' R) : (a + b).z = a.z + b.z :=
   rfl
 
-@[simp] theorem zero_x : (0 : Point).x = 0 :=
+@[simp] theorem smul_x [Mul R] (r : R) (a : Point' R) : (r • a).x = r • a.x :=
   rfl
-@[simp] theorem zero_y : (0 : Point).y = 0 :=
+@[simp] theorem smul_y [Mul R] (r : R) (a : Point' R) : (r • a).y = r • a.y :=
   rfl
-@[simp] theorem zero_z : (0 : Point).z = 0 :=
+@[simp] theorem smul_z [Mul R] (r : R) (a : Point' R) : (r • a).z = r • a.z :=
   rfl
 
-example : ((⟨1, 2, 3⟩ : Point) + (⟨10, 20, 30⟩ : Point)).x = 11 := by
+@[simp] theorem zero_x [Zero R] : (0 : Point' R).x = 0 :=
+  rfl
+@[simp] theorem zero_y [Zero R]: (0 : Point' R).y = 0 :=
+  rfl
+@[simp] theorem zero_z [Zero R] : (0 : Point' R).z = 0 :=
+  rfl
+
+example : ((⟨1, 2, 3⟩ : Point' ℝ) + (⟨10, 20, 30⟩ : Point' ℝ)).x = 11 := by
   dsimp -- goal is now `1 + 10 = 11`
   norm_num
 
@@ -379,15 +385,15 @@ end slides
 
 section exercise
 /-! ### EXERCISE 6 -/
-
+variable {R : Type}
 /-
 1. Write lemmas like the above for `neg`
 -/
 
 -- SOLUTIONS:
-@[simp] theorem neg_x (a : Point) : (-a).x = -a.x := rfl
-@[simp] theorem neg_y (a : Point) : (-a).y = -a.y := rfl
-@[simp] theorem neg_z (a : Point) : (-a).z = -a.z := rfl
+@[simp] theorem neg_x [Neg R] (a : Point' R) : (-a).x = -a.x := rfl
+@[simp] theorem neg_y [Neg R] (a : Point' R) : (-a).y = -a.y := rfl
+@[simp] theorem neg_z [Neg R] (a : Point' R) : (-a).z = -a.z := rfl
 /- EXAMPLES:
 @[simp] theorem neg_x : sorry := sorry
 @[simp] theorem neg_y : sorry := sorry
@@ -419,7 +425,7 @@ structure Point where
 ```
 instead we'll add the attribute retrospectively
 -/
-attribute [ext] Point
+attribute [ext] Point Point'
 
 example {a b : Point}
     (hx : a.x = b.x)
@@ -456,6 +462,7 @@ end slides
 
 section exercise
 /-! ### EXERCISE 7 -/
+variable {R : Type}
 
 /--
 1. Prove that addition is associative on `Point`
@@ -496,10 +503,9 @@ end exercise
 
 section proofs_within_structures
 
-end proofs_within_structures
-
 section slides
 
+@[ext]
 structure OpenDisc2D (r : ℝ) where
   x : ℝ
   y : ℝ
@@ -517,19 +523,27 @@ example (p : OpenDisc2D 1) : p.x ≠ 2 := by
   have := p.mem_disc  -- this : p.x ^ 2 + p.y ^ 2 < 1 ^ 2
   nlinarith
 
+@[ext]
 structure EvenNat where
   n : ℕ
   is_even : Even n
 
+@[ext]
 structure PythagoreanTriple where
   a : ℕ
   b : ℕ
   c : ℕ
   sq_add_sq : a^2 + b^2 = c^2
 
+@[ext]
 structure RootOf (f : ℝ → ℝ) where
   x : ℝ
   is_root : f x = 0
+
+-- without the `: Prop`, we can't use this with `↔`
+structure IsFizzBuzz (n : ℕ) : Prop where
+  is_fizz : 3 ∣ n
+  is_buzz : 5 ∣ n
 
 end slides
 
@@ -572,6 +586,185 @@ instance : Add EvenNat where
   add x y := sorry
 BOTH: -/
 
+/-
+4. Show that `IsFizzBuzz` is the same as divisibility by 3 and 5
+-/
+
+lemma isFizzBuzz_iff_dvd_and_dvd (n : ℕ) : IsFizzBuzz n ↔ 3 ∣ n ∧ 5 ∣ n := by
+-- SOLUTIONS:
+  constructor
+  · rintro h
+    exact ⟨h.is_fizz, h.is_buzz⟩
+  · rintro h
+    exact ⟨h.left, h.right⟩
+/- EXAMPLES:
+  sorry
+BOTH: -/
+
 end exercise
 
+/- Builtin types-/
+section slides
+
+-- ctrl-click on `Prod` to see its definition
+#print Prod
+#print Subtype
+
+end slides
+
+section exercise
+/-! ### EXERCISE 9
+
+Here we show that the composition of builting structures is the same as our custom structures.
+Note that `≃` is notation for `Equiv`, which is itself a structure
+(right click -> "peek definition" will show you how it is defined).
+-/
+#check Equiv
+/--
+1. Show that our point type is equivalent to a triplet of real numbers. N
+-/
+
+def Point.equivProdProd : Point ≃ ℝ × ℝ × ℝ where
+-- SOLUTIONS:
+  toFun p := ⟨p.x, p.y, p.z⟩
+  invFun p := { x := p.fst, y := p.snd.fst, z := p.snd.snd }
+  left_inv p := by
+    cases p
+    rfl
+  right_inv t := by
+    cases t
+    rfl
+/- EXAMPLES:
+  toFun p := sorry
+  invFun t := sorry
+  left_inv p := by
+    sorry
+  right_inv t := by
+    sorry
+BOTH: -/
+
+/-
+2. Show that our OpenDisc2D type is isomorphic to a subtype
+-/
+-- SOLUTIONS:
+def OpenDisc2D.equiv (r) : OpenDisc2D r ≃ {x : ℝ × ℝ // x.1^2 + x.2^2 < r ^ 2} where
+  toFun o := ⟨(o.x, o.y), o.mem_disc⟩
+  invFun s := { x := s.val.fst, y := s.val.snd, mem_disc := s.property }
+  left_inv o := by
+    ext <;> rfl
+  right_inv s := by
+    ext <;> rfl
+/- EXAMPLES:
+def OpenDisc2D.equiv (r) : OpenDisc2D r ≃ {x : ℝ × ℝ // x.1^2 + x.2^2 < r ^ 2} :=
+  sorry
+BOTH: -/
+
+end exercise
+
+end proofs_within_structures
+
 end proofs_with_structures
+
+/-! ## Algebraic structures -/
+section algebraic_structures
+
+section slides
+
+class DirectTranslation.PartialOrder (P : Type) where  -- a set $P$ and
+  le : P → P → Prop               -- a binary relation $\le$ on $P$
+  le_trans : Transitive le        -- that is transitive
+  le_antirefl : AntiSymmetric le  -- and antisymmetric
+
+class DirectTranslation.Group (G : Type) where     -- a set $G$ with
+  mul : G → G → G             -- an associative binary operation,
+  mul_assoc : Associative mul
+  one : G                     -- an identity element $1$, and
+  one_mul : LeftIdentity mul one
+  mul_one : RightIdentity mul one
+  inv : G → G                 -- returns an inverse for each $g$ in $G$.
+  mul_right_inv :
+    RightInverse mul inv one
+
+/-- A simpler version of `Group` -/
+class LFTCM.Group (G : Type) extends Mul G, One G, Inv G where
+  mul_assoc : ∀ x y z : G, (x * y) * z = x * (y * z)
+  mul_one : ∀ x : G, x * 1 = x
+  one_mul : ∀ x : G, 1 * x = x
+  mul_left_inv : ∀ x : G, x⁻¹ * x = 1
+
+variable {α : Type}
+
+/- These already exist
+```
+instance : One (Equiv.Perm α) where
+  one := Equiv.refl _
+instance : Mul (Equiv.Perm α) where
+  mul x y := x.trans y
+instance : Inv (Equiv.Perm α) where
+  inv x := x.symm
+```
+-/
+#synth One (Equiv.Perm α)
+#synth Mul (Equiv.Perm α)
+#synth Inv (Equiv.Perm α)
+
+instance : LFTCM.Group (Equiv.Perm α) where
+  mul_assoc e₁ e₂ e₃ := by
+    ext
+    dsimp
+  mul_one e := by
+    ext
+    dsimp
+  one_mul e := by
+    ext
+    dsimp
+  mul_left_inv e := by
+    ext
+    exact e.symm_apply_apply _
+
+end slides
+
+section exercise
+
+/-! ### EXERCISE 10
+
+1. In the style of `LFTCM.Group`, write a typeclass for additive group
+-/
+
+/-- A simpler version of `AddGroup`. You will need to `extend` the appropiate notation, and write
+the fields. -/
+-- SOLUTIONS:
+class MyAddGroup (G : Type) extends Add G, Zero G, Neg G where
+  add_assoc : ∀ x y z : G, (x + y) + z = x + (y + z)
+  add_zero : ∀ x : G, x + 0 = x
+  zero_add : ∀ x : G, 0 + x = x
+  add_left_neg : ∀ x : G, -x + x = 0
+/- EXAMPLES:
+class LFTCM.AddGroup (G : Type) where
+BOTH: -/
+
+/-
+2. Prove that `Point' R` forms an additive group when `R` does
+-/
+
+instance {R} [MyAddGroup R] : MyAddGroup (Point' R) where
+  add_assoc p q r := by
+    -- note that because we are inventing our own `AddGroup`,
+    -- we can't use the builtin `add_assoc` lemma
+    ext <;> dsimp
+    · apply MyAddGroup.add_assoc
+    · apply MyAddGroup.add_assoc
+    · apply MyAddGroup.add_assoc
+-- SOLUTIONS:
+  add_zero p := by ext <;> apply MyAddGroup.add_zero
+  zero_add p := by ext <;> apply MyAddGroup.zero_add
+  add_left_neg p := by ext <;> apply MyAddGroup.add_left_neg
+/- EXAMPLES:
+  add_assoc p q r:= _
+  add_zero p := _
+  zero_add p := _
+  add_left_neg p := _
+BOTH: -/
+end exercise
+
+end algebraic_structures
