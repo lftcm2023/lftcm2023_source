@@ -120,7 +120,7 @@ open unitInterval ChartedSpace
 attribute [local instance] Real.fact_zero_lt_one
 
 @[simp]
-lemma chartAt_target_unitInterval (x : I) : chartAt (EuclideanHalfSpace 1) x =
+lemma chartAt_unitInterval (x : I) : chartAt (EuclideanHalfSpace 1) x =
     if (x : ℝ) < 1 then IccLeftChart (0 : ℝ) 1 else IccRightChart 0 1 := by
   rfl
 
