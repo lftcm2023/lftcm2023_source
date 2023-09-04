@@ -728,7 +728,7 @@ section exercise
 
 /-! ### EXERCISE 10
 
-1. In the style of `LFTCM.Group`, write a typeclass for additive group
+1. In the style of `LFTCM.Group`, write a typeclass for additive groups
 -/
 
 /-- A simpler version of `AddGroup`. You will need to `extend` the appropiate notation, and write
@@ -765,6 +765,32 @@ instance {R} [MyAddGroup R] : MyAddGroup (Point' R) where
   zero_add p := _
   add_left_neg p := _
 BOTH: -/
+end exercise
+
+section exercise
+
+/-! ### EXERCISE 11
+
+1. Do the same as in exercise 10, but for "real" mathlib additive groups
+-/
+instance {R} [AddGroup R] : AddGroup (Point' R) where
+  add_assoc p q r := by
+    -- now we can use the real `add_assoc`
+    ext <;> dsimp
+    · apply add_assoc
+    · apply add_assoc
+    · apply add_assoc
+-- SOLUTIONS:
+  add_zero p := by ext <;> apply add_zero
+  zero_add p := by ext <;> apply zero_add
+  add_left_neg p := by ext <;> apply add_left_neg
+/- EXAMPLES:
+  add_assoc p q r:= _
+  add_zero p := _
+  zero_add p := _
+  add_left_neg p := _
+BOTH: -/
+
 end exercise
 
 end algebraic_structures
