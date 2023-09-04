@@ -1,4 +1,3 @@
-import LftCM.Common
 import LftCM.C07_Algebraic_Hierarchy.S02_Morphisms
 import Mathlib.GroupTheory.QuotientGroup
 
