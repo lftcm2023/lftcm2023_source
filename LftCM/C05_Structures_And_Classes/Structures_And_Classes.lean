@@ -793,4 +793,79 @@ BOTH: -/
 
 end exercise
 
+/-- Advanced: forgetful inheritance -/
+def foo {α : Type} :
+    Group (Equiv.Perm α) where
+  mul := sorry
+  mul_assoc := sorry
+  one := sorry
+  one_mul := sorry
+  mul_one := sorry
+  npow := sorry            -- optional
+  npow_zero := sorry       -- optional
+  npow_succ := sorry       -- optional
+  inv := sorry
+  div := sorry             -- optional
+  div_eq_mul_inv := sorry  -- optional
+  zpow := sorry            -- optional
+  zpow_zero' := sorry      -- optional
+  zpow_succ' := sorry      -- optional
+  zpow_neg' := sorry       -- optional
+  mul_left_inv := sorry
+-- no need to fill the above, this is not an exercise!
+
+namespace LFTCM
+
+@[ext]
+structure MulOpposite (α : Type) where op ::
+  unop : α
+
+namespace MulOpposite
+
+instance {α} [One α] : One (MulOpposite α) where
+  one := op 1
+
+@[simp] theorem op_one {α} [One α] : op (1 : α) = 1 := rfl
+@[simp] theorem unop_one {α} [One α] : (unop 1 : α) = 1 := rfl
+
+instance {α} [Mul α] : Mul (MulOpposite α) where
+  mul x y := op (unop y * unop x)
+
+@[simp] theorem op_mul {α} [Mul α] (a b : α) :
+  op (a * b : α) = op b * op a := rfl
+@[simp] theorem unop_mul {α} [Mul α] (a b : MulOpposite α) :
+  (unop (a * b) : α) = unop b * unop a := rfl
+
+instance {α} [Inv α] : Inv (MulOpposite α) where
+  inv x := op (x.unop⁻¹)
+
+@[simp] theorem op_inv {α} [Inv α] (x : α) : op (x⁻¹) = (op x)⁻¹ := rfl
+@[simp] theorem unop_inv {α} [Inv α] (x : MulOpposite α) :
+  (unop (x⁻¹) : α) = (unop x)⁻¹ := rfl
+
+end MulOpposite
+
+end LFTCM
+
+open LFTCM.MulOpposite
+
+section exercise
+/-! ### EXERCISE 11
+
+1. Show that `MulOpposite α` is a group when `α` is. Remember the advice about deleting the
+  un-needed fields. You can also delete `one`, `mul`, and `inv` as they are found from the above.
+-/
+-- SOLUTIONS:
+instance {α} [Group α] : Group (LFTCM.MulOpposite α) where
+  mul_assoc a b c := by ext; simp [mul_assoc]
+  mul_one a := by ext; simp
+  one_mul a := by ext; simp
+  mul_left_inv a := by ext; simp
+/- EXERCISES:
+instance {α} [Group α] : Group (MulOpposite α) :=
+  sorry
+BOTH: -/
+
+end exercise
+
 end algebraic_structures
