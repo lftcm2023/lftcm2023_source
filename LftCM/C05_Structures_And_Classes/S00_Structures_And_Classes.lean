@@ -581,7 +581,7 @@ Don't forget to use the 💡 feature!
 -/
 
 /-
-1. Define a pythogorean triple
+1. Define a Pythagorean triple
 -/
 example : MyPythagoreanTriple :=
 -- SOLUTIONS:
@@ -642,7 +642,7 @@ end slides
 section exercise
 /-! ### EXERCISE 9
 
-Here we show that the composition of builting structures is the same as our custom structures.
+Here we show that the composition of builtin structures is the same as our custom structures.
 Note that `≃` is notation for `Equiv`, which is itself a structure
 (right click -> "peek definition" will show you how it is defined).
 -/
@@ -758,7 +758,7 @@ section exercise
 1. In the style of `LFTCM.Group`, write a typeclass for additive groups
 -/
 
-/-- A simpler version of `AddGroup`. You will need to `extend` the appropiate notation, and write
+/-- A simpler version of `AddGroup`. You will need to `extend` the appropriate notation, and write
 the fields. -/
 -- SOLUTIONS:
 class MyAddGroup (G : Type) extends Add G, Zero G, Neg G where
