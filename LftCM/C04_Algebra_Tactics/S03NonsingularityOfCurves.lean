@@ -34,6 +34,8 @@ example {x : ℚ} (hx : x ^ 2 - 4 * x = - 4) : x = 2 := by
   polyrith
 SOLUTIONS: -/
   sorry
+
+-- BOTH:
 -- polyrith failed to retrieve a solution from Sage! ValueError: polynomial is not in the ideal
 -- QUOTE.
 
@@ -49,11 +51,14 @@ example {x : ℤ} (hx : x ^ 2 - 4 * x = -4) : x = 2 := by
     polyrith
 SOLUTIONS: -/
     linear_combination hx
+-- BOTH:
   have := pow_eq_zero this
 /- EXAMPLES:
   polyrith
 SOLUTIONS: -/
   linear_combination this
+
+-- BOTH:
 -- QUOTE.
 
 /-
@@ -72,11 +77,15 @@ example {r s : ℚ} (hr : r ≠ 1) (h : r * s - 2 = s - 2 * r) : s = -2 := by
     polyrith
 SOLUTIONS: -/
     linear_combination hr
+
+-- BOTH:
   apply mul_left_cancel₀ hr'
 /- EXAMPLES:
   polyrith
 SOLUTIONS: -/
   linear_combination h
+
+-- BOTH:
 -- QUOTE.
 
 /-
@@ -94,6 +103,8 @@ example {r s : ℚ} (h : r * s - 2 = s - 2 * r) : r = 1 ∨ s = -2 := by
   · polyrith
 SOLUTIONS: -/
   · linear_combination h
+
+-- BOTH:
   cases' eq_zero_or_eq_zero_of_mul_eq_zero this with H H
   -- the case `r - 1 = 0`
   · left; linear_combination H
@@ -216,9 +227,6 @@ example {x y z : K} (h : MvPolynomial.eval ![x, y, z] (klein K) = 0)
   have h₂ := hdz 2
   simp only [this, polynomial_simps] at h h₀ h₁ h₂
   norm_num at h h₀ h₁ h₂
-/- EXAMPLES:
-  sorry
-SOLUTIONS: -/
   have : y ^ 3 * z = 0
 /- EXAMPLES:
   · sorry

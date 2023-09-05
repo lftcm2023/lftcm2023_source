@@ -12,6 +12,10 @@ import LftCM.C02_Logic.S03_Negation
 import LftCM.C02_Logic.S04_Conjunction_and_Iff
 import LftCM.C02_Logic.S05_Disjunction
 import LftCM.C02_Logic.S06_Sequences_and_Convergence
+import LftCM.C03_Sets_and_Functions.LftCM_functions
+import LftCM.C03_Sets_and_Functions.LftCM_functions_solutions
+import LftCM.C03_Sets_and_Functions.LftCM_sets
+import LftCM.C03_Sets_and_Functions.LftCM_sets_solutions
 import LftCM.C03_Sets_and_Functions.S01_Sets
 import LftCM.C03_Sets_and_Functions.S02_Functions
 import LftCM.C03_Sets_and_Functions.S03_The_Schroeder_Bernstein_Theorem
@@ -38,6 +42,7 @@ import LftCM.C09B_Combinatorics.Combinatorics
 import LftCM.C10_Category_Theory.CategoryTheory
 import LftCM.C11_Algebraic_Geometry.Algebraic_Geometry
 import LftCM.C12A_Differential_Geometry.Differential_Geometry
+import LftCM.C12A_Differential_Geometry.Lib
 import LftCM.C12B_Number_Theory.S01_Irrational_Roots
 import LftCM.C12B_Number_Theory.S02_Induction_and_Recursion
 import LftCM.C12B_Number_Theory.S03_Infinitely_Many_Primes
