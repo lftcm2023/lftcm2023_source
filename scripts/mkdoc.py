@@ -226,6 +226,7 @@ def process_section(chapter_name, section_name):
                     pass
                 elif mode == 'text':
                     rst_file.write(line)
+                    examples_file.write("-- " + line)
                 else:
                     raise RuntimeError("unexpected mode")
                 if quoting and mode != 'solutions':
