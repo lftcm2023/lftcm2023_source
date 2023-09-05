@@ -16,7 +16,7 @@ example : True := by
   #lemmas
   trivial
 
-namespace Do_not_try_this_at_home
+section Do_not_try_this_at_home
 
 variable (R S : Type*) [CommRing R] [CommRing S]
 
@@ -54,7 +54,7 @@ example (f : Spec ℤ (R)) : f = Int.castRingHom (α := R) := by
   -- * a map `f : OneHom ℤ R` preserving `1` and
   -- * a proof `hmul` of multiplicativity
   -- `rcases f with ⟨⟨⟨f, h1⟩, hmul⟩, h0, hadd⟩`
-  -- would have "gone" all the way:
+  -- would have destructured "all the way":
   -- * `f` is a function `ℤ → R`
   -- * `f` is additive `hadd`
   -- * `f` is multiplicative `hmul`
