@@ -344,6 +344,7 @@ example : ∃ f : Spec ℤ[X] (ℤ[X]), f ≠ RingHom.id ℤ[X] := by
   sorry
 
 variable (R) in
+/- The evaluation at a fixed element of `R` is a ring homomorphism `ℤ[X] →+* R`. -/
 def eval_at (r : R) : Spec ℤ[X] (R) := (aeval r).toRingHom
 
 lemma eval_at_injective : Function.Injective (eval_at R) := by
