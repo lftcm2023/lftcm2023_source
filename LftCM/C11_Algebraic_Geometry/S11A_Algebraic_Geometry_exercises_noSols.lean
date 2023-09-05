@@ -234,7 +234,7 @@ section RingHoms
 /-
 ##  Part 1 -- `RingHom` and points
 
-The file `cheat_sheet.md` contains a list of tactics and lemmas that is probably
+The tactics/commands `#help, #tactics, #lemmas` list tactics and lemmas that are probably
 sufficient to solve all the exercises.
 
 We begin with some examples to get familiar with `RingHom`, but thinking them as
