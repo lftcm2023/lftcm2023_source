@@ -1,5 +1,6 @@
 -- BOTH:
 import LftCM.C12A_Differential_Geometry.Lib
+import Mathlib.Analysis.NormedSpace.Connected
 
 /-!
 # Differential Geometry
@@ -7,9 +8,6 @@ import LftCM.C12A_Differential_Geometry.Lib
 Acknowledgements: Based on the tutorial by Sébastien Gouëzel at LFTCM 2020.
 
 ## An overview of manifolds in Lean, discussing design decisions
-
-Warning: there are sorries in this section, they are not supposed to be filled! The exercises sections
-start later, and there you will have plenty of sorries to fill.
 
 What is a manifold?
 
@@ -35,10 +33,10 @@ times does it typically self-intersect?
 
 Manifold in Lean:
 
-* charted space structure, i.e., set of local homeos to a model space. This is data, fixed
+* charted space structure, i.e., set of partial homeos to a model space. This is data, fixed
   once and for all (and a typeclass)
 * compatibility condition, i.e., the change of coordinates should belong to some subgroup
-  of the group of local homeos of the model space. This is Prop (and a typeclass). The same
+  of the group of partial homeos of the model space. This is Prop (and a typeclass). The same
   manifold can be at the same time an analytic manifold, a smooth manifold and a topological
   manifold (with the same fixed atlas).
 * A charted space is a smooth manifold (with corners) if it is compatible with the smooth
@@ -70,9 +68,10 @@ variable (n : ℕ) (E : Type*) [NormedAddCommGroup E]
 
 /- Dicussing three (controversial?) design decisions
 
-#### Local homeos
+#### Partial homeos
 
-What is a local homeo `f` between an open subset of `E` and an open subset of `F`?
+What is a partial homeo `f` between an open subset of `E` and an open subset of `F`?
+This is notion is called `LocalHomeomorph` in Mathlib.
 (1) a map defined on a Subtype: `f x` only makes sense for `x : f.source`;
 (2) a map defined on the whole space `E`, but taking values in `Option F = F ∪ {junk}`,
   with `f x = junk` when `x ∉ f.source`;
@@ -260,6 +259,7 @@ def mySecondLocalHomeoαα : LocalHomeomorph ℝ ℝ where
   open_source := isOpen_Ioo
   open_target := isOpen_Ioo
   continuous_toFun := by
+    dsimp only
     refine continuous_neg.continuousOn.congr (fun x hx ↦ ?_)
     simp [hx.1, hx.2, neg_lt (a := x), ne_3_of_mem_Ioo hx]
   continuous_invFun := continuous_neg.continuousOn
@@ -303,6 +303,7 @@ local homeomorphisms we have constructed above. To avoid using too much structur
 avoid confusing Lean), we will work with a copy of `ℝ`, on which we will only register the
 topology. -/
 
+-- @[reducible]
 def Myℝ : Type := ℝ
 deriving TopologicalSpace
 attribute [reducible, simp] instMyℝTopologicalSpace
@@ -354,17 +355,15 @@ instance smooth_Myℝ : HasGroupoid Myℝ (contDiffGroupoid ∞ 𝓡1) := by
   -- in theory, we should prove that all compositions of charts are diffeos, i.e., they are smooth
   -- and their inverse are smooth. For symmetry reasons, it suffices to check one direction
   apply hasGroupoid_of_pregroupoid
+  dsimp only
   -- take two charts `e` and `e'`
   intro e e' he he'
-  -- if next line is a little bit slow for your taste, you can replace `simp` with `squeeze_simp`
-  -- and then follow the advice
-  simp [atlas] at he he'
-  dsimp
+  simp [atlas] at he he' ⊢
   -- to continue, some hints:
   -- (1) don't hesitate to use the fact that the restriction of a smooth function to a
   -- subset is still smooth there (`ContDiff.contDiffOn`)
   -- (2) hopefully, there is a theorem saying that the negation function is smooth.
-  -- you can either try to guess its name, or hope that `suggest` will help you there.
+  -- you can either try to guess its name, or hope that `apply?` will help you there.
 -- SOLUTIONS:
   rcases he with rfl|rfl <;> rcases he' with rfl|rfl
   · exact contDiff_id.contDiffOn
@@ -464,7 +463,7 @@ lemma ContMDiff_tangentMap_myMap :
   ContMDiff (𝓡1.prod 𝓡1) (𝓡1.prod 𝓡1) ∞ (tangentMap 𝓡1 𝓡1 myMap) := by
   -- hopefully, there is a theorem providing the general result, i.e. the tangent map to a smooth
   -- map is smooth.
-  -- you can either try to guess its name, or hope that `suggest` will help you there.
+  -- you can either try to guess its name, or hope that `apply?` will help you there.
 -- SOLUTIONS:
   exact contMDiff_myMap.contMDiff_tangentMap le_top
 -- BOTH:
@@ -571,7 +570,7 @@ lemma crazy_formula_after_identifications (x : ℝ) (v : ℝ) :
   have : ¬ (3 : ℝ) < 1 := by norm_num
   intro p
   simp [FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply]
-  simp [ModelProd, Function.comp, Myℝ, this]
+  simp [Myℝ, this]
   split_ifs
   · simp [myFirstLocalHomeo, fderiv_neg (f := fun x ↦ x)]
   · simp
@@ -631,18 +630,22 @@ manifold yet. Since we have cheated and introduced it (with sorries) at the begi
 let's cheat again and use it to reformulate the previous statement.
 -/
 
--- the next result is not trivial, leave it sorried (but you can work on it if you don't like
--- manifolds and prefer topology -- then please PR it to mathlib!).
 notation "sphere" n => Metric.sphere (0 : EuclideanSpace ℝ (Fin (n+1))) 1
 
-instance connectedSpace_sphere (n : ℕ) : ConnectedSpace (sphere (n+1)) := sorry
+-- The sphere is connected, compact and Hausdorff:
 
--- The sphere is compact Hausdorff:
+instance (n : ℕ) : ConnectedSpace (sphere (n+1)) := by
+  apply Subtype.connectedSpace
+  apply isConnected_sphere
+  · simp [← finrank_eq_rank]
+    norm_cast
+    simp
+  · exact zero_le_one
 
-instance (n : ℕ) : T2Space (sphere n) := by
+example (n : ℕ) : T2Space (sphere n) := by
   infer_instance
 
-instance (n : ℕ) : CompactSpace (sphere n) := by
+example (n : ℕ) : CompactSpace (sphere n) := by
   infer_instance
 
 instance (n : ℕ) : Fact (finrank ℝ (EuclideanSpace ℝ (Fin (n+1))) = n + 1) := by
@@ -683,8 +686,9 @@ theorem exotic_ℝ4 :
 /-!
 ### Smooth functions on `[0, 1]`
 
-In this paragraph, you will prove several (math-trivial but Lean-nontrivial) statements on the smooth
-structure of `[0,1]`. These facts should be Lean-trivial, but they are not (yet) since there is essentially
+In the following exercises we will prove that the tangent bundle to `[0, 1]`
+is homeomorphic to `[0, 1] × ℝ`. This is math-trivial but Lean-nontrivial.
+These facts should also be Lean-trivial, but they are not (yet) since there is essentially
 nothing in this direction for now in the library.
 
 The goal is as much to be able to write the statements as to prove them. Most of the necessary vocabulary
@@ -692,86 +696,9 @@ has been introduced above, so don't hesitate to browse the file if you are stuck
 need the notion of a smooth function on a subset: it is `ContDiffOn` for functions between vector
 spaces and `ContMDiffOn` for functions between manifolds.
 
-Try to formulate the next math statements in Lean, and prove them (but see below for hints):
-
-Lemma contMDiffG : the inclusion `g` of `[0, 1]` in `ℝ` is smooth.
-
-Lemma msmooth_of_smooth : Consider a function `f : ℝ → [0, 1]`, which is smooth in the usual sense as a function
-from `ℝ` to `ℝ` on a set `s`. Then it is manifold-smooth on `s`.
-
-Definition : construct a function `f` from `ℝ` to `[0,1]` which is the identity on `[0, 1]`.
-
-Theorem : the tangent bundle to `[0, 1]` is homeomorphic to `[0, 1] × ℝ`
-
-Hint for the last theorem: don't try to unfold the definition of the tangent bundle, it will only get you
-into trouble. Instead, use the derivatives of the maps `f` and `g`, and rely on functoriality
-to check that they are inverse to each other. (This advice is slightly misleading as these derivatives
-do not go between the right spaces, so you will need to massage them a little bit).
-
 A global advice: don't hesitate to use and abuse `simp`, it is the main workhorse in this
 area of mathlib.
 -/
-
-/- After doing the exercise myself, I realized it was (way!) too hard. So I will give at least the statements
-of the lemmas, to guide you a little bit more. To let you try the original version if you want,
-I have left a big blank space to avoid spoilers. -/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 def g : I → ℝ := Subtype.val
 
@@ -824,7 +751,7 @@ lemma msmooth_of_smooth {f : ℝ → I} {s : Set ℝ} (h : ContDiffOn ℝ ∞ (f
 def f : ℝ → I :=
   fun x ↦ ⟨max (min x 1) 0, by simp [le_refl, zero_le_one]⟩
 
-lemma contMDiffOnF : ContMDiffOn 𝓡1 (𝓡∂ 1) ∞ f (Icc 0 1) := by
+lemma contMDiffOnF : ContMDiffOn 𝓡1 (𝓡∂ 1) ∞ f I := by
 -- SOLUTIONS:
   apply msmooth_of_smooth
   apply contDiff_id.contDiffOn.congr
@@ -861,8 +788,7 @@ lemma continuous_G : Continuous G := by
 -- BOTH:
 
 def F : I × ℝ → TangentBundle (𝓡∂ 1) I :=
-  fun p ↦ tangentMapWithin 𝓡1 (𝓡∂ 1) f (Icc 0 1)
-    ((tangentBundleVectorSpaceTriv ℝ).symm (p.1, p.2))
+  fun p ↦ tangentMapWithin 𝓡1 (𝓡∂ 1) f I ((tangentBundleVectorSpaceTriv ℝ).symm (p.1, p.2))
 
 lemma continuous_F : Continuous F := by
 -- SOLUTIONS:
@@ -885,7 +811,7 @@ lemma FoG : F ∘ G = id := by
   · rcases x with ⟨x', h'⟩
     simp at h'
     simp [h']
-  · change (tangentMapWithin 𝓡1 (𝓡∂ 1) f (Icc 0 1) (tangentMap (𝓡∂ 1) 𝓡1 g ⟨x, v⟩)).snd = v
+  · change (tangentMapWithin 𝓡1 (𝓡∂ 1) f I (tangentMap (𝓡∂ 1) 𝓡1 g ⟨x, v⟩)).snd = v
     rw [← tangentMapWithin_univ, ← tangentMapWithin_comp_at, fog, tangentMapWithin_univ,
       tangentMap_id]
     · rfl
@@ -909,10 +835,10 @@ lemma GoF : G ∘ F = id := by
   · have A : UniqueMDiffWithinAt 𝓡1 I (⟨(x : ℝ), v⟩ : TangentBundle 𝓡1 ℝ).proj
     · rw [uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
       apply uniqueDiffOn_Icc_zero_one _ x.2
-    change (tangentMap (𝓡∂ 1) 𝓡1 g (tangentMapWithin 𝓡1 (𝓡∂ 1) f (Icc 0 1) ⟨x, v⟩)).snd = v
+    change (tangentMap (𝓡∂ 1) 𝓡1 g (tangentMapWithin 𝓡1 (𝓡∂ 1) f I ⟨x, v⟩)).snd = v
     rw [← tangentMapWithin_univ, ← tangentMapWithin_comp_at _ _ _ subset_preimage_univ A]
-    · have : tangentMapWithin 𝓡1 𝓡1 (g ∘ f) (Icc 0 1) ⟨x, v⟩
-             = tangentMapWithin 𝓡1 𝓡1 (id : ℝ → ℝ) (Icc 0 1) ⟨x, v⟩ :=
+    · have : tangentMapWithin 𝓡1 𝓡1 (g ∘ f) I ⟨x, v⟩
+             = tangentMapWithin 𝓡1 𝓡1 (id : ℝ → ℝ) I ⟨x, v⟩ :=
         tangentMapWithin_congr gof _ x.2 A
       rw [this, tangentMapWithin_id _ A]
     · apply contMDiffG.contMDiffOn.mdifferentiableOn le_top _ (mem_univ _)
@@ -944,5 +870,4 @@ for functions between vector spaces, but this is very much a work in progress.
 3) What about trying to prove `diffeomorph_of_one_dim_compact_connected`? (I am not sure mathlib
 is ready for this, as the proofs I am thinking of are currently a little bit too high-powered.
 If you manage to do it, you should absolutely PR it!)
-
 -/
