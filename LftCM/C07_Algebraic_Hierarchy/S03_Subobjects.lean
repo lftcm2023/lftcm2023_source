@@ -5,7 +5,7 @@ set_option autoImplicit true
 
 namespace lftcm
 
-/-
+/- TEXT:
 .. _section_hierarchies_subobjects:
 
 Sub-objects
@@ -40,7 +40,7 @@ instance [Monoid M] : SetLike (Submonoid M) M where
 
 -- QUOTE.
 
-/-
+/- TEXT:
 Equipped with the above ``SetLike`` instance, we can already state naturally that
 a submonoid ``N`` contains ``1`` without using ``N.carrier``.
 We can also silently treat ``N`` as a set in ``M`` as take its direct image under a map.
@@ -52,7 +52,7 @@ example [Monoid M] (N : Submonoid M) : 1 ∈ N := N.one_mem
 example [Monoid M] (N : Submonoid M) (α : Type) (f : M → α) := f '' N
 -- QUOTE.
 
-/-
+/- TEXT:
 We also have a coercion to ``Type`` which uses ``Subtype`` so, given a submonoid ``N`` we can write
 a parameter ``(x : N)`` which can be coerced to an element of ``M`` belonging to ``N``.
 
@@ -62,7 +62,7 @@ BOTH: -/
 example [Monoid M] (N : Submonoid M) (x : N) : (x : M) ∈ N := x.property
 -- QUOTE.
 
-/-
+/- TEXT:
 Using this coercion to ``Type`` we can also tackle the task of equipping a submonoid with a
 monoid structure. We will use the coercion from the type associated to ``N`` as above, and the
 lemma ``SetCoe.ext`` asserting this coercion is injective. Both are provided by the ``SetLike``
@@ -79,7 +79,7 @@ instance SubMonoidMonoid [Monoid M] (N : Submonoid M) : Monoid N where
   mul_one := fun x ↦ SetCoe.ext (mul_one (x : M))
 -- QUOTE.
 
-/-
+/- TEXT:
 Note that, in the above instance, instead of using the coercion to ``M`` and calling the
 ``property`` field, we could have used destructuring binders as follows.
 
@@ -94,7 +94,7 @@ example [Monoid M] (N : Submonoid M) : Monoid N where
   mul_one := fun ⟨x, _⟩ ↦ SetCoe.ext (mul_one x)
 -- QUOTE.
 
-/-
+/- TEXT:
 
 In order to apply lemmas about submonoids to subgroups or subrings, we need a class, just
 like for morphisms. Note this class take a ``SetLike`` instance as a parameter so it does not need
@@ -111,7 +111,7 @@ instance [Monoid M] : SubmonoidClass (Submonoid M) M where
   one_mem := Submonoid.one_mem
 -- QUOTE.
 
-/-
+/- TEXT:
 
 As an exercise you should define a ``Subgroup`` structure, endow it with a ``SetLike`` instance
 and a ``SubmonoidClass`` instance, put a ``Group`` instance on the subtype associated to a
@@ -147,7 +147,7 @@ instance [Group G] : SubgroupClass (Subgroup G) G :=
 { (inferInstance : SubmonoidClass (Subgroup G) G) with
   inv_mem := Subgroup.inv_mem }
 
-/-
+/- TEXT:
 Another very important thing to know about subobjects of a given algebraic object in Mathlib
 always form a complete lattice, and this structure is used a lot. For instance you may look for
 the lemma saying that an intersection of submonoids is a submonoid. But this won't be a lemma,
@@ -163,7 +163,7 @@ instance [Monoid M] : Inf (Submonoid M) :=
       mul_mem := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ ↦ ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
 -- QUOTE.
 
-/-
+/- TEXT:
 This allows to get the intersections of two submonoids as a submonoid.
 
 BOTH: -/
@@ -172,7 +172,7 @@ BOTH: -/
 example [Monoid M] (N P : Submonoid M) : Submonoid M := N ⊓ P
 -- QUOTE.
 
-/-
+/- TEXT:
 You may think it's a shame that we had to use the inf symbol ``⊓`` in the above example instead
 of the intersection symbol ``∩``. But think about the supremum. The union of two submonoids is not
 a submonoid. However submonoids still form a lattice (even a complete one). Actually ``N ⊔ P`` is

@@ -1,36 +1,36 @@
-#!/usr/bin/env bash
-set -e
-# if [ "$#" -ne 2 ]; then
-#     echo "Usage example: $0 leanprover-community mathematics_in_lean"
-#     exit 1
-# fi
+# #!/usr/bin/env bash
+# set -e
+# # if [ "$#" -ne 2 ]; then
+# #     echo "Usage example: $0 leanprover-community mathematics_in_lean"
+# #     exit 1
+# # fi
 
-# Build
-scripts/mkall.py
-cp -r .vscode user_repo/.vscode
-# make clean html latexpdf
-# cp -Lr build/html user_repo/
-# cp build/latex/mathematics_in_lean.pdf user_repo/
+# # Build
+# scripts/mkall.py
+# cp -r .vscode user_repo/.vscode
+# # make clean html latexpdf
+# # cp -Lr build/html user_repo/
+# # cp build/latex/mathematics_in_lean.pdf user_repo/
 
-# Deploy
-rm -rf deploy
-git clone git@github.com:lftcm2023/lftcm2023 deploy
-cd deploy
-rm -rf * .gitignore
-cp -Lr ../user_repo/./ .
-git add .
-git add -f .vscode
-git commit -m "Update `date`"
-git push
-
-# git checkout gh-pages
-# rm -rf * .gitignore .buildinfo .nojekyll
-# cp -r ../build/html/./ .
-# cp ../build/latex/mathematics_in_lean.pdf .
-# touch .nojekyll
+# # Deploy
+# rm -rf deploy
+# git clone git@github.com:lftcm2023/lftcm2023 deploy
+# cd deploy
+# rm -rf * .gitignore
+# cp -Lr ../user_repo/./ .
 # git add .
+# git add -f .vscode
 # git commit -m "Update `date`"
 # git push
 
-cd ..
-rm -rf deploy
+# # git checkout gh-pages
+# # rm -rf * .gitignore .buildinfo .nojekyll
+# # cp -r ../build/html/./ .
+# # cp ../build/latex/mathematics_in_lean.pdf .
+# # touch .nojekyll
+# # git add .
+# # git commit -m "Update `date`"
+# # git push
+
+# cd ..
+# rm -rf deploy

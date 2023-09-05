@@ -6,7 +6,7 @@ set_option autoImplicit true
 
 namespace lftcm
 
-/-
+/- TEXT:
 .. _section_hierarchies_basics:
 
 Basics
@@ -23,7 +23,7 @@ class One (α : Type) where
   one : α
 -- QUOTE.
 
-/-
+/- TEXT:
 Since we'll make a much heavier use of classes in this chapter, we need to understand some
 more details about what the ``class`` command is doing.
 First, the ``class`` command above defines a structure ``One`` with parameter ``α : Type`` and
@@ -45,7 +45,7 @@ BOTH: -/
 #check One'.one -- lftcm.One'.one {α : Type} (self : One' α) : α
 -- QUOTE.
 
-/-
+/- TEXT:
 In the second check, we can see that ``self : One' α`` is an explicit argument.
 Let us make sure the first version is indeed usable without any explicit argument.
 BOTH: -/
@@ -54,7 +54,7 @@ BOTH: -/
 example (α : Type) [One α] : α := One.one
 -- QUOTE.
 
-/-
+/- TEXT:
 Remark: in the above example, the argument ``One α`` is marked as instance-implicit,
 which is a bit silly since this affects only *uses* of the declaration and declaration created by
 the ``example`` command cannot be used. However it allows to avoid giving a name to that
@@ -72,7 +72,7 @@ BOTH: -/
 example (α : Type) [One α] := (One.one : α)
 -- QUOTE.
 
-/-
+/- TEXT:
 You may have already encountered that issue when playing with limits of sequences
 in :numref:`sequences_and_convergence` if you tried to state for instance that
 ``0 < 1`` without telling Lean whether you meant this inequality to be about natural numbers
@@ -92,7 +92,7 @@ example {α : Type} [One α] : α := 𝟙
 example {α : Type} [One α] : (𝟙 : α) = 𝟙 := rfl
 -- QUOTE.
 
-/-
+/- TEXT:
 We now want a data-carrying class recording a binary operation. We don't want to choose
 between addition and multiplication for now so we'll use diamond.
 BOTH: -/
@@ -104,7 +104,7 @@ class Dia (α : Type) where
 infixl:70 " ⋄ "   => Dia.dia
 -- QUOTE.
 
-/-
+/- TEXT:
 As in the ``One`` example, the operation has no property at all at this stage. Let us
 now define the class of semigroup structures where the operation is denoted by ``⋄``.
 For now, we define it by hand as a structure with two fields, a ``Dia`` instance and some
@@ -118,7 +118,7 @@ class SemigroupDia (α : Type) where
   dia_assoc : ∀ a b c : α, a ⋄ b ⋄ c = a ⋄ (b ⋄ c)
 -- QUOTE.
 
-/-
+/- TEXT:
 Note that while stating `dia_assoc`, the previously defined field `toDia` is in the local
 context hence can be used when Lean searches for an instance of `Dia α` to make sense
 of `a ⋄ b`. However this `toDia` field does not become part of the type class instances database.
@@ -134,7 +134,7 @@ attribute [instance] SemigroupDia.toDia
 example {α : Type} [SemigroupDia α] (a b : α) : α := a ⋄ b
 -- QUOTE.
 
-/-
+/- TEXT:
 Before building up, we need a more convenient way to extend structures than explicitly
 writing fields like `toDia` and adding the instance attribute by hand. The ``class``
 supports this using the ``extends`` syntax as in:
@@ -148,7 +148,7 @@ class SemigroupDia' (α : Type) extends Dia α where
 example {α : Type} [SemigroupDia' α] (a b : α) : α := a ⋄ b
 -- QUOTE.
 
-/-
+/- TEXT:
 Note this syntax is also available in the ``structure`` command, although it that
 case it fixes only the hurdle of writing fields such as `toDia` since there
 is no instance to define in that case.
@@ -166,7 +166,7 @@ class DiaOneClass (α : Type) extends One α, Dia α where
 
 -- QUOTE.
 
-/-
+/- TEXT:
 In the next example, we tell Lean that ``α`` has a ``DiaOneClass`` structure and state a
 property that uses both a `Dia` instance and a `One` instance. In order to see how Lean finds
 those instances we set a tracing option whose result can be seen in the info view. This result
@@ -181,7 +181,7 @@ set_option trace.Meta.synthInstance true in
 example {α : Type} [DiaOneClass α] (a b : α) : Prop := a ⋄ b = 𝟙
 -- QUOTE.
 
-/-
+/- TEXT:
 Note that we don't need to include extra fields where combining existing classes. Hence we can
 define monoids as:
 BOTH: -/
@@ -190,7 +190,7 @@ BOTH: -/
 class MonoidDia (α : Type) extends SemigroupDia α, DiaOneClass α
 -- QUOTE.
 
-/-
+/- TEXT:
 While the above definition seems straightforward, it hides an important subtlety. Both
 ``SemigroupDia α`` and ``DiaOneClass α`` extend ``Dia α``, so one could fear that having
 a ``Monoid α`` instance gives two unrelated diamond operations on ``α``, one coming from
@@ -205,7 +205,7 @@ class MonoidDiaBad (α : Type) where
   toDiaOneClass : DiaOneClass α
 -- QUOTE.
 
-/-
+/- TEXT:
 then we get two completely unrelated diamond operations
 ``MonoidDiaBad.toSemigroupDia.toDia.dia`` and ``MonoidDiaBad.toDiaOneClass.toDia.dia``.
 
@@ -217,7 +217,7 @@ example {α : Type} [MonoidDia α] :
   (MonoidDia.toSemigroupDia.toDia.dia : α → α → α) = MonoidDia.toDiaOneClass.toDia.dia := rfl
 -- QUOTE.
 
-/-
+/- TEXT:
 So the ``class`` command did some magic for us (and the ``structure`` command would have done it
 too). An easy way to see what are the fields of our classes is to check their constructor. Compare:
 BOTH: -/
@@ -232,7 +232,7 @@ BOTH: -/
 #check MonoidDia.mk
 -- QUOTE.
 
-/-
+/- TEXT:
 So we see that ``Monoid`` takes ``Semigroup α`` argument as expected but then it won't
 take a would-be overlapping ``DiaOneClass α`` argument but instead tears it apart and includes
 only the non-overlapping parts. And it also auto-generated an instance ``Monoid.toDiaOneClass``
@@ -245,7 +245,7 @@ BOTH: -/
 #check MonoidDia.toDiaOneClass
 -- QUOTE.
 
-/-
+/- TEXT:
 We are now very close to defining groups. We could add to the monoid structure a field asserting
 the existence of an inverse for every element. But then we would need to work to access these
 inverses. In practice it is more convenient to add it as data. To optimize reusability,
@@ -266,7 +266,7 @@ class GroupDia (G : Type) extends MonoidDia G, Inv G where
   inv_dia : ∀ a : G, a⁻¹ ⋄ a = 𝟙
 -- QUOTE.
 
-/-
+/- TEXT:
 The above definition may seem too weak, we only ask that ``a⁻¹`` is a left-inverse of ``a``.
 But the other side is automatic. In order to prove that, we need a preliminary lemma.
 BOTH: -/
@@ -276,7 +276,7 @@ lemma left_inv_eq_right_inv {M : Type} [MonoidDia M] {a b c : M} (hba : b ⋄ a 
   rw [← DiaOneClass.one_dia c, ← hba, SemigroupDia.dia_assoc, hac, DiaOneClass.dia_one b]
 -- QUOTE.
 
-/-
+/- TEXT:
 In this lemma, it is pretty annoying to give full names, especially since it requires knowing
 which part of the hierarchy provides those facts. One way to fix this is to use the ``export``
 command to copy those facts as lemmas in the root name space.
@@ -288,7 +288,7 @@ export SemigroupDia (dia_assoc)
 export GroupDia (inv_dia)
 -- QUOTE.
 
-/-
+/- TEXT:
 We can then rewrite the above proof as:
 BOTH: -/
 
@@ -297,7 +297,7 @@ example {M : Type} [MonoidDia M] {a b c : M} (hba : b ⋄ a = 𝟙) (hac : a ⋄
   rw [← one_dia c, ← hba, dia_assoc, hac, dia_one b]
 -- QUOTE.
 
-/-
+/- TEXT:
 It is now your turn to prove things about our algebraic structures.
 BOTH: -/
 
@@ -316,7 +316,7 @@ SOLUTIONS: -/
   by rw [← inv_dia a⁻¹, inv_eq_of_dia (inv_dia a)]
 -- QUOTE.
 
-/-
+/- TEXT:
 At this stage we would like to move on to define rings, but there is a serious issue.
 A ring structure on a type contains both an additive group structure and a multiplicative
 monoid structure, and some properties about their interaction. But so far we hard-coded
@@ -364,7 +364,7 @@ lemma left_inv_eq_right_inv' {M : Type} [Monoid M] {a b c : M} (hba : b * a = 1)
 #check left_neg_eq_right_neg'
 -- QUOTE.
 
-/-
+/- TEXT:
 Equipped with this technology, we can easily define also commutative semigroups, monoids and
 groups, and then define rings.
 
@@ -397,7 +397,7 @@ class Group (G : Type) extends Monoid G, Inv G where
   mul_left_inv : ∀ a : G, a⁻¹ * a = 1
 -- QUOTE.
 
-/-
+/- TEXT:
 We should remember to tagged lemmas with ``simp`` when appropriate.
 BOTH: -/
 
@@ -406,7 +406,7 @@ attribute [simp] Group.mul_left_inv AddGroup.neg_add
 
 -- QUOTE.
 
-/-
+/- TEXT:
 Then we need to repeat ourselves a bit since we switch to standard notations, but at least
 ``to_additive`` does the work of translating from the multiplicative notation to the additive one.
 BOTH: -/
@@ -424,7 +424,7 @@ SOLUTIONS: -/
 -- BOTH:
 -- QUOTE.
 
-/-
+/- TEXT:
 Note that ``to_additive`` can be ask to tag a lemma with ``simp`` and propagate that attribute
 to the additive version as follows.
 BOTH: -/
@@ -461,7 +461,7 @@ class CommGroup (G : Type) extends Group G, CommMonoid G
 
 -- QUOTE.
 
-/-
+/- TEXT:
 We are now ready for rings. For demonstration purposes we won't assume that addition is
 commutative, and then immediately provide an instance of ``AddCommGroup``. Mathlib does not
 play this game, first because in practice this does not make any ring instance easier and
@@ -495,7 +495,7 @@ SOLUTIONS: -/
       _ = a + (b + a + b) := by simp [add_assoc]
     exact add_right_cancel (add_left_cancel this) }
 -- QUOTE.
-/-
+/- TEXT:
 Of course we can also build concrete instances, such as a ring structure on integers (of course
 the instance below uses that all the work is already done in Mathlib).
 BOTH: -/
@@ -519,7 +519,7 @@ instance : Ring ℤ where
   left_distrib := Int.mul_add
   right_distrib := Int.add_mul
 -- QUOTE.
-/-
+/- TEXT:
 As an exercise you can now set up a simple hierarchy for order relations, including a class
 for ordered commutative monoids, which have both a partial order and a commutative monoid structure
 such that ``∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b``. Of course you need to add fields and maybe
@@ -566,7 +566,7 @@ instance : OrderedCommMonoid ℕ where -- fill it in
   mul_comm := mul_comm
   mul_of_le := fun _ _ h c ↦ Nat.mul_le_mul_left c h
 -- QUOTE.
-/-
+/- TEXT:
 
 
 
@@ -587,7 +587,7 @@ class SMul (α : Type) (β : Type) where
 infixr:73 " • " => SMul.smul
 -- QUOTE.
 
-/-
+/- TEXT:
 Then we can define modules (again think about vector spaces if you don't know what is a module).
 BOTH: -/
 
@@ -600,7 +600,7 @@ class Module (R : Type) [Ring R] (M : Type) [AddCommGroup M] extends SMul R M wh
   smul_add : ∀ (a : R) (m n : M), a • (m + n) = a • m + a • n
 -- QUOTE.
 
-/-
+/- TEXT:
 There is something interesting going on here. While it isn't too surprising that the
 ring structure on ``R`` is a parameter in this definition, you probably expected ``AddCommGroup M``
 to be part of the ``extends`` clause just as ``SMul R M`` is.  Trying to do that would lead
@@ -637,7 +637,7 @@ instance selfModule (R : Type) [Ring R] : Module R R where
   add_smul := Ring.right_distrib
   smul_add := Ring.left_distrib
 -- QUOTE.
-/-
+/- TEXT:
 As a second example, every abelian group is a module over ``ℤ`` (this is one of the reason to
 generalize the theory of vector spaces by allowing non-invertible scalars). First one can define
 scalar multiplication by a natural number for any type equipped with a zero and an addition:
@@ -654,7 +654,7 @@ def zsmul {M : Type} [Zero M] [Add M] [Neg M] : ℤ → M → M
   | Int.ofNat n, a => nsmul n a
   | Int.negSucc n, a => -(nsmul n.succ a)
 -- QUOTE.
-/-
+/- TEXT:
 Proving this gives rise to a module structure is a bit tedious and not interesting for the
 current discussion, so we will sorry all axioms. You are *not* asked to replace those sorries
 with proofs. If you insist on doing it then you will probably want to state and prove several
@@ -669,7 +669,7 @@ instance abGrpModule (A : Type) [AddCommGroup A] : Module ℤ A where
   add_smul := sorry
   smul_add := sorry
 -- QUOTE.
-/-
+/- TEXT:
 A much more important issue is that we now have two module structures over the ring ``ℤ``
 for ``ℤ`` itself: ``abGrpModule ℤ`` since ``ℤ`` is a abelian group, and ``selfModule ℤ`` since
 ``ℤ`` is a ring. Those two module structure correspond to the same abelian group structure,
@@ -684,7 +684,7 @@ BOTH: -/
 #synth Module ℤ ℤ -- abGrpModule ℤ
 
 -- QUOTE.
-/-
+/- TEXT:
 But in a more indirect context it can happen that Lean infers the one and then gets confused.
 This situation is known as a bad diamond. This has nothing to do with the diamond operation
 we used above, it refers to the way one can draw the paths from ``ℤ`` to its ``Module ℤ``
@@ -722,7 +722,7 @@ class AddMonoid' (M : Type) extends AddSemigroup M, AddZeroClass M where
 
 instance mySMul {M : Type} [AddMonoid' M] : SMul ℕ M := ⟨AddMonoid'.nsmul⟩
 -- QUOTE.
-/-
+/- TEXT:
 
 Let us check we can still construct a product monoid instance without providing the ``nsmul``
 related fields.
@@ -736,7 +736,7 @@ instance (M N : Type) [AddMonoid' M] [AddMonoid' N] : AddMonoid' (M × N) where
   zero_add := fun a ↦ by ext <;> apply zero_add
   add_zero := fun a ↦ by ext <;> apply add_zero
 -- QUOTE.
-/-
+/- TEXT:
 And now let us handle the special case of ``ℤ`` where we want to build ``nsmul`` using the coercion
 of ``ℕ`` to ``ℤ`` and the multiplication on ``ℤ``. Note in particular how the proof fields
 contain more work than in the default value above.
@@ -754,7 +754,7 @@ instance : AddMonoid' ℤ where
   nsmul_succ := fun n m ↦ show (n + 1 : ℤ) * m = m + n * m
     by rw [Int.add_mul, Int.add_comm, Int.one_mul]
 -- QUOTE.
-/-
+/- TEXT:
 Let us check we solved our issue. Because Lean already has a definition of scalar multiplication
 of a natural number and an integer, and we want to make sure our instance is used, we won't use
 the ``•`` notation but call ``SMul.mul`` and explicitly provide our instance defined above.
@@ -763,7 +763,7 @@ BOTH: -/
 
 example (n : ℕ) (m : ℤ) : SMul.smul (self := mySMul) n m = n * m := rfl
 -- QUOTE.
-/-
+/- TEXT:
 This story then continues with incorporating a ``zsmul`` field into the definition of groups
 and similar tricks. You are now ready to read the definition of monoids, groups, rings and modules
 in Mathlib. There are more complicated than what we have seen here, because they are part of a huge
