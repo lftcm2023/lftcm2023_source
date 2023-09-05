@@ -165,6 +165,7 @@ local notation R "[" A "]" => AddMonoidAlgebra R A
 -- ##  Basic constructors
 
 -- ###  `single` -- a single term
+-- fully qualified name: `AddMonoidAlgebra.single`
 -- Mathematically, you would probably write this as $r a$ or $r [a]$ if you wanted to
 -- maintain the distinction between the element $a ∈ A` and the corresponding $[a] ∈ k[A]$
 #check single a r
