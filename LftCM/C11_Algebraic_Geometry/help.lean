@@ -22,7 +22,7 @@ m!"Possibly useful {type}:{indentD tacArr}"
 
 /--  The path to the file with the information about `tactics` and `lemmas`. -/
 def cheat : System.FilePath :=
-  "LftCM/C11_Algebraic_Geometry/suggestionsData.txt"
+  "LftCM/C11_Algebraic_Geometry/helpData.txt"
 
 /--  Produces the message depending on whether the input is `tactics`, `lemmas` or anything else. -/
 def tacsOrLems (s : Option (TSyntax `str)) : IO MessageData := do
