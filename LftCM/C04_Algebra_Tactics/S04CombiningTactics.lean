@@ -87,6 +87,7 @@ example {x : ℂ} (hx : x ^ 5 = 1) (hx' : x ≠ 1) : (x + 1 / x) ^ 2 + (x + 1 / 
     · polyrith
 SOLUTIONS: -/
     · linear_combination -(1 * hx) + x ^ 4 * h₀
+-- BOTH:
     norm_num at this
   field_simp
   have h₁ : x - 1 ≠ 0
@@ -95,12 +96,13 @@ SOLUTIONS: -/
     polyrith
 SOLUTIONS: -/
     linear_combination hx'
+-- BOTH:
   apply mul_left_cancel₀ h₁
 /- EXAMPLES:
   polyrith
 SOLUTIONS: -/
   linear_combination x * hx
-
+-- BOTH:
 -- QUOTE.
 /-
 Here is an exercise. Let :math:`ϕ:\mathbb{R}\to \mathbb{R}` be the function
@@ -120,7 +122,7 @@ example {x : ℝ} (h₁ : x ≠ 1) (h₀ : x ≠ 0) : ϕ (ϕ (ϕ x)) = x :=
   by
   dsimp [ϕ]
 /- EXAMPLES:
-    sorry
+  sorry
 SOLUTIONS: -/
   have : 1 - x ≠ 0 := by contrapose! h₁ ; linear_combination -h₁
   have : -x ≠ 0 := by contrapose! h₀ ; linear_combination -h₀
@@ -189,13 +191,17 @@ def stereoInvFun (w : ℝ) : 𝕊 :=
   ⟨(w ^ 2 + 4)⁻¹ • (4 * w, w ^ 2 - 4), by
     dsimp
 /- EXAMPLES:
-    sorry
+    sorry⟩
 SOLUTIONS: -/
     have : w ^ 2 + 4 ≠ 0 := by nlinarith
     field_simp
     ring⟩
 -- BOTH:
+
+
 -- QUOTE.
+
+
 @[simp]
 theorem stereoInvFun_apply (w : ℝ) :
     (stereoInvFun w : ℝ × ℝ) = (w ^ 2 + 4)⁻¹ • (4 * w, w ^ 2 - 4) :=
@@ -225,6 +231,7 @@ SOLUTIONS: -/
   field_simp at h
   have : (8 : ℝ) = 0 := by linear_combination -h.2
   norm_num at this
+-- BOTH:
 -- QUOTE.
 
 /-
@@ -262,6 +269,7 @@ SOLUTIONS: -/
 SOLUTIONS: -/
   · field_simp
     linear_combination -4 * (y - 1) ^ 3 * pythag
+-- BOTH:
 -- QUOTE.
 
 /-
@@ -278,6 +286,7 @@ SOLUTIONS: -/
   have : w ^ 2 + 4 ≠ 0 := by nlinarith
   field_simp
   ring
+-- BOTH:
 -- QUOTE.
 
 /-
@@ -385,34 +394,34 @@ example {i j : ℕ} :
   · sorry
 SOLUTIONS: -/
   · exact_mod_cast i.succ_mul_centralBinom_succ
-  -- BOTH:
+-- BOTH:
   have h₂ : ((j : ℚ) + 1) * (j + 1).centralBinom = 2 * (2 * j + 1) * j.centralBinom
 /- EXAMPLES:
   · sorry
 SOLUTIONS: -/
   · exact_mod_cast j.succ_mul_centralBinom_succ
-  -- BOTH:
+-- BOTH:
   have : (i : ℚ) + j + 1 ≠ 0
 /- EXAMPLES:
   · sorry
 SOLUTIONS: -/
   · norm_cast
     exact (i+j).succ_ne_zero
-  -- BOTH:
+-- BOTH:
   have : (i : ℚ) + j + 2 ≠ 0
 /- EXAMPLES:
   · sorry
 SOLUTIONS: -/
   · norm_cast
     exact Nat.succ_ne_zero (i + j + 1)
-  -- BOTH:
+-- BOTH:
   have : (i : ℚ) + 1 ≠ 0
 /- EXAMPLES:
   · sorry
 SOLUTIONS: -/
   · norm_cast
     exact Nat.succ_ne_zero i
-  -- BOTH:
+-- BOTH:
   have : (j : ℚ) + 1 ≠ 0
 /- EXAMPLES:
   · sorry
@@ -435,4 +444,5 @@ SOLUTIONS: -/
           1 / 4 * Bjj) *
         h₁ +
       (-(1 / 4 * Bii * ii ^ 2) + ii * jj * Bi - 1 / 2 * ii * Bi + jj * Bi + 1 / 4 * Bii + 1 / 2 * Bi) * h₂
+-- BOTH:
 -- QUOTE.

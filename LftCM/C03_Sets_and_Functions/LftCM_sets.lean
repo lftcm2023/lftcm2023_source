@@ -158,7 +158,7 @@ example : f '' S ⊆ T ↔ S ⊆ f ⁻¹' T := by
   sorry -- exercise
 
 /-!
-### Universal and existencial quantifiers
+### Universal and existential quantifiers
 -/
 
 lemma not_exists_iff_forall_not : ¬ (∃ a, a ∈ X) ↔ ∀ b, ¬ (b ∈ X) := by

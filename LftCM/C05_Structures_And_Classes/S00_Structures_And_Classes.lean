@@ -4,7 +4,11 @@ import Mathlib.Data.Fin.VecNotation
 open scoped NNReal
 
 /-!
+-- SOLUTIONS:
+# Structures and classes (SOLUTIONS)
+-- EXAMPLES:
 # Structures and classes
+-- BOTH:
 
 These follow the slides at http://eric-wieser.github.io/lftcm-2023
 
@@ -17,7 +21,11 @@ If you get bored of these exercises, feel free to move onto the exercises in MIL
 `S03_Building_the_Gaussian_Integers`. You will need to read MIL alongside the lean file in order
 to see the explanation of the exercise!
 
+-- SOLUTIONS:
+If you're struggling, don't forget that this IS the solutions file!
+-- EXAMPLES:
 If you're struggling, don't forget the solutions are in the repo too.
+-- BOTH:
 Some exercises rely on you having solved (or copied the solutions from) previous exercises.
 -/
 
@@ -74,7 +82,7 @@ def twoOfClubs : Card where
 def twoOfClubs : Card := _
 BOTH: -/
 
--- make a list of cards of different numbers but the same suit; 💡 works inside other expressions too
+-- make a list of cards of different numbers but the same suit; 💡 on `_` works inside other expressions too
 def threeOfAKind : List Card :=
 -- SOLUTIONS:
   [⟨0, 2⟩, {
@@ -82,7 +90,7 @@ def threeOfAKind : List Card :=
     value := 3
   }, { suit := 0, value := 4}]
 /- EXAMPLES:
-  -- [sorry, sorry, sorry]
+  [sorry, sorry, sorry]
 BOTH: -/
 
 end exercise
@@ -573,7 +581,7 @@ Don't forget to use the 💡 feature!
 -/
 
 /-
-1. Define a pythogorean triple
+1. Define a Pythagorean triple
 -/
 example : MyPythagoreanTriple :=
 -- SOLUTIONS:
@@ -634,7 +642,7 @@ end slides
 section exercise
 /-! ### EXERCISE 9
 
-Here we show that the composition of builting structures is the same as our custom structures.
+Here we show that the composition of builtin structures is the same as our custom structures.
 Note that `≃` is notation for `Equiv`, which is itself a structure
 (right click -> "peek definition" will show you how it is defined).
 -/
@@ -750,7 +758,7 @@ section exercise
 1. In the style of `LFTCM.Group`, write a typeclass for additive groups
 -/
 
-/-- A simpler version of `AddGroup`. You will need to `extend` the appropiate notation, and write
+/-- A simpler version of `AddGroup`. You will need to `extend` the appropriate notation, and write
 the fields. -/
 -- SOLUTIONS:
 class MyAddGroup (G : Type) extends Add G, Zero G, Neg G where
@@ -759,9 +767,10 @@ class MyAddGroup (G : Type) extends Add G, Zero G, Neg G where
   zero_add : ∀ x : G, 0 + x = x
   add_left_neg : ∀ x : G, -x + x = 0
 /- EXAMPLES:
-class LFTCM.AddGroup (G : Type) where
+class MyAddGroup (G : Type) where
+  -- add your fields here
 BOTH: -/
-#check Group.toDivisionMonoid
+
 /-
 2. Prove that `Point' R` forms an additive group when `R` does
 -/
@@ -878,7 +887,7 @@ end LFTCM
 open LFTCM.MulOpposite
 
 section exercise
-/-! ### EXERCISE 11
+/-! ### EXERCISE 12
 
 1. Show that `MulOpposite α` is a group when `α` is. Remember the advice about deleting the
   un-needed fields. You can also delete `one`, `mul`, and `inv` as they are found from the above.

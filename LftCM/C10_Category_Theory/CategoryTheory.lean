@@ -107,8 +107,9 @@ example (l : Z ⟶ W)
 Another tool for handling associativity is the macro `reassoc_of%` which creates a reassociated
 version of a given equality:
 -/
-theorem reassoc_of_example {f g : X ⟶ Y} (e : f = g) (h : Y ⟶ Z) :
-    f ≫ h = g ≫ h :=
+theorem reassoc_of_example {i : W ⟶ X} {f g : X ⟶ Y}
+    (e : i ≫ f = i ≫ g) (h : Y ⟶ Z) :
+    i ≫ f ≫ h = i ≫ g ≫ h :=
   (reassoc_of% e) h
 /- The same can be achieved adding `@[reassoc]` in front of a theorem.
 
@@ -129,6 +130,7 @@ end
 /- Category instantiations can be found in other folders, e.g. `Algebra.Category`  -/
 #check GroupCat  -- The category of groups
 /-
+* Many categories are defined via `Bundled`
 * (Co)homology of chain complexes in `Algebra.Homology.Homology`
 * Abelian categories
 
@@ -144,8 +146,10 @@ open Opposite
 variable (C : Type u) [Category.{v} C]
 
 def isoOfHomIso {X Y : C} (h : yoneda.obj X ≅ yoneda.obj Y) : X ≅ Y where
+-- SOLUTIONS:
   hom := (h.app (op X)).hom (𝟙 X)
   inv := (h.app (op Y)).inv (𝟙 Y)
+-- BOTH:
 
 end
 
@@ -155,6 +159,7 @@ end
 section
 
 noncomputable def RingCat.Polynomial : RingCat ⥤ RingCat where
+-- SOLUTIONS:
   obj R := .of (_root_.Polynomial R)
   map f := Polynomial.mapRingHom f
   map_id R := by
@@ -167,6 +172,7 @@ noncomputable def RingCat.Polynomial : RingCat ⥤ RingCat where
     simp only [comp_apply]
     rw [this, Polynomial.coe_mapRingHom, Polynomial.coe_mapRingHom, Polynomial.coe_mapRingHom]
     simp [Polynomial.map_map]
+-- BOTH:
 
 end
 
@@ -179,7 +185,9 @@ variable {C : Type u} {D : Type u'} [Category.{v} C] [Category.{v'} D]
 
 theorem equiv_reflects_monos {X Y : C} (f : X ⟶ Y) (e : C ≌ D) (hef : Mono (e.functor.map f)) :
     Mono f := by
+-- SOLUTIONS:
   aesop_cat
+-- BOTH:
 
 end
 
@@ -192,9 +200,9 @@ open Polynomial
 
 #check Polynomial.eval₂
 #check Polynomial.eval₂RingHom
-#check NatTrans
 
 theorem CommRing.forget_representable : Functor.Corepresentable (forget CommRingCat.{0}) where
+-- SOLUTIONS:
   has_corepresentation := ⟨.op (.of (Polynomial ℤ)),
     { app := fun R f => by { unfold coyoneda at f; dsimp at f; exact f X } },
     ⟨{ app := fun R r => Polynomial.eval₂RingHom (algebraMap ℤ R) r
@@ -213,12 +221,9 @@ theorem CommRing.forget_representable : Functor.Corepresentable (forget CommRing
           simp
           rw [coe_eval₂RingHom]
           aesop_cat ⟩⟩
+-- BOTH:
 
 end
-
-#check RingHom.map_sum
-
-#check Functor.Corepresentable
 
 /-
 ### Exercise 6: Pushouts and Epis
@@ -243,6 +248,7 @@ variable {C : Type u} [Category.{v} C]
 
 def pushoutOfEpi {X Y : C} (f : X ⟶ Y) [Epi f] :
     IsColimit (PushoutCocone.mk (𝟙 Y) (𝟙 Y) rfl : PushoutCocone f f) := by
+-- SOLUTIONS:
   fapply PushoutCocone.IsColimit.mk
   · intro s; exact s.ι.app WalkingSpan.left
   · intro s
@@ -255,5 +261,6 @@ def pushoutOfEpi {X Y : C} (f : X ⟶ Y) [Epi f] :
     aesop_cat
   · intro s
     aesop_cat
+-- BOTH:
 
 end

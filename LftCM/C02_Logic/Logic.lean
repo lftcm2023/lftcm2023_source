@@ -147,7 +147,7 @@ example (h : ∀ a, ∃ x, a < f x) : ¬ fnHasUB f := by
 end
 
 /-!
-## Conjuction
+## Conjunction
 -/
 
 section

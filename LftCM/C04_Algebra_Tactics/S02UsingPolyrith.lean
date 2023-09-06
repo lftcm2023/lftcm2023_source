@@ -152,9 +152,9 @@ SOLUTIONS: -/
   | m + 2 => by
     intro k
 /- EXAMPLES:
-    have H₁ := mul_t (m + 37) (k * 37) -- not actually a relevant pair of input values!
-    have h₁ := t_add_two 7 -- not actually a relevant input value!
-    have h₂ := t_add_two (37 + m) -- not actually a relevant input value!
+    have H₁ := mul_T (m + 37) (k * 37) -- not actually a relevant pair of input values!
+    have h₁ := T_add_two 7 -- not actually a relevant input value!
+    have h₂ := T_add_two (37 + m) -- not actually a relevant input value!
     ring_nf at H₁ h₁ h₂ ⊢
     sorry -- polyrith should work if you have added the relevant hypotheses (may be more than 3)
 SOLUTIONS: -/
@@ -165,6 +165,8 @@ SOLUTIONS: -/
     have h₃ := T_add_two k
     ring_nf at H₁ H₂ h₁ h₂ h₃ ⊢
     linear_combination 2 * (X : ℤ[X]) * H₁ - 1 * H₂ + 2 * T (2 + m + k) * h₁ - 1 * h₂ - 1 * h₃
+
+-- BOTH:
 -- QUOTE.
 
 
@@ -377,20 +379,21 @@ SOLUTIONS: -/
       simp [quaternion_simps] at *
       intro H1 H2
       linear_combination H1 + (a.re ^ 2 + a.imI ^ 2 + a.imJ ^ 2 + a.imK ^ 2) * H2
+-- BOTH:
     one_mem' := by
+/- EXAMPLES:
+      sorry
+SOLUTIONS: -/
       simp [quaternion_simps]
 -- BOTH:
   }
   inv_mem' := by
-/- EXAMPLES:
-    sorry
-SOLUTIONS: -/
     rintro ⟨a, b, h, h'⟩
     intro H
     simp at H ⊢
 -- BOTH:
 /- EXAMPLES:
-  sorry
+    sorry -- use Quaternion.mul_* lemmas
 SOLUTIONS: -/
     have hre := Quaternion.mul_re a b
     have hI := Quaternion.mul_imI a b
@@ -454,15 +457,15 @@ theorem toMatrix_mem_orthogonal {a : ℍ} (ha : a ∈ unitQuaternions) :
   ext (i j)
   fin_cases i <;> fin_cases j <;> simp [quaternion_simps]
 /- EXAMPLES:
-    · polyrith
-    · polyrith
-    · polyrith
-    · polyrith
-    · polyrith
-    · polyrith
-    · polyrith
-    · polyrith
-    · polyrith
+  · polyrith
+  · polyrith
+  · polyrith
+  · polyrith
+  · polyrith
+  · polyrith
+  · polyrith
+  · polyrith
+  · polyrith
 SOLUTIONS: -/
   · linear_combination (x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 + 1) * H
   · ring
