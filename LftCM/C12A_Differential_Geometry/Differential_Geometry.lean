@@ -38,7 +38,7 @@ Manifold in Lean:
   `𝓡 n` and `𝓡∂ n`.
 -/
 
-open Set ENat ENNReal Manifold Metric FiniteDimensional Bundle
+open Set ENat Manifold Metric FiniteDimensional Bundle Function
 
 noncomputable section
 section examples
@@ -176,7 +176,7 @@ variable
   [SmoothManifoldWithCorners I M]
   -- declare a smooth manifold `N` over the pair `(F, G)`.
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
-  {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
+  (J : ModelWithCorners 𝕜 F G) {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   [SmoothManifoldWithCorners J N]
 
 example (f : M → N) (x : M) : TangentSpace I x →L[𝕜] TangentSpace J (f x) :=
@@ -236,6 +236,20 @@ variable (f : C^∞⟮I, M; IB, B⟯)
 example : SmoothVectorBundle F₁ ((f : M → B) *ᵖ E₁) I := by
   apply SmoothVectorBundle.pullback
 
+def Immersion (f : M → N) : Prop := ∀ m, Injective (mfderiv I J f m)
+
+variable (E : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+  [Fact (finrank ℝ E = 3)]
+
+local notation "ℝ³" => E
+local notation "𝕊²" => sphere (0 : E) 1
+
+theorem sphere_eversion : ∃ f : ℝ → 𝕊² → ℝ³,
+    (ContMDiff (𝓘(ℝ, ℝ).prod (𝓡 2)) 𝓘(ℝ, ℝ³) ∞ (uncurry f)) ∧
+    (f 0 = λ x : 𝕊² ↦ (x : ℝ³)) ∧
+    (f 1 = λ x : 𝕊² ↦ -(x : ℝ³)) ∧
+    ∀ t, Immersion (𝓡 2) 𝓘(ℝ, ℝ³) (f t) :=
+  sorry -- not yet in mathlib, but formalized as a consequence of Gromov's h-principle
 
 end examples
 
