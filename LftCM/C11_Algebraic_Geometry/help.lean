@@ -26,7 +26,7 @@ def cheat : System.FilePath :=
 
 /--  Produces the message depending on whether the input is `tactics`, `lemmas` or anything else. -/
 def tacsOrLems (s : Option (TSyntax `str)) : IO MessageData := do
-  if let #[lems, tacs] := ← IO.FS.lines cheat then
+  if let #[_, lems, tacs] := ← IO.FS.lines cheat then
     match s.getD default with
       | `("tactics") => return toMessageData tacs "tactics"
       | `("lemmas")  => return toMessageData lems "lemmas"
