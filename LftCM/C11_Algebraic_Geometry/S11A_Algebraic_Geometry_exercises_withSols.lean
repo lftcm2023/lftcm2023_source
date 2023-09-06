@@ -237,11 +237,12 @@ of `Spec R` are denoted by precisely this notation
 and exactly mean "the ring homomorphisms from `R` to `S`".
 
 You will compute `Spec ℤ (R)` for any `R`,
-and that `Spec ℚ[x]/(x^2-1) (ℚ)` has at most two elements.
+and you will show that `Spec ℚ[x]/(x^2-1) (ℚ)` has at most two elements.
 In the exercises, this last result uses two facts.
 First, the isomorphism
 `ℚ[x]/(x^2-1) ≃ ℚ [ℤ/2ℤ]`
-where the right hand ring is `AddMonoidAlgebra ℚ (ZMod 2)`, the group algebra on the group with two elements.
+where the right hand ring is `AddMonoidAlgebra ℚ (ZMod 2)`,
+the group algebra on the group with two elements.
 Second, the Type `Bool` of `Bool`eans whose only terms are `true` and `false`.
 You will prove that `Spec ℚ (AddMonoidAlgebra ℚ (ZMod 2))`
 injects into `Bool`.
