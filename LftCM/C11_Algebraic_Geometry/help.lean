@@ -16,7 +16,7 @@ namespace Tactic.Suggestions
 open Lean
 
 /-- Convert a comma-separated `Sting` into a `MessageData`. -/
-def toMessageData (s : String) (type : String) : MessageData :=
+def toMessageData (s type : String) : MessageData :=
 let tacArr := m!"{s.splitOn ","}"
 m!"Possibly useful {type}:{indentD tacArr}"
 
