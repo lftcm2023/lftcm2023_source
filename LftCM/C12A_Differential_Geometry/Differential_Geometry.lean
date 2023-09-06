@@ -21,31 +21,19 @@ What is a manifold?
 Bourbaki: 2, 4
 Lean: 1, 2, 3
 
-Perelman geometrization theorem : any compact connected irreducible 3-manifold can
-be cut along tori into finitely many pieces, each of which has a _geometric structure_ of
-finite volume, i.e., it is locally like a model space, with changes of coordinates given
-locally by the action of a Lie group
-
-Typical dynamics theorem : let `M` be a compact manifold, and `f : M → M` a map with property
-such and such. Then ...
-
-Or : Consider a hyperbolic surface of genus `g`, and a random geodesic of length `T`. How many
-times does it typically self-intersect?
-
-
 Manifold in Lean:
 
-* charted space structure, i.e., set of partial homeos to a model space. This is data, fixed
-  once and for all (and a typeclass)
+* charted space structure, i.e., set of partial homeomorphisms to a model space.
+  This is data, fixed once and for all (and a typeclass)
 * compatibility condition, i.e., the change of coordinates should belong to some subgroup
-  of the group of partial homeos of the model space. This is Prop (and a typeclass). The same
-  manifold can be at the same time an analytic manifold, a smooth manifold and a topological
-  manifold (with the same fixed atlas).
+  of the group of partial homeomorphisms of the model space. This is Prop (and a typeclass).
+  The same manifold can be at the same time an analytic manifold,
+  a smooth manifold and a topological manifold (with the same fixed atlas).
 * A charted space is a smooth manifold (with corners) if it is compatible with the smooth
   groupoid on the model space. To cover uniformly both situations with and without boundary,
   the smooth groupoid is with respect to a map `I : H → E` (think of `H` as the half-space and
-  `E` the full space), which is the identity in the boundaryless situation, the inclusion in
-  the half-space situation. This map `I` is called a _model with corners_. The most standard ones
+  `E` the full space) in the half-space situation and `id : E → E` in the boundaryless situation.
+  This map `I` is called a _model with corners_. The most standard ones
   (identity in `ℝ^n` and inclusion of half-space in `ℝ^n`) have dedicated notations:
   `𝓡 n` and `𝓡∂ n`.
 -/
@@ -149,10 +137,8 @@ Issues:
   but "seen" in the chart `e_x` (this will show up in the definition of the derivative: the
   derivative of `f : M → M'` at `x` is defined to be the derivative of the map
   `e_{f x} ∘ f ∘ e_x⁻¹`). Works perfectly fine, but makes mathematicians unhappy/uneasy.
-  (Axiom of choice? In fact we put the choice of `e_x` in the *definition* of charted spaces,
-  so not further choice)
 
-We pick (4) in Mathlib.
+We pick (4) in Mathlib. In fact, in the definition of a manifold, every point has a preferred chart associated to it.
 
 #### Smooth functions in manifolds with boundary
 
@@ -184,7 +170,7 @@ in vector spaces. You won't find this in books!
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 variable
-  -- declare a smooth manifold `M'` over the pair `(E', H')`.
+  -- declare a smooth manifold `M` over the pair `(E, H)`.
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
@@ -204,6 +190,7 @@ example {f g : M → M} (x : M)
 example (f : M → N) : TangentBundle I M → TangentBundle J N :=
   tangentMap I J f
 
+-- We also have smooth vector bundles
 
 #check Trivialization
 #check FiberBundle
@@ -230,26 +217,25 @@ variable (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ 
 
 -- then the product bundle is a smooth vector bundle.
 
-example : FiberBundle (F₁ × F₂) (E₁ ×ᵇ E₂) := by
-  infer_instance
-
-example : VectorBundle 𝕜 (F₁ × F₂) (E₁ ×ᵇ E₂) := by
-  infer_instance
-
 example : SmoothVectorBundle (F₁ × F₂) (E₁ ×ᵇ E₂) IB := by
   infer_instance
+
+-- we can take construct the bundle of continuous linear maps between bundles.
 
 variable [∀ x, TopologicalAddGroup (E₁ x)] [∀ x, TopologicalAddGroup (E₂ x)]
   [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 
-example : FiberBundle (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂) := by
+
+example : SmoothVectorBundle (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (.id 𝕜) E₁ E₂) IB := by
   infer_instance
 
-example : VectorBundle 𝕜 (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂) := by
-  infer_instance
+-- and we can pull back vector bundles
 
-example : SmoothVectorBundle (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂) IB := by
-  infer_instance
+variable (f : C^∞⟮I, M; IB, B⟯)
+
+example : SmoothVectorBundle F₁ ((f : M → B) *ᵖ E₁) I := by
+  apply SmoothVectorBundle.pullback
+
 
 end examples
 
