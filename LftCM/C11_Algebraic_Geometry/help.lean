@@ -1,5 +1,16 @@
 import Lean.Elab.Command
 
+/-
+# Custom `#help`, `#tactics` and `#lemmas` tactics/commands
+
+This file does not contain any exercise.
+The helper commands are simply accessed by typing `#help`, `#tactics` or `#lemmas` either as
+commands, in-between declarations, or
+inside tactic-mode.
+They show an alphabetical listing of tactics and lemmas/defs used
+in the proposed solutions to the exercises.
+-/
+
 namespace Tactic.Suggestions
 
 open Lean
