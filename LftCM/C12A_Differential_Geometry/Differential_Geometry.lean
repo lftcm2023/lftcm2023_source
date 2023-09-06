@@ -1,6 +1,8 @@
 -- BOTH:
 import LftCM.C12A_Differential_Geometry.Lib
 import Mathlib.Analysis.NormedSpace.Connected
+import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.Analysis.NormedSpace.Dual
 
 /-!
 # Differential Geometry
@@ -11,10 +13,10 @@ Acknowledgements: Based on the tutorial by Sébastien Gouëzel at LFTCM 2020.
 
 What is a manifold?
 
-1) allow field other than `ℝ` or `ℂ`?
-2) allow infinite dimension?
-3) allow boundary?
-4) allow model space depending on the point of the manifold?
+(1) allow field other than `ℝ` or `ℂ`?
+(2) allow infinite dimension?
+(3) allow boundary?
+(4) allow model space depending on the point of the manifold?
 
 Bourbaki: 2, 4
 Lean: 1, 2, 3
@@ -48,29 +50,61 @@ Manifold in Lean:
   `𝓡 n` and `𝓡∂ n`.
 -/
 
-open Set ENat ENNReal Manifold Metric FiniteDimensional unitInterval
-noncomputable section
+open Set ENat ENNReal Manifold Metric FiniteDimensional Bundle
 
-#check I
-#check ChartedSpace (EuclideanHalfSpace 1) I
-#check HasGroupoid I (contDiffGroupoid ∞ (𝓡∂ 1))
-#check SmoothManifoldWithCorners (𝓡∂ 1) I
+noncomputable section
+section examples
+
+section unitInterval
+open unitInterval
+
+#check Equiv -- bijections with a chosen inverse
+#check LocalEquiv -- An equiv between a subset of the domain and a subset of the codomain
+#check LocalHomeomorph -- A homeomorphism between open subsets of the domain and codomain
+
+#check I -- I is notation for the interval [0, 1]
+
+-- the interval [0, 1] is modelled by two charts with model space [0, ∞),
+-- so it is a topological manifold
+example : ChartedSpace (EuclideanHalfSpace 1) I := by
+  infer_instance
+
+#check IccManifold
+
+-- To state that it is a smooth manifold, we have to say that all coordinate changes live in the
+-- groupoid of smooth maps
+#check contDiffGroupoid
+example : HasGroupoid I (contDiffGroupoid ∞ (𝓡∂ 1)) := by
+  infer_instance
+
+-- We can write this shorter as follows
+example : SmoothManifoldWithCorners (𝓡∂ 1) I := by
+  infer_instance
 
 -- atlases are not maximal in general
-
 #check (contDiffGroupoid ∞ (𝓡∂ 1)).maximalAtlas I
 
+end unitInterval
+
+-- the sphere in a finite-dimensional inner product space is a smooth manifold
 
 variable (n : ℕ) (E : Type*) [NormedAddCommGroup E]
-  [InnerProductSpace ℝ E] [Fact (finrank ℝ E = n + 1)] in
+  [InnerProductSpace ℝ E] [Fact (finrank ℝ E = n + 1)]
 #check SmoothManifoldWithCorners (𝓡 n) (sphere (0 : E) 1)
 
+-- the map 𝕊ⁿ ↪ ℝⁿ⁺¹ is smooth
+example : Smooth (𝓡 n) 𝓘(ℝ, E) ((·) : sphere (0 : E) 1 → E) := by
+  exact?
+
+-- the circle is a Lie group
+example : LieGroup (𝓡 1) circle := by
+  infer_instance
 
 /- Dicussing three (controversial?) design decisions
 
-#### Partial homeos
+#### Partial homeomorphisms
 
-What is a partial homeo `f` between an open subset of `E` and an open subset of `F`?
+What is a partial homeomorphism `f` between an open subset of `E` and an open subset of `F`?
 This is notion is called `LocalHomeomorph` in Mathlib.
 (1) a map defined on a Subtype: `f x` only makes sense for `x : f.source`;
 (2) a map defined on the whole space `E`, but taking values in `Option F = F ∪ {junk}`,
@@ -144,6 +178,80 @@ This does not happen with the half-space, as it is large enough: derivatives wit
 work well if the tangent directions span the whole space. Predicate `UniqueDiffOn` for sets
 in vector spaces. You won't find this in books!
 -/
+
+-- declaring a smooth manifold is a little verbose:
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+
+variable
+  -- declare a smooth manifold `M'` over the pair `(E', H')`.
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  [SmoothManifoldWithCorners I M]
+  -- declare a smooth manifold `N` over the pair `(F, G)`.
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+  {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
+  [SmoothManifoldWithCorners J N]
+
+example (f : M → N) (x : M) : TangentSpace I x →L[𝕜] TangentSpace J (f x) :=
+  mfderiv I J f x
+
+example {f g : M → M} (x : M)
+    (hg : MDifferentiableAt I I g (f x)) (hf : MDifferentiableAt I I f x) :
+    mfderiv I I (g ∘ f) x = (mfderiv I I g (f x)).comp (mfderiv I I f x) :=
+  mfderiv_comp x hg hf
+
+example (f : M → N) : TangentBundle I M → TangentBundle J N :=
+  tangentMap I J f
+
+
+#check Trivialization
+#check FiberBundle
+#check VectorBundle
+#check SmoothVectorBundle
+
+variable
+  {E : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  (IB : ModelWithCorners 𝕜 E H) {B : Type*} [TopologicalSpace B] [ChartedSpace H B]
+  [SmoothManifoldWithCorners IB B]
+
+-- let `E₁` and `E₂` be smooth vector bundles over `B`
+
+variable (F₁ : Type*) [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type*)
+  [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
+  [∀ x : B, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
+  [SmoothVectorBundle F₁ E₁ IB]
+variable (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type*)
+  [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, AddCommGroup (E₂ x)] [∀ x, Module 𝕜 (E₂ x)]
+  [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂]
+  [SmoothVectorBundle F₂ E₂ IB]
+
+
+-- then the product bundle is a smooth vector bundle.
+
+example : FiberBundle (F₁ × F₂) (E₁ ×ᵇ E₂) := by
+  infer_instance
+
+example : VectorBundle 𝕜 (F₁ × F₂) (E₁ ×ᵇ E₂) := by
+  infer_instance
+
+example : SmoothVectorBundle (F₁ × F₂) (E₁ ×ᵇ E₂) IB := by
+  infer_instance
+
+variable [∀ x, TopologicalAddGroup (E₁ x)] [∀ x, TopologicalAddGroup (E₂ x)]
+  [∀ x, ContinuousSMul 𝕜 (E₂ x)]
+
+example : FiberBundle (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂) := by
+  infer_instance
+
+example : VectorBundle 𝕜 (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂) := by
+  infer_instance
+
+example : SmoothVectorBundle (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂) IB := by
+  infer_instance
+
+end examples
 
 
 /-! ## Exercises -/
@@ -288,7 +396,6 @@ lemma EqOnSource_myFirstLocalHomeo_mySecondLocalHomeo :
   simp [myFirstLocalHomeo, mySecondLocalHomeo, ne_3_of_mem_Ioo hx]
 -- BOTH:
 
-
 /-! ### An example of a charted space structure on `ℝ`
 
 A charted space is a topological space together with a set of local homeomorphisms to a model space,
@@ -303,15 +410,13 @@ local homeomorphisms we have constructed above. To avoid using too much structur
 avoid confusing Lean), we will work with a copy of `ℝ`, on which we will only register the
 topology. -/
 
--- @[reducible]
 def Myℝ : Type := ℝ
-deriving TopologicalSpace
-attribute [reducible, simp] instMyℝTopologicalSpace
+deriving OrderedRing, TopologicalSpace
 
 @[simps]
 instance chartedSpaceMyℝ : ChartedSpace ℝ Myℝ where
   atlas := { LocalHomeomorph.refl ℝ, myFirstLocalHomeo }
-  chartAt := fun x ↦ if x ∈ Ioo (-1 : ℝ) 1 then myFirstLocalHomeo else LocalHomeomorph.refl ℝ
+  chartAt := fun x ↦ if x ∈ Ioo (-1) 1 then myFirstLocalHomeo else LocalHomeomorph.refl ℝ
   mem_chart_source := by
 -- SOLUTIONS:
     intro x
@@ -482,13 +587,11 @@ def myHomeo : TangentBundle 𝓡1 Myℝ ≃ₜ (ℝ × ℝ) := by
 -- SOLUTIONS:
   let p : TangentBundle 𝓡1 Myℝ := ⟨(4 : ℝ), 0⟩
   let F := chartAt (ModelProd ℝ ℝ) p
-  have A : ¬ (4 : ℝ) < 1 := by norm_num
+  have A : ¬ (4 : Myℝ) < 1 := by norm_num
   have S : F.source = univ
-  · simp [FiberBundle.chartedSpace_chartAt]
-    simp [Myℝ, A]
+  · simp [FiberBundle.chartedSpace_chartAt, A]
   have T : F.target = univ
-  · simp [FiberBundle.chartedSpace_chartAt, LocalHomeomorph.refl_target ℝ]
-    simp [Myℝ, A]
+  · simp [FiberBundle.chartedSpace_chartAt, LocalHomeomorph.refl_target ℝ, A]
   exact F.toHomeomorphOfSourceEqUnivTargetEqUniv S T
 -- BOTH:
 
@@ -700,6 +803,9 @@ A global advice: don't hesitate to use and abuse `simp`, it is the main workhors
 area of mathlib.
 -/
 
+open unitInterval
+
+
 def g : I → ℝ := Subtype.val
 
 -- smoothness results for `EuclideanSpace` are expressed for general `L^p` spaces
@@ -860,14 +966,18 @@ def myTangentHomeo : TangentBundle (𝓡∂ 1) I ≃ₜ I × ℝ := by
 /-!
 ### Further things to do
 
-1) can you prove `diffeomorph_of_zero_dim_connected` or `connectedSpace_sphere`?
+(1) can you prove `diffeomorph_of_zero_dim_connected`?
 
-2) Try to express and then prove the local inverse theorem in real manifolds: if a map between
+(2) Try to express and then prove the local inverse theorem in real manifolds: if a map between
 real manifolds (without boundary, modelled on a complete vector space) is smooth, then it is
 a local homeomorphism around each point. We already have versions of this statement in mathlib
 for functions between vector spaces, but this is very much a work in progress.
 
-3) What about trying to prove `diffeomorph_of_one_dim_compact_connected`? (I am not sure mathlib
+(3) What about trying to prove `diffeomorph_of_one_dim_compact_connected`? (I am not sure mathlib
 is ready for this, as the proofs I am thinking of are currently a little bit too high-powered.
 If you manage to do it, you should absolutely PR it!)
+
+(4) Construct the tensor product of two vector bundles
+  Remark: we have not endowed the tensor product of vector spaces with a topology yet,
+  even if the vector spaces were finite-dimensional.
 -/
