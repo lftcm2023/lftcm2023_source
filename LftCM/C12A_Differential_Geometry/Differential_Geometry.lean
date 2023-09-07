@@ -39,6 +39,7 @@ Manifold in Lean:
 -/
 
 open Set ENat Manifold Metric FiniteDimensional Bundle Function
+attribute [local instance] Real.fact_zero_lt_one
 
 noncomputable section
 section examples
@@ -46,26 +47,19 @@ section examples
 section unitInterval
 open unitInterval
 
-#check Equiv -- bijections with a chosen inverse
-#check LocalEquiv -- An equiv between a subset of the domain and a subset of the codomain
-#check LocalHomeomorph -- A homeomorphism between open subsets of the domain and codomain
-
 #check I -- I is notation for the interval [0, 1]
 
--- the interval [0, 1] is modelled by two charts with model space [0, ∞),
--- so it is a topological manifold
+/- the interval [0, 1] is modelled by two charts with model space [0, ∞),
+so it is a topological manifold -/
 example : ChartedSpace (EuclideanHalfSpace 1) I := by
   infer_instance
 
-#check IccManifold
-
--- To state that it is a smooth manifold, we have to say that all coordinate changes live in the
--- groupoid of smooth maps
-#check contDiffGroupoid
+/- To state that it is a smooth manifold, we have to say that all coordinate changes
+live in the groupoid of smooth maps -/
 example : HasGroupoid I (contDiffGroupoid ∞ (𝓡∂ 1)) := by
   infer_instance
 
--- We can write this shorter as follows
+-- This is the same as saying that `I` forms a smooth manifold.
 example : SmoothManifoldWithCorners (𝓡∂ 1) I := by
   infer_instance
 
@@ -112,7 +106,14 @@ Just like division by zero! But worse:
   (and it is *not* equivalent to (1) or (2) when one of the spaces is empty).
 
 We pick (3) in Mathlib.
+-/
 
+#check Equiv -- bijections with a chosen inverse
+#check LocalEquiv -- An equiv between a subset of the domain and a subset of the codomain
+#check LocalHomeomorph -- A homeomorphism between open subsets of the domain and codomain
+
+
+/-
 #### Tangent vectors
 
 What is a tangent vector (for a manifold `M` modelled on a vector space `E`)?
@@ -138,8 +139,13 @@ Issues:
   derivative of `f : M → M'` at `x` is defined to be the derivative of the map
   `e_{f x} ∘ f ∘ e_x⁻¹`). Works perfectly fine, but makes mathematicians unhappy/uneasy.
 
-We pick (4) in Mathlib. In fact, in the definition of a manifold, every point has a preferred chart associated to it.
+We pick (4) in Mathlib. In fact, in the definition of a manifold,
+every point has a preferred chart associated to it.
+-/
+#check TangentSpace
+#check TangentBundle
 
+/-
 #### Smooth functions in manifolds with boundary
 
 Usual definition of smooth functions in a half space: extend to a smooth function a little bit
@@ -164,6 +170,8 @@ This does not happen with the half-space, as it is large enough: derivatives wit
 work well if the tangent directions span the whole space. Predicate `UniqueDiffOn` for sets
 in vector spaces. You won't find this in books!
 -/
+#check ContDiffWithinAt
+
 
 -- declaring a smooth manifold is a little verbose:
 
@@ -190,6 +198,10 @@ example {f g : M → M} (x : M)
 example (f : M → N) : TangentBundle I M → TangentBundle J N :=
   tangentMap I J f
 
+example [AddGroup N] [LieAddGroup J N] {f g : M → N} {n : ℕ∞}
+    (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (f + g) :=
+  hf.add hg
+
 -- We also have smooth vector bundles
 
 #check Trivialization
@@ -198,12 +210,11 @@ example (f : M → N) : TangentBundle I M → TangentBundle J N :=
 #check SmoothVectorBundle
 
 variable
-  {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   (IB : ModelWithCorners 𝕜 E H) {B : Type*} [TopologicalSpace B] [ChartedSpace H B]
   [SmoothManifoldWithCorners IB B]
 
--- let `E₁` and `E₂` be smooth vector bundles over `B`
+-- Let `E₁` and `E₂` be smooth vector bundles over `B`
 
 variable (F₁ : Type*) [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type*)
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
@@ -215,12 +226,12 @@ variable (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ 
   [SmoothVectorBundle F₂ E₂ IB]
 
 
--- then the product bundle is a smooth vector bundle.
+-- The product of two bundles is a smooth vector bundle.
 
 example : SmoothVectorBundle (F₁ × F₂) (E₁ ×ᵇ E₂) IB := by
   infer_instance
 
--- we can take construct the bundle of continuous linear maps between bundles.
+-- We can take construct the bundle of continuous linear maps between bundles.
 
 variable [∀ x, TopologicalAddGroup (E₁ x)] [∀ x, TopologicalAddGroup (E₂ x)]
   [∀ x, ContinuousSMul 𝕜 (E₂ x)]
@@ -229,12 +240,14 @@ variable [∀ x, TopologicalAddGroup (E₁ x)] [∀ x, TopologicalAddGroup (E₂
 example : SmoothVectorBundle (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (.id 𝕜) E₁ E₂) IB := by
   infer_instance
 
--- and we can pull back vector bundles
+-- We can pull back vector bundles.
 
 variable (f : C^∞⟮I, M; IB, B⟯)
 
 example : SmoothVectorBundle F₁ ((f : M → B) *ᵖ E₁) I := by
   apply SmoothVectorBundle.pullback
+
+/- Patrick Massot, Oliver Nash and I have proven sphere eversion from Gromov's h-principle -/
 
 def Immersion (f : M → N) : Prop := ∀ m, Injective (mfderiv I J f m)
 
@@ -242,16 +255,28 @@ variable (E : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E]
   [Fact (finrank ℝ E = 3)]
 
 local notation "ℝ³" => E
-local notation "𝕊²" => sphere (0 : E) 1
+local notation "𝕊²" => sphere (0 : ℝ³) 1
 
 theorem sphere_eversion : ∃ f : ℝ → 𝕊² → ℝ³,
     (ContMDiff (𝓘(ℝ, ℝ).prod (𝓡 2)) 𝓘(ℝ, ℝ³) ∞ (uncurry f)) ∧
     (f 0 = λ x : 𝕊² ↦ (x : ℝ³)) ∧
     (f 1 = λ x : 𝕊² ↦ -(x : ℝ³)) ∧
     ∀ t, Immersion (𝓡 2) 𝓘(ℝ, ℝ³) (f t) :=
-  sorry -- not yet in mathlib, but formalized as a consequence of Gromov's h-principle
+  sorry -- not yet in mathlib
 
 end examples
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /-! ## Exercises -/
